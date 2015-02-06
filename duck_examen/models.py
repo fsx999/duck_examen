@@ -7,6 +7,13 @@ from django_apogee.models import Pays, InsAdmEtp
 # from core.utils import paginator_etudiant
 
 
+
+class EtapeExamen(InsAdmEtp):
+    class Meta:
+        proxy = True
+        verbose_name = 'Etape examen'
+
+
 @python_2_unicode_compatible
 class ExamCenter(models.Model):
     u"""
@@ -67,6 +74,7 @@ class ExamCenter(models.Model):
 #
 
 
+
 class RattachementCentreExamen(models.Model):
     inscription = models.ForeignKey(InsAdmEtp)
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
@@ -75,19 +83,19 @@ class RattachementCentreExamen(models.Model):
 
 
 
-@python_2_unicode_compatible
-class CentreGestionException(models.Model):
-    label = models.CharField("Nom du centre", max_length=200, null=True)
-    adresse = models.TextField("Adresse du centre", null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Centre autre"
-        verbose_name_plural = "Centres autres"
-        db_table = 'core_centregestionexception'
-
-    def __str__(self):
-        return "{}".format(self.label)
-# #
+# @python_2_unicode_compatible
+# class CentreGestionException(models.Model):
+#     label = models.CharField("Nom du centre", max_length=200, null=True)
+#     adresse = models.TextField("Adresse du centre", null=True, blank=True)
+#
+#     class Meta:
+#         verbose_name = "Centre autre"
+#         verbose_name_plural = "Centres autres"
+#         db_table = 'core_centregestionexception'
+#
+#     def __str__(self):
+#         return "{}".format(self.label)
+# # #
 #
 # @python_2_unicode_compatible
 # class EtudiantCentreExamen(models.Model):
@@ -341,26 +349,26 @@ class CentreGestionException(models.Model):
 #
 #     def __str__(self):
 #         return '{} {} {}'.format(self.centre.name_by_pays(), self.etape_id, self.session)
-
-class CentreGestionExamenInitial(models.Model):
-    '''
-    uniquement pour l'import Todo a supprimer
-    '''
-    label = models.CharField("Nom du centre", max_length=200, null=True)
-    adresse = models.TextField("Adresse du centre")
-    adresse_envoi_materiel = models.TextField("Adresse de l'envoi du matériel", blank=True, null=True)
-    nom = models.CharField(max_length=30, null=True, blank=True)
-    prenom = models.CharField(max_length=30, null=True, blank=True)
-    email = models.EmailField(null=True, blank=True)
-    email_bis = models.EmailField(null=True, blank=True, verbose_name="second email")
-    telephone = models.CharField(max_length=30, blank=True, null=True)
-    fax = models.CharField(max_length=30, null=True, blank=True)
-
-    pays = models.ForeignKey(Pays, verbose_name="pays")
-
-    class Meta:
-        verbose_name = "Centre examen"
-        verbose_name_plural = "Centres examens"
-        # ordering = ['pays__lib_pay']
-        db_table = 'core_centregestionexamen'
-        managed = False
+#
+# class CentreGestionExamenInitial(models.Model):
+#     '''
+#     uniquement pour l'import Todo a supprimer
+#     '''
+#     label = models.CharField("Nom du centre", max_length=200, null=True)
+#     adresse = models.TextField("Adresse du centre")
+#     adresse_envoi_materiel = models.TextField("Adresse de l'envoi du matériel", blank=True, null=True)
+#     nom = models.CharField(max_length=30, null=True, blank=True)
+#     prenom = models.CharField(max_length=30, null=True, blank=True)
+#     email = models.EmailField(null=True, blank=True)
+#     email_bis = models.EmailField(null=True, blank=True, verbose_name="second email")
+#     telephone = models.CharField(max_length=30, blank=True, null=True)
+#     fax = models.CharField(max_length=30, null=True, blank=True)
+#
+#     pays = models.ForeignKey(Pays, verbose_name="pays")
+#
+#     class Meta:
+#         verbose_name = "Centre examen"
+#         verbose_name_plural = "Centres examens"
+#         # ordering = ['pays__lib_pay']
+#         db_table = 'core_centregestionexamen'
+#         managed = False
