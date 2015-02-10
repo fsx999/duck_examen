@@ -1,7 +1,14 @@
 # coding=utf-8
+from django.utils.encoding import smart_unicode
+from django_apogee.models import Pays
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter
 import xadmin
+from xadmin.filters import RelatedFieldListFilter
 from xadmin.layout import Layout, Container, Col, Fieldset
+from xadmin.views import filter_hook
+from django.db import models
+from xadmin.views.list import EMPTY_CHANGELIST_VALUE
+from django.utils.translation import ugettext as _
 
 
 class RattachementCentreExamenAdmin(object):
@@ -71,8 +78,18 @@ class EtapeExamenAdmin(object):
     get_eta_iae.allow_tags = True
 
 
+class PaysFilter(RelatedFieldListFilter):
+    def choices(self):
+        self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
+        return super(PaysFilter, self).choices()
+
+
 class ExamenCenterAdmin(object):
-    pass
+    search_fields = ['label', 'country__lib_pay']
+    ordering = ['country__lib_pay']
+    list_filter = [('country', PaysFilter)]
+
+
 
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
