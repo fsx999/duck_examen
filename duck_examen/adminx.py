@@ -85,6 +85,8 @@ class PaysFilter(RelatedFieldListFilter):
 
 
 class ExamenCenterAdmin(object):
+    hidden_menu = True
+    show_bookmarks = False
     search_fields = ['label', 'country__lib_pay']
     ordering = ['country__lib_pay']
     list_filter = [('country', PaysFilter)]
