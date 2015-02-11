@@ -11,6 +11,11 @@ from xadmin.views.list import EMPTY_CHANGELIST_VALUE
 from django.utils.translation import ugettext as _
 
 
+class PaysFilter(RelatedFieldListFilter):
+    def choices(self):
+        self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
+        return super(PaysFilter, self).choices()
+
 class RattachementCentreExamenAdmin(object):
     model = RattachementCentreExamen
     style = 'table'
@@ -20,7 +25,7 @@ class RattachementCentreExamenAdmin(object):
 
 class EtapeExamenAdmin(object):
     inlines = [RattachementCentreExamenAdmin]
-
+    list_filter = [('rattachementcentreexamen__centre__country', PaysFilter), 'cod_etp']
     fields = [
         'get_nom', 'get_prenom',
         'get_cod_etu', 'get_adresse',
@@ -30,11 +35,13 @@ class EtapeExamenAdmin(object):
         'get_nom', 'get_prenom',
         'get_cod_etu', 'get_adresse',
         'cod_etp', 'cod_cge',
-        'get_eta_iae']
+        'get_eta_iae', 'get_centre']
+    list_display = ('__str__', 'get_nom', 'get_prenom', 'cod_etp', 'get_centre')
     search_fields = ['cod_ind__cod_etu', "cod_ind__lib_nom_pat_ind", 'cod_ind__lib_pr1_ind']
     hidden_menu = True
     show_bookmarks = False
     site_title = u'Gestion examen'
+    list_per_page = 20
     form_layout = Layout(Container(Col('full',
                 Fieldset(
                     "",
@@ -77,12 +84,12 @@ class EtapeExamenAdmin(object):
     get_eta_iae.short_description = 'Etat de l\'inscription administrative'
     get_eta_iae.allow_tags = True
 
-
-class PaysFilter(RelatedFieldListFilter):
-    def choices(self):
-        self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
-        return super(PaysFilter, self).choices()
-
+    def get_centre(self, obj):
+        txt = u""
+        for rattachement in obj.rattachementcentreexamen_set.all():
+            txt += str(rattachement)
+        return txt
+    get_centre.short_description = 'Centre'
 
 class ExamenCenterAdmin(object):
     hidden_menu = True

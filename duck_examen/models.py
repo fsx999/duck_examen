@@ -81,7 +81,8 @@ class RattachementCentreExamen(models.Model):
     centre = models.ForeignKey(ExamCenter)
     ec_manquant = models.BooleanField(default=False, blank=True)
 
-
+    def __str__(self):
+        return u"{} session : {} ec manquant : {}".format(self.centre, self.session, "oui" if self.ec_manquant else 'non')
 
 # @python_2_unicode_compatible
 # class CentreGestionException(models.Model):
