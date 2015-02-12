@@ -14,7 +14,11 @@ from django.utils.translation import ugettext as _
 
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):
-        self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
+        etp = self.request.GET.get('_p_cod_etp__in', None)
+        if etp:
+            self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__rattachementcentreexamen__inscription__cod_etp=etp).order_by('lib_pay').distinct()]
+        else:
+            self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
         return super(PaysFilter, self).choices()
 
 
@@ -50,7 +54,7 @@ class RattachementCentreExamenAdmin(object):
 class EtapeExamenAdmin(object):
     inlines = [RattachementCentreExamenAdmin]
     list_filter = [('rattachementcentreexamen__centre__country', PaysFilter), 'cod_etp',
-                   ('rattachementcentreexamen__centre', DomTomFilter)]
+                   ('rattachementcentreexamen__centre', DomTomFilter), 'rattachementcentreexamen__session']
 
     fields = [
         'get_nom', 'get_prenom',
@@ -81,6 +85,8 @@ class EtapeExamenAdmin(object):
             ))
 
 
+    def queryset(self):
+         return  EtapeExamen.inscrits_condi.all()
     @filter_hook
     def model_admin_url(self, name, *args, **kwargs):
         extention = '?incorporation={}'.format(self.request.GET.get('incorporation', 0))

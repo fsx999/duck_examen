@@ -84,6 +84,20 @@ class RattachementCentreExamen(models.Model):
     def __str__(self):
         return u"{} session : {} ec manquant : {}".format(self.centre, self.session, "oui" if self.ec_manquant else 'non')
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.ec_manquant:
+            code_etp_actuel = self.inscription.cod_etp
+            if code_etp_actuel[0] == 'L' and code_etp_actuel != 'L3NEDU':
+                if code_etp_actuel[1] in ['2', '3']:
+                    code_etp_anterieur = code_etp_actuel[0] + str(int(code_etp_actuel[1]) - 1) + code_etp_actuel[2:]
+                    cod_ind = self.inscription.cod_ind
+                    etp = InsAdmEtp.inscrits_condi.filter(cod_ind=cod_ind, cod_etp=code_etp_anterieur).first()
+                    if etp:
+                        RattachementCentreExamen.objects.get_or_create(inscription=etp, session=self.session, centre=self.centre)
+
+        super(RattachementCentreExamen, self).save(force_insert, force_update, using, update_fields)
+
+
 # @python_2_unicode_compatible
 # class CentreGestionException(models.Model):
 #     label = models.CharField("Nom du centre", max_length=200, null=True)
