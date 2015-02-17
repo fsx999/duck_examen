@@ -5,17 +5,20 @@
     <table class="table table-bordered table-striped">
         <thead>
         <tr>
-            <th>Paiement</th>
-            <th>Impression des bordereaux</th>
-            <th>Cloture des bordereaux</th>
+            <th>Etape</th>
+            <th>Etiquette centre examen</th>
+            <!--<th>Impression des bordereaux</th>-->
+            <!--<th>Cloture des bordereaux</th>            <!--<th>Impression des bordereaux</th>-->
+            <!--<th>Cloture des bordereaux</th>-->
         </tr>
         </thead>
         <tbody>
-        {% for year in years %}
+        {% for etape in etapes %}
         <tr>
-            <td><a class="btn btn-primary" href="">Paiements : {{ year}}</a></td>
-            <td><a class="btn btn-primary" href="">Impression des bordereaux pour l'année  {{ year}}</a></td>
-            <td><a class="btn btn-primary" href="">Bordereaux : {{ year}}</a></td>
+            <td>{{ etape }}</td>
+            <td><a href=""></a>{{ etape }}</td>
+            <!--<td><a class="btn btn-primary" href="">Impression des bordereaux pour l'année  {{ year}}</a></td>-->
+            <!--<td><a class="btn btn-primary" href="">Bordereaux : {{ year}}</a></td>-->
 
         <tr>
         {% endfor %}

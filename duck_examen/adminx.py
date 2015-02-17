@@ -2,7 +2,7 @@
 from django.core.urlresolvers import reverse
 from django.utils.encoding import smart_unicode
 from django.views.decorators.cache import never_cache
-from django_apogee.models import Pays
+from django_apogee.models import Pays, Etape
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
@@ -10,20 +10,24 @@ from xadmin.layout import Layout, Container, Col, Fieldset
 from xadmin.views import filter_hook
 from django.db import models
 from xadmin import views
-from xadmin.views.list import EMPTY_CHANGELIST_VALUE
-from django.utils.translation import ugettext as _
-
 
 
 class ListImpressionView(views.Dashboard):
     base_template = 'duck_examen/list_impression_examen.html'
     widget_customiz = False
 
+    @filter_hook
+    def get_context(self):
+        context = super(ListImpressionView, self).get_context()
+        context['etapes'] = Etape.objects.by_centre_gestion('IED').order_by('cod_cur')
+        return context
 
     @never_cache
     def get(self, request, *args, **kwargs):
         self.widgets = self.get_widgets()
         return self.template_response(self.base_template, self.get_context())
+
+
 xadmin.site.register_view(r'^list_impression_examen/$', ListImpressionView, 'liste_impression_examen')
 
 
@@ -31,15 +35,18 @@ class PaysFilter(RelatedFieldListFilter):
     def choices(self):
         etp = self.request.GET.get('_p_cod_etp__in', None)
         if etp:
-            self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__rattachementcentreexamen__inscription__cod_etp=etp).order_by('lib_pay').distinct()]
+            self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(
+                examcenter__rattachementcentreexamen__inscription__cod_etp=etp).order_by('lib_pay').distinct()]
         else:
-            self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
+            self.lookup_choices = [(x.pk, x.lib_pay) for x in
+                                   Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
         return super(PaysFilter, self).choices()
 
 
 class DomTomFilter(RelatedFieldListFilter):
     def choices(self):
-        self.lookup_choices = [(x.pk, x.label) for x in ExamCenter.objects.filter(has_incorporation=False).order_by('label').distinct()]
+        self.lookup_choices = [(x.pk, x.label) for x in
+                               ExamCenter.objects.filter(has_incorporation=False).order_by('label').distinct()]
         return super(DomTomFilter, self).choices()
 
 
@@ -62,8 +69,7 @@ class RattachementCentreExamenAdmin(object):
             for x in self.model_instance.rattachementcentreexamen_set.all():
                 query = query | ExamCenter.objects.filter(pk=x.centre_id)
             return db_field.formfield(queryset=query, **dict(attrs, **kwargs))
-        return db_field.formfield( **dict(attrs, **kwargs))
-
+        return db_field.formfield(**dict(attrs, **kwargs))
 
 
 class EtapeExamenAdmin(object):
@@ -88,54 +94,60 @@ class EtapeExamenAdmin(object):
     site_title = u'Gestion examen'
     list_per_page = 20
     form_layout = Layout(Container(Col('full',
-                Fieldset(
-                    "",
-                    'get_nom', 'get_prenom',
-                    'get_cod_etu', 'get_adresse',
-                    'cod_etp', 'cod_cge',
-                    'get_eta_iae', 'exoneration',
-                    'demi_annee',
-                    'force_encaissement'
-                    , css_class="unsort no_title"), horizontal=True, span=12)
-            ))
-
+                                       Fieldset(
+                                           "",
+                                           'get_nom', 'get_prenom',
+                                           'get_cod_etu', 'get_adresse',
+                                           'cod_etp', 'cod_cge',
+                                           'get_eta_iae', 'exoneration',
+                                           'demi_annee',
+                                           'force_encaissement',
+                                           css_class="unsort no_title"),
+                                       horizontal=True, span=12)))
 
     def queryset(self):
-         return  EtapeExamen.inscrits_condi.all()
+        return EtapeExamen.inscrits_condi.all()
+
     @filter_hook
     def model_admin_url(self, name, *args, **kwargs):
         extention = '?incorporation={}'.format(self.request.GET.get('incorporation', 0))
         return reverse(
             "%s:%s_%s_%s" % (self.admin_site.app_name, self.opts.app_label,
-            self.module_name, name), args=args, kwargs=kwargs) + extention
+                             self.module_name, name), args=args, kwargs=kwargs) + extention
 
     def get_nom(self, obj):
         return obj.cod_ind.lib_nom_pat_ind
+
     get_nom.short_description = 'Nom'
     get_nom.allow_tags = True
 
     def get_prenom(self, obj):
         return '{}'.format(obj.cod_ind.lib_pr1_ind)
+
     get_prenom.short_description = 'Prenom'
     get_prenom.allow_tags = True
 
     def get_cod_etu(self, obj):
         return '{}'.format(obj.cod_ind.cod_etu)
+
     get_cod_etu.short_description = 'Code étudiant'
     get_cod_etu.allow_tags = True
 
     def get_cod_opi(self, obj):
         return '{}'.format(obj.cod_ind.cod_ind_opi)
+
     get_cod_opi.short_description = 'Code opi'
     get_cod_opi.allow_tags = True
 
     def get_adresse(self, obj):
         return '{}'.format(obj.cod_ind.get_full_adresse(obj.cod_anu.cod_anu))
+
     get_adresse.short_description = 'Adresse'
     get_adresse.allow_tags = True
 
     def get_eta_iae(self, obj):
         return '{}'.format(obj.annulation())
+
     get_eta_iae.short_description = 'Etat de l\'inscription administrative'
     get_eta_iae.allow_tags = True
 
@@ -144,7 +156,9 @@ class EtapeExamenAdmin(object):
         for rattachement in obj.rattachementcentreexamen_set.all():
             txt += str(rattachement)
         return txt
+
     get_centre.short_description = 'Centre'
+
 
 class ExamenCenterAdmin(object):
     hidden_menu = True
@@ -152,7 +166,6 @@ class ExamenCenterAdmin(object):
     search_fields = ['label', 'country__lib_pay']
     ordering = ['country__lib_pay']
     list_filter = [('country', PaysFilter)]
-
 
 
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
