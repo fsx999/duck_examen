@@ -36,13 +36,11 @@
                 <div class="row half">
             {% endif %}
         <div class="col-xs-5 etiquette">
-            <div class="panel panel-default">
-                <div class="panel-body">
+
                     A l'attention de {{ centres_gestion.last_name_manager }} {{ centres_gestion.first_name }} <br/>
                     {{ centres_gestion.sending_address|linebreaks }} <br/>
                     {{ centres_gestion.country }}
-                </div>
-            </div>
+
         </div>
         {% if forloop.counter|divisibleby:'2' %}
             </div>
