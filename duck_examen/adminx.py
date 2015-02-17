@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.core.urlresolvers import reverse
 from django.utils.encoding import smart_unicode
+from django.views.decorators.cache import never_cache
 from django_apogee.models import Pays
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter
 import xadmin
@@ -8,8 +9,22 @@ from xadmin.filters import RelatedFieldListFilter
 from xadmin.layout import Layout, Container, Col, Fieldset
 from xadmin.views import filter_hook
 from django.db import models
+from xadmin import views
 from xadmin.views.list import EMPTY_CHANGELIST_VALUE
 from django.utils.translation import ugettext as _
+
+
+
+class ListImpressionView(views.Dashboard):
+    base_template = 'duck_examen/list_impression_examen.html'
+    widget_customiz = False
+
+
+    @never_cache
+    def get(self, request, *args, **kwargs):
+        self.widgets = self.get_widgets()
+        return self.template_response(self.base_template, self.get_context())
+xadmin.site.register_view(r'^list_impression_examen/$', ListImpressionView, 'liste_impression_examen')
 
 
 class PaysFilter(RelatedFieldListFilter):
