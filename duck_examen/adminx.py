@@ -2,6 +2,7 @@
 from django.core.urlresolvers import reverse
 from django.utils.encoding import smart_unicode
 from django.views.decorators.cache import never_cache
+from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter
 import xadmin
@@ -30,6 +31,24 @@ class ListImpressionView(views.Dashboard):
 
 xadmin.site.register_view(r'^list_impression_examen/$', ListImpressionView, 'liste_impression_examen')
 
+
+class ImpresssionCentre(PDFTemplateView):
+    filename = "Etiquettes.pdf"
+    template_name = "duck_examen/etiquette_centre.html"
+    cmd_options = {
+        'orientation': 'landscape',
+    }
+
+    def get_context_data(self, **kwargs):
+        cod_etp = self.kwargs.get('cod_etp', None)
+        session = self.kwargs.get('session', None)
+        context = super(ImpresssionCentre, self).get_context_data(**kwargs)
+        context['centres_gestions'] = ExamCenter.objects.filter(rattachementcentreexamen__inscription__cod_etp=cod_etp,
+                                                                rattachementcentreexamen__session=session,
+                                                                has_incorporation=True).distinct()
+        context['nb_etiquette'] = [x for x in range(3)]
+
+        return context
 
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):

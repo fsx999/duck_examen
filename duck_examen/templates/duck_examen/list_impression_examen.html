@@ -16,7 +16,10 @@
         {% for etape in etapes %}
         <tr>
             <td>{{ etape }}</td>
-            <td><a href=""></a>{{ etape }}</td>
+            <td>
+                <a href="{% url 'impression_centre' etape.cod_etp '1' %}">première session</a><br/>
+                <a href="{% url 'impression_centre' etape.cod_etp '2' %}">deuxième session</a>
+            </td>
             <!--<td><a class="btn btn-primary" href="">Impression des bordereaux pour l'année  {{ year}}</a></td>-->
             <!--<td><a class="btn btn-primary" href="">Bordereaux : {{ year}}</a></td>-->
 
