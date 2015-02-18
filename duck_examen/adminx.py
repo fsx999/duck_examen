@@ -129,17 +129,16 @@ class EtapeExamenAdmin(object):
                                            'force_encaissement',
                                            css_class="unsort no_title"),
                                        horizontal=True, span=12)))
-    # url_kwargs = ['(\d+)']
+    url_kwargs = ['(?P<year>\d+)']
 
     def queryset(self):
         return EtapeExamen.inscrits_condi.all()
 
     @filter_hook
     def model_admin_url(self, name, *args, **kwargs):
+        url = super(EtapeExamenAdmin, self).model_admin_url(name, *args, **kwargs)
         extention = '?incorporation={}'.format(self.request.GET.get('incorporation', 0))
-        return reverse(
-            "%s:%s_%s_%s" % (self.admin_site.app_name, self.opts.app_label,
-                             self.module_name, name), args=args,  kwargs=kwargs) + extention
+        return url + extention
 
     def get_nom(self, obj):
         return obj.cod_ind.lib_nom_pat_ind
