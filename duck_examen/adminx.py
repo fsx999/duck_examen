@@ -16,6 +16,11 @@ from xadmin import views
 class ListImpressionView(views.Dashboard):
     base_template = 'duck_examen/list_impression_examen.html'
     widget_customiz = False
+    title = 'Liste des impressions'
+    @filter_hook
+    def get_breadcrumb(self):
+        return [{'url': self.get_admin_url('index'), 'title': 'Accueil'},
+                {'url': self.get_admin_url('liste_impression_examen'), 'title': 'Liste des impressions'}]
 
     @filter_hook
     def get_context(self):
@@ -45,10 +50,11 @@ class ImpresssionCentre(PDFTemplateView):
         context = super(ImpresssionCentre, self).get_context_data(**kwargs)
         context['centres_gestions'] = ExamCenter.objects.filter(rattachementcentreexamen__inscription__cod_etp=cod_etp,
                                                                 rattachementcentreexamen__session=session,
-                                                                has_incorporation=True).distinct()
+                                                                has_incorporation=True).order_by('country__lib_pay').distinct()
         context['nb_etiquette'] = [x for x in range(3)]
 
         return context
+
 
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):
@@ -123,6 +129,7 @@ class EtapeExamenAdmin(object):
                                            'force_encaissement',
                                            css_class="unsort no_title"),
                                        horizontal=True, span=12)))
+    # url_kwargs = ['(\d+)']
 
     def queryset(self):
         return EtapeExamen.inscrits_condi.all()
@@ -132,7 +139,7 @@ class EtapeExamenAdmin(object):
         extention = '?incorporation={}'.format(self.request.GET.get('incorporation', 0))
         return reverse(
             "%s:%s_%s_%s" % (self.admin_site.app_name, self.opts.app_label,
-                             self.module_name, name), args=args, kwargs=kwargs) + extention
+                             self.module_name, name), args=args,  kwargs=kwargs) + extention
 
     def get_nom(self, obj):
         return obj.cod_ind.lib_nom_pat_ind
