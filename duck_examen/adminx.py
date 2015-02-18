@@ -129,7 +129,7 @@ class EtapeExamenAdmin(object):
                                            'force_encaissement',
                                            css_class="unsort no_title"),
                                        horizontal=True, span=12)))
-    url_kwargs = ['(?P<year>\d+)']
+
 
     def queryset(self):
         return EtapeExamen.inscrits_condi.all()
