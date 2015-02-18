@@ -56,6 +56,24 @@ class ImpresssionCentre(PDFTemplateView):
         return context
 
 
+class ImpresssionRecap(PDFTemplateView):
+    filename = "Etiquettes.pdf"
+    template_name = "duck_examen/etiquette_centre.html"
+    cmd_options = {
+        'orientation': 'landscape',
+    }
+
+    def get_context_data(self, **kwargs):
+        cod_etp = self.kwargs.get('cod_etp', None)
+        session = self.kwargs.get('session', None)
+        context = super(ImpresssionRecap, self).get_context_data(**kwargs)
+        context['centres_gestions'] = ExamCenter.objects.filter(rattachementcentreexamen__inscription__cod_etp=cod_etp,
+                                                                rattachementcentreexamen__session=session,
+                                                                has_incorporation=True).order_by('country__lib_pay').distinct()
+        context['nb_etiquette'] = [x for x in range(3)]
+
+        return context
+
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):
         etp = self.request.GET.get('_p_cod_etp__in', None)
@@ -129,7 +147,6 @@ class EtapeExamenAdmin(object):
                                            'force_encaissement',
                                            css_class="unsort no_title"),
                                        horizontal=True, span=12)))
-
 
     def queryset(self):
         return EtapeExamen.inscrits_condi.all()
