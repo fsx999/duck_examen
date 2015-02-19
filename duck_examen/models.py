@@ -1,11 +1,11 @@
 # coding=utf-8
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.db import models
-from django_apogee.models import Pays, InsAdmEtp
-# from apogee.models import Pays, INS_ADM_ETP_IED
+from django_apogee.models import Pays, InsAdmEtp, Etape
 # from core.managers.managers_examen import EtapeExamenManager
 # from core.utils import paginator_etudiant
 from duck_examen.managers import ExamenCenterManager
+import re
 
 
 class EtapeExamen(InsAdmEtp):
@@ -91,108 +91,8 @@ class RattachementCentreExamen(models.Model):
         super(RattachementCentreExamen, self).save(force_insert, force_update, using, update_fields)
 
 
-# @python_2_unicode_compatible
-# class CentreGestionException(models.Model):
-#     label = models.CharField("Nom du centre", max_length=200, null=True)
-#     adresse = models.TextField("Adresse du centre", null=True, blank=True)
-#
-#     class Meta:
-#         verbose_name = "Centre autre"
-#         verbose_name_plural = "Centres autres"
-#         db_table = 'core_centregestionexception'
-#
-#     def __str__(self):
-#         return "{}".format(self.label)
-# # #
-#
-# @python_2_unicode_compatible
-# class EtudiantCentreExamen(models.Model):
-#     inscription = models.ForeignKey(INS_ADM_ETP_IED)
-#     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
-#     centre = models.ForeignKey(CentreGestionExamen)
-#     ec_manquant = models.BooleanField(default=False, blank=True)
-#
-#     def get_label_dict(self):
-#         return {
-#             'nom': self.inscription.COD_IND.LIB_NOM_PAT_IND,
-#             'epoux': self.inscription.COD_IND.LIB_NOM_USU_IND,
-#             'prenom': self.inscription.COD_IND.LIB_PR1_IND,
-#             'num_etu': self.inscription.COD_IND.COD_ETU
-#         }
-#
-#     class Meta:
-#         app_label = 'core'
-#         ordering = ['inscription__COD_IND__LIB_NOM_PAT_IND']
-#
-#     def __str__(self):
-#         return "{} {} {}".format(self.inscription, self.session, self.centre)
-#
-#
-# @python_2_unicode_compatible
-# class EtudiantCentreExamenException(models.Model):
-#     inscription = models.ForeignKey(INS_ADM_ETP_IED)
-#     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
-#     centre = models.ForeignKey(CentreGestionException)
-#     ec_manquant = models.BooleanField(default=False, blank=True)
-#
-#     class Meta:
-#         app_label = 'core'
 
-#     def get_label_dict(self):
-#         return {
-#             'nom': self.inscription.COD_IND.LIB_NOM_PAT_IND,
-#             'epoux': self.inscription.COD_IND.LIB_NOM_USU_IND,
-#             'prenom': self.inscription.COD_IND.LIB_PR1_IND,
-#             'num_etu': self.inscription.COD_IND.COD_ETU
-#         }
-#
-#     def __str__(self):
-#         return "{} {} {}".format(self.inscription, self.session, self.centre)
-#
-#
-# @python_2_unicode_compatible
-# class Inscription(INS_ADM_ETP_IED):
-#
-#     def _label(self):
-#         return "{} {} {}".format(self.COD_IND.COD_ETU, self.COD_IND.LIB_NOM_PAT_IND, self.COD_IND.LIB_PR1_IND)
-#     _label.allow_tags = True
-#     _label.short_description = "Identité"
-#
-#     label = property(_label)
-#
-#     class Meta:
-#         app_label = 'core'
-#         proxy = True
-#
-#     def __str__(self):
-#         label = "{} {} {}".format(self.COD_IND.COD_ETU, self.COD_IND.LIB_NOM_PAT_IND, self.COD_IND.LIB_PR1_IND)
-#         for e in self.etudiantcentreexamen_set.all().order_by('session'):
-#             label += ' {} : {} ,'.format(e.session, e.centre)
-#         return label
-#
-#
-# @python_2_unicode_compatible
-# class InscriptionException(INS_ADM_ETP_IED):
-#
-#     def _label(self):
-#
-#         return "{} {} {}".format(self.COD_IND.COD_ETU, self.COD_IND.LIB_NOM_PAT_IND, self.COD_IND.LIB_PR1_IND)
-#     _label.allow_tags = True
-#     _label.short_description = "Identité"
-#
-#     label = property(_label)
-#
-#     class Meta:
-#         app_label = 'core'
-#         proxy = True
-#
-#     def __str__(self):
-#         label = "{} {} {}".format(self.COD_IND.COD_ETU, self.COD_IND.LIB_NOM_PAT_IND, self.COD_IND.LIB_PR1_IND)
-#         for e in self.etudiantcentreexamen_set.all().order_by('session'):
-#             label += ' {} : {} ,'.format(e.session, e.centre)
-#         return label
-#
-#
+
 # class EtapeExamenModel(Etape):
 #     """
 #     utiliser pour les examen
@@ -287,56 +187,55 @@ class RattachementCentreExamen(models.Model):
 #         ordering = ['cod_etp']
 #
 #
-# @python_2_unicode_compatible
-# class DeroulementExamenModel(models.Model):
-#     etape = models.ForeignKey(Etape)
-#     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
-#     nb_salle = models.IntegerField('nombre de salle', null=True, blank=True)
-#     nb_table = models.IntegerField('nombre de table par salle', null=True, blank=True)
-#     deroulement = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
-#                                    blank=True)
-#     date_examen = models.TextField('Date examen', null=True, blank=True)
-#     salle_examen = models.TextField('salles examens', null=True, blank=True)
-#
-#     class Meta:
-#         app_label = 'core'
-#         verbose_name = "Deroulement"
-#         verbose_name_plural = "Deroulements"
-#         db_table = 'core_deroulementexemenmodel'  # faute ortho déjà mis en prod
-#
-#     def deroulement_parse(self):
-#         if not self.deroulement:
-#             return []
-#         text = self.deroulement.encode('utf-8')
-#         resultat = []
-#         r = []
-#         for i, x in enumerate(re.split(r'(\[[^]]*])', text)):
-#             x = x.strip()
-#             if i % 2:
-#                 r = [x[1:-1]]
-#             else:
-#                 if len(x):
-#                     result = []
-#                     for a in x.split('|'.encode('utf-8')):
-#                         b = a.strip()
-#                         if not len(b):
-#                             continue
-#                         c = []
-#                         for text in re.split(r'(<[^>]*>)', b):
-#                             if text:
-#                                 text = text.strip()
-#                                 text = text.strip('< >'.encode('utf-8'))
-#                                 text = '<br>'.encode('utf-8').join([i for i in text.splitlines()])
-#                                 c.append(text)
-#                         result.append(c)
-#                     r.append(result)
-#
-#                     resultat.append(r)
-#         return resultat
-#
-#     def __str__(self):
-#         return '{} {}'.format(self.etape, self.session)
-#
+@python_2_unicode_compatible
+class DeroulementExamenModel(models.Model):
+    etape = models.ForeignKey(Etape)
+    session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
+    nb_salle = models.IntegerField('nombre de salle', null=True, blank=True)
+    nb_table = models.IntegerField('nombre de table par salle', null=True, blank=True)
+    deroulement = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
+                                   blank=True)
+    date_examen = models.TextField('Date examen', null=True, blank=True)
+    salle_examen = models.TextField('salles examens', null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Deroulement"
+        verbose_name_plural = "Deroulements"
+        db_table = 'core_deroulementexemenmodel'  # faute ortho déjà mis en prod
+
+    def deroulement_parse(self):
+        if not self.deroulement:
+            return []
+        text = self.deroulement.encode('utf-8')
+        resultat = []
+        r = []
+        for i, x in enumerate(re.split(r'(\[[^]]*])', text)):
+            x = x.strip()
+            if i % 2:
+                r = [x[1:-1]]
+            else:
+                if len(x):
+                    result = []
+                    for a in x.split('|'.encode('utf-8')):
+                        b = a.strip()
+                        if not len(b):
+                            continue
+                        c = []
+                        for text in re.split(r'(<[^>]*>)', b):
+                            if text:
+                                text = text.strip()
+                                text = text.strip('< >'.encode('utf-8'))
+                                text = '<br>'.encode('utf-8').join([i for i in text.splitlines()])
+                                c.append(text)
+                        result.append(c)
+                    r.append(result)
+
+                    resultat.append(r)
+        return resultat
+
+    def __str__(self):
+        return '{} {}'.format(self.etape, self.session)
+
 #
 # @python_2_unicode_compatible
 # class RecapitulatifExamenModel(models.Model):
