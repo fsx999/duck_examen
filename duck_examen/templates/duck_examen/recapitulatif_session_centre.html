@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        @page{
+            size: a4 landscape;
+        }
+    </style>
+    <title></title>
+
+</head>
+<body>
+<div>
+    Nombre de centre : {{ nb_centre }}
+</div>
+<table class="table table-bordered table-striped">
+<tr>
+    <td>Numéro</td>
+    <td>{{ session }}</td>
+    <td>NB ETUDIANT</td>
+    <td>DATE ENVOI SUJETS</td>
+    <td>DATE RECEPTION SUJETS</td>
+    <td>NB ENVELOPPE</td>
+    <td>MAIL RESPONSABLE</td>
+    <td>DATE ET SIGNATURE RECEPTION COPIE</td>
+</tr>
+{% for centre in centres %}
+    <tr>
+        <td>{{ centre.numero }}</td>
+        <td>{{ centre.label }}</td>
+        <td>{{ centre.nb_etudiant }}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>{{ centre.email }}</td>
+        <td></td>
+    </tr>
+{% endfor %}
+</table>
+</body>
+</html>

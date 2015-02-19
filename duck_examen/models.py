@@ -5,7 +5,7 @@ from django_apogee.models import Pays, InsAdmEtp
 # from apogee.models import Pays, INS_ADM_ETP_IED
 # from core.managers.managers_examen import EtapeExamenManager
 # from core.utils import paginator_etudiant
-
+from duck_examen.managers import ExamenCenterManager
 
 
 class EtapeExamen(InsAdmEtp):
@@ -37,7 +37,7 @@ class ExamCenter(models.Model):
     has_incorporation = models.BooleanField(default=True, verbose_name="Demande rattachement",
                                             help_text=u"l'étudiant doit faire une demande de rattachement")
     is_main_center = models.BooleanField(default=False)
-
+    objects = ExamenCenterManager()
     # @property
     # def adresse_envoi_html(self):
     #     return ''.join([x+'<br>' for x in self.adresse_envoi_materiel.splitlines()])[:-4]
@@ -50,8 +50,8 @@ class ExamCenter(models.Model):
     def __str__(self):
         return u"{} {}".format(smart_text(self.label), self.country)
 
-    # def name_by_pays(self):
-#         return u"{} {}".format(self.pays, smart_text(self.label))
+    def name_by_pays(self):
+        return u"{} {}".format(self.country, smart_text(self.label))
 #
 #     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 #         if not self.adresse_envoi_materiel:
@@ -59,20 +59,13 @@ class ExamCenter(models.Model):
 #
 #         super(CentreGestionExamen, self).save(force_insert, force_update, using, update_fields)
 #
-#     def etudiant_by_step_session(self, step, session):
-#         query = self.etudiantcentreexamen_set.filter(inscription__COD_ETP=step, session=session)
-#         if step[0] == 'L' and int(step[1]) < 3:
-#             code_etp = step[0] + str(int(step[1]) + 1) + step[2:]
-#             query |= self.etudiantcentreexamen_set.filter(inscription__COD_ETP=code_etp,
-#                                                           session=session,
-#                                                           ec_manquant=True)
-#         return query.order_by('inscription__COD_IND__LIB_NOM_PAT_IND').distinct()
-#
-#     def nb_etudiant(self, step, session):
-#         return self.etudiant_by_step_session(step, session).count()
-#
-#
 
+    def etudiant_by_step_session(self, cod_etp, session):
+        query = self.rattachementcentreexamen_set.filter(inscription__cod_etp=cod_etp, session=session)
+        return query.order_by('inscription__cod_ind__lib_nom_pat_ind').distinct()
+
+    def nb_etudiant(self, cod_etp, session):
+        return self.etudiant_by_step_session(cod_etp, session).count()
 
 
 class RattachementCentreExamen(models.Model):

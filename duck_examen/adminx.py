@@ -48,9 +48,7 @@ class ImpresssionCentre(PDFTemplateView):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         context = super(ImpresssionCentre, self).get_context_data(**kwargs)
-        context['centres_gestions'] = ExamCenter.objects.filter(rattachementcentreexamen__inscription__cod_etp=cod_etp,
-                                                                rattachementcentreexamen__session=session,
-                                                                has_incorporation=True).order_by('country__lib_pay').distinct()
+        context['centres_gestions'] = ExamCenter.objects.get_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
         context['nb_etiquette'] = [x for x in range(3)]
 
         return context
@@ -58,7 +56,7 @@ class ImpresssionCentre(PDFTemplateView):
 
 class ImpresssionRecap(PDFTemplateView):
     filename = "Etiquettes.pdf"
-    template_name = "duck_examen/etiquette_centre.html"
+    template_name = "duck_examen/recapitulatif_session_centre.html"
     cmd_options = {
         'orientation': 'landscape',
     }
@@ -67,10 +65,15 @@ class ImpresssionRecap(PDFTemplateView):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         context = super(ImpresssionRecap, self).get_context_data(**kwargs)
-        context['centres_gestions'] = ExamCenter.objects.filter(rattachementcentreexamen__inscription__cod_etp=cod_etp,
-                                                                rattachementcentreexamen__session=session,
-                                                                has_incorporation=True).order_by('country__lib_pay').distinct()
-        context['nb_etiquette'] = [x for x in range(3)]
+        centres_gestions = ExamCenter.objects.get_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
+        context['label'] = 'Session {} {}'.format(session, cod_etp)
+        context['nb_centre'] = centres_gestions.count()
+        resultat = []
+        for i, centre in enumerate(centres_gestions):
+            resultat.append(
+                {'numero': i + 1, 'label': centre.name_by_pays(), 'nb_etudiant': centre.nb_etudiant(cod_etp, int(session)),
+                 'email': centre.email})
+        context['centres'] = resultat
 
         return context
 
