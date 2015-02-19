@@ -187,6 +187,7 @@ class RattachementCentreExamen(models.Model):
 #         ordering = ['cod_etp']
 #
 #
+
 @python_2_unicode_compatible
 class DeroulementExamenModel(models.Model):
     etape = models.ForeignKey(Etape)
@@ -234,7 +235,7 @@ class DeroulementExamenModel(models.Model):
         return resultat
 
     def __str__(self):
-        return '{} {}'.format(self.etape, self.session)
+        return '{} session {}'.format(self.etape, self.session)
 
 #
 # @python_2_unicode_compatible

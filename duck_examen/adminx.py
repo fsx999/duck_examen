@@ -4,7 +4,7 @@ from django.utils.encoding import smart_unicode
 from django.views.decorators.cache import never_cache
 from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
-from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter
+from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
 from xadmin.layout import Layout, Container, Col, Fieldset
@@ -218,5 +218,32 @@ class ExamenCenterAdmin(object):
     list_filter = [('country', PaysFilter)]
 
 
+class DeroulementAdmin(object):
+    readonly_fields = ['etape', 'session']
+    form_layout = Layout(Container(Col('full',
+                                       Fieldset(
+                                           "",
+                                           'etape', 'session',
+                                           'nb_salle', 'nb_table',
+                                           'deroulement', 'date_examen',
+                                           'salle_examen',
+                                           css_class="unsort no_title"),
+                                       horizontal=True, span=12)))
+
+    @filter_hook
+    def get_readonly_fields(self):
+        if self.user.is_superuser:
+            return []
+        else:
+            return self.readonly_fields
+
+    @filter_hook
+    def get_list_queryset(self):
+        query = super(DeroulementAdmin, self).get_list_queryset()
+        if not self.user.is_superuser:
+            query = query.filter(etape__in=self.user.setting_user.etapes.all())
+        return query
+
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
+xadmin.site.register(DeroulementExamenModel, DeroulementAdmin)
