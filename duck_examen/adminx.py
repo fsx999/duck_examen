@@ -219,6 +219,7 @@ class ExamenCenterAdmin(object):
 
 
 class DeroulementAdmin(object):
+    hidden_menu = True
     readonly_fields = ['etape', 'session']
     form_layout = Layout(Container(Col('full',
                                        Fieldset(
