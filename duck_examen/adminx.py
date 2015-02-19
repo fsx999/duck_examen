@@ -38,11 +38,13 @@ xadmin.site.register_view(r'^list_impression_examen/$', ListImpressionView, 'lis
 
 
 class ImpresssionCentre(PDFTemplateView):
-    filename = "Etiquettes.pdf"
+    filename = "Etiquettes_{}_{}.pdf"
     template_name = "duck_examen/etiquette_centre.html"
     cmd_options = {
         'orientation': 'landscape',
     }
+    def get_filename(self):
+        return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'))
 
     def get_context_data(self, **kwargs):
         cod_etp = self.kwargs.get('cod_etp', None)
@@ -55,11 +57,14 @@ class ImpresssionCentre(PDFTemplateView):
 
 
 class ImpresssionRecap(PDFTemplateView):
-    filename = "Etiquettes.pdf"
+    filename = "RecapExamen_{}_{}.pdf"
     template_name = "duck_examen/recapitulatif_session_centre.html"
     cmd_options = {
         'orientation': 'landscape',
     }
+
+    def get_filename(self):
+        return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'))
 
     def get_context_data(self, **kwargs):
         cod_etp = self.kwargs.get('cod_etp', None)
