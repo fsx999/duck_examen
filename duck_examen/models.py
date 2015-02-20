@@ -68,6 +68,7 @@ class ExamCenter(models.Model):
         return self.etudiant_by_step_session(cod_etp, session).count()
 
 
+@python_2_unicode_compatible
 class RattachementCentreExamen(models.Model):
     inscription = models.ForeignKey(InsAdmEtp)
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
@@ -209,30 +210,27 @@ class DeroulementExamenModel(models.Model):
         if not self.deroulement:
             return []
         text = self.deroulement.encode('utf-8')
+        text = text.replace('\r\n', '').strip()
         resultat = []
-        r = []
-        for i, x in enumerate(re.split(r'(\[[^]]*])', text)):
-            x = x.strip()
-            if i % 2:
-                r = [x[1:-1]]
-            else:
-                if len(x):
-                    result = []
-                    for a in x.split('|'.encode('utf-8')):
-                        b = a.strip()
-                        if not len(b):
-                            continue
-                        c = []
-                        for text in re.split(r'(<[^>]*>)', b):
-                            if text:
-                                text = text.strip()
-                                text = text.strip('< >'.encode('utf-8'))
-                                text = '<br>'.encode('utf-8').join([i for i in text.splitlines()])
-                                c.append(text)
-                        result.append(c)
-                    r.append(result)
-
-                    resultat.append(r)
+        text = re.split(r'(\[[^]]*])', text)[1:]
+        for i, token in enumerate(text):
+            if i % 2 == 0:
+                jour = {'date': text[i][1:-1], 'matieres': []}
+                suite = text[i+1]
+                suite = re.split(r'(<[^>]*>)', suite)[1:]
+                for j, token2 in enumerate(suite):
+                    if j % 2 == 0:
+                        heure = suite[j].strip('< >'.encode('utf-8')).split(r'-')
+                        r = {
+                            'heure_debut': heure[0],
+                            'heure_fin': heure[1]
+                        }
+                        deroule = re.split(r'\|', suite[j+1])
+                        r['code_ec'] = deroule[0]
+                        r['label'] = deroule[1]
+                        r['prof'] = deroule[2]
+                        jour['matieres'].append(r)
+                resultat.append(jour)
         return resultat
 
     def __str__(self):
@@ -259,25 +257,3 @@ class DeroulementExamenModel(models.Model):
 #     def __str__(self):
 #         return '{} {} {}'.format(self.centre.name_by_pays(), self.etape_id, self.session)
 #
-# class CentreGestionExamenInitial(models.Model):
-#     '''
-#     uniquement pour l'import Todo a supprimer
-#     '''
-#     label = models.CharField("Nom du centre", max_length=200, null=True)
-#     adresse = models.TextField("Adresse du centre")
-#     adresse_envoi_materiel = models.TextField("Adresse de l'envoi du matériel", blank=True, null=True)
-#     nom = models.CharField(max_length=30, null=True, blank=True)
-#     prenom = models.CharField(max_length=30, null=True, blank=True)
-#     email = models.EmailField(null=True, blank=True)
-#     email_bis = models.EmailField(null=True, blank=True, verbose_name="second email")
-#     telephone = models.CharField(max_length=30, blank=True, null=True)
-#     fax = models.CharField(max_length=30, null=True, blank=True)
-#
-#     pays = models.ForeignKey(Pays, verbose_name="pays")
-#
-#     class Meta:
-#         verbose_name = "Centre examen"
-#         verbose_name_plural = "Centres examens"
-#         # ordering = ['pays__lib_pay']
-#         db_table = 'core_centregestionexamen'
-#         managed = False
