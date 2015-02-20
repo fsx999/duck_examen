@@ -8,9 +8,9 @@
             <th>Etape</th>
             <th>Etiquette centre examen</th>
             <th>Récap centre examen</th>
-            <!--<th>Impression des bordereaux</th>-->
-            <!--<th>Cloture des bordereaux</th>            <!--<th>Impression des bordereaux</th>-->
-            <!--<th>Cloture des bordereaux</th>-->
+            <th>Impression émargement étranger</th>
+            <th>Impression émargement autres</th>
+
         </tr>
         </thead>
         <tbody>
@@ -25,8 +25,14 @@
                 <a href="{% url 'impression_recap' etape.cod_etp '1' %}">première session</a><br/>
                 <a href="{% url 'impression_recap' etape.cod_etp '2' %}">deuxième session</a>
             </td>
-            <!--<td><a class="btn btn-primary" href="">Impression des bordereaux pour l'année  {{ year}}</a></td>-->
-            <!--<td><a class="btn btn-primary" href="">Bordereaux : {{ year}}</a></td>-->
+            <td>
+                <a href="{% url 'impression_emargement' etape.cod_etp 'E' '1' %}">première session</a><br/>
+                <a href="{% url 'impression_emargement' etape.cod_etp 'E' '2' %}">deuxième session</a>
+            </td>
+            <td>
+                <a href="{% url 'impression_emargement' etape.cod_etp 'A' '1' %}">première session</a><br/>
+                <a href="{% url 'impression_emargement' etape.cod_etp 'A' '2' %}">deuxième session</a>
+            </td>
 
         <tr>
         {% endfor %}

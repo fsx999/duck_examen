@@ -43,6 +43,7 @@ class ImpresssionCentre(PDFTemplateView):
     cmd_options = {
         'orientation': 'landscape',
     }
+
     def get_filename(self):
         return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'))
 
@@ -50,7 +51,7 @@ class ImpresssionCentre(PDFTemplateView):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         context = super(ImpresssionCentre, self).get_context_data(**kwargs)
-        context['centres_gestions'] = ExamCenter.objects.get_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
+        context['centres_gestions'] = ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
         context['nb_etiquette'] = [x for x in range(3)]
 
         return context
@@ -70,7 +71,7 @@ class ImpresssionRecap(PDFTemplateView):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         context = super(ImpresssionRecap, self).get_context_data(**kwargs)
-        centres_gestions = ExamCenter.objects.get_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
+        centres_gestions = ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
         context['label'] = 'Session {} {}'.format(session, cod_etp)
         context['nb_centre'] = centres_gestions.count()
         resultat = []
@@ -81,6 +82,55 @@ class ImpresssionRecap(PDFTemplateView):
         context['centres'] = resultat
 
         return context
+
+
+class ImpressionEmargement(PDFTemplateView):
+    filename = "RecapExamen_{}_{}.pdf"
+    template_name = "duck_examen/liste_emargement.html"
+    cmd_options = {
+        'orientation': 'landscape',
+        'page-size': 'A3'
+    }
+    type_emargement = {
+        'E': 'emargement_etranger',
+        'P': 'emargement_presentiel',
+        'A': 'emargement_autre'
+    }
+
+    def get_filename(self):
+        return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'))
+
+    def emargement_etranger(self, cod_etp, session):
+        return ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
+
+    def emargement_autre(self, cod_etp, session):
+        return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session)
+
+    def emargement_presentiel(self, cod_etp, session):
+        return ExamCenter.objects.get_main_center_by_cod_etp_by_session(cod_etp, session)
+
+    def get_context_data(self, **kwargs):
+        cod_etp = self.kwargs.get('cod_etp', None)
+        session = self.kwargs.get('session', None)
+        type_emargement = self.kwargs.get('type', None)
+        context = super(ImpressionEmargement, self).get_context_data(**kwargs)
+
+        centres_gestions = getattr(self, self.type_emargement[type_emargement])(cod_etp, session)
+        context['deroulements'] = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session).deroulement_parse()
+        nb_matiere = 0
+        for jour in context['deroulements']:
+            nb_matiere += len(jour['matieres'])
+        context['nb_matiere'] = [0] * nb_matiere
+        for centre in centres_gestions:
+            centre.etudiants = centre.etudiant_by_step_session(cod_etp, session)
+            centre.nb_etudiant = centre.etudiants.count()
+            centre.nb_ligne_vide = [nb + centre.nb_etudiant + 1 for nb in range(15-centre.nb_etudiant)]
+        context['centres'] = centres_gestions
+        context['session'] = session
+        context['label'] = Etape.objects.get(cod_etp=cod_etp).lib_etp
+
+        return context
+
 
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):
@@ -157,8 +207,10 @@ class EtapeExamenAdmin(object):
                                        horizontal=True, span=12)))
 
     def queryset(self):
-        return EtapeExamen.inscrits_condi.all()
-
+        query = EtapeExamen.inscrits_condi.all()
+        if not self.user.is_superuser:
+            return query.filter(cod_etp__in=self.user.setting_user.etapes.values_list('cod_etp', flat=True))
+        return query
     @filter_hook
     def model_admin_url(self, name, *args, **kwargs):
         url = super(EtapeExamenAdmin, self).model_admin_url(name, *args, **kwargs)

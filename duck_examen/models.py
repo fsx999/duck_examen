@@ -186,8 +186,8 @@ class RattachementCentreExamen(models.Model):
 #     class Meta:
 #         proxy = True
 #         ordering = ['cod_etp']
-#
-#
+
+
 
 
 @python_2_unicode_compatible
