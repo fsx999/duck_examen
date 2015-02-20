@@ -116,7 +116,10 @@ class ImpressionEmargement(PDFTemplateView):
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
 
         centres_gestions = getattr(self, self.type_emargement[type_emargement])(cod_etp, session)
+        # try:
         context['deroulements'] = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session).deroulement_parse()
+        # except IndexError:
+        #     pass
         nb_matiere = 0
         for jour in context['deroulements']:
             nb_matiere += len(jour['matieres'])

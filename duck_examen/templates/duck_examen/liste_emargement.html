@@ -1,10 +1,8 @@
+{% load static %}
 <html>
 <head>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static "bootstrap3/css/bootstrap.min.css" %}" rel="stylesheet">
     <style type="text/css">
-{#        @page {#}
-{#            size: a3 landscape;#}
-{#        }#}
        div.break { page-break-after: always }
 {#        table{#}
 {#            font-size: 14pt;#}
@@ -44,7 +42,7 @@
 <thead>
     <tr class="entete">
         <td class="entete" colspan="100%">
-        <div class="pull-left"><img class="signature " src="{{ url_image }}"></div>
+        <div class="pull-left"><img class="signature " src="{% static 'images/logo-ied.jpg'%}"></div>
             <center><h3>Session {{ session }} - {{ label }} </h3><h3>{{ centre.label }}</h3><br/></center>
         </td>
     </tr>
