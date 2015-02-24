@@ -95,17 +95,12 @@
                 <div class="col-xs-5 etiquette">
                 IED PARIS 8
                 <center>
-                    <h4>ENVELOPPE RETOUR</h4>
-                    DES PROCES-VERBAUX <br/>
-                    ET <br/>
-                    LA LISTE D'EMARGEMENT <br/>
-                    {% if session == '1' %}
-                        Juin
-                    {% else %}
-                        Septembre
-                    {% endif %}
-                    {% now "Y" %} <br/>
+                {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
+                    {{ deroulement.jour }} <br/>
+                    de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
+
                     {{ label }} <br/>
+                    {{ matiere.label }} <br/>
                     {{ centre.label }}
                 </center>
 
@@ -115,10 +110,17 @@
 
             <div class="col-xs-5 etiquette">
 
-                A l'attention de {{ centres_gestion.last_name_manager }} {{ centres_gestion.first_name }} <br/>
-                {{ centres_gestion.sending_address|linebreaks }} <br/>
-                {{ centres_gestion.country }}
+                IED PARIS 8
+                <center>
+                {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
+                    RETOUR ENVELOPPE <br/>
+                    {{ deroulement.jour }} <br/>
+                    de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
+                    {{ label }} <br/>
+                    {{ matiere.label }} <br/>
+                    {{ centre.label }}
+                </center>
             </div>
         </div>
         <div style="page-break-after:always"></div>
