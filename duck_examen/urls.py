@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.conf.urls import patterns, url
-from duck_examen.adminx import ImpresssionCentre, ImpresssionRecap, ImpressionEmargement
+from duck_examen.adminx import ImpresssionCentre, ImpresssionRecap, ImpressionEmargement, ImpressionEtiquetteEnveloppe
 
 
 urlpatterns = patterns(
@@ -14,5 +14,8 @@ urlpatterns = patterns(
     url(r'^impression_emargement/(?P<cod_etp>\w+)/(?P<type>\w+)/(?P<session>\w+)$',
         ImpressionEmargement.as_view(),
         name='impression_emargement'),
+    url(r'^impression_envoi_centre/(?P<cod_etp>\w+)/(?P<type>\w+)/(?P<session>\w+)$',
+        ImpressionEtiquetteEnveloppe.as_view(),
+        name='impression_envoi_centre'),
     )
 

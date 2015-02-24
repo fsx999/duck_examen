@@ -1,0 +1,133 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static "bootstrap3/css/bootstrap.css" %}">
+    <script src="{% static "bootstrap3/js/bootstrap.js" %}"></script>
+    <title></title>
+    <style type="text/css">
+        .etiquette {
+            margin-left: 1cm;
+            margin-top: 1cm;
+        }
+
+        {#        .expediteur{#}
+        {#        }#}
+        .destinataire {
+            margin-left: 3cm;
+            margin-right: 1cm;
+            margin-top: 1cm;
+            font-size: 18px;
+        }
+
+        .half {
+            height: 12cm;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    {% for centre in centres %}
+
+        {% for deroulement in deroulements %}
+                {% for matiere in deroulement.matieres %}
+
+                <div class="row half">
+
+            <div class="col-xs-5 etiquette">
+            IED PARIS 8
+                    <center>
+                    <div class="small">
+                    <h5>ENVELOPPE DESTINEE </h5>
+                    <h5>AU RESPONSABLE DU CENTRE</h5>
+                    <h5>D'EXAMEN</h5>
+
+                    {{ label }} <br/>
+                    {{ centre.label }} - {% if session == '1' %}
+                    Juin
+                        {% else %}
+                        Septembre
+                    {% endif %}{% now "Y" %}
+                    </div>
+                    </center>
+            Cette enveloppe contient :
+                <ul>
+                    <li>Le bordereau d'envoi</li>
+                    <li>l'accusé de réception</li>
+                    <li>Le déroulement des épreuves</li>
+                    <li>Le document "après les épreuves"</li>
+                    <li>Le document "consignes de surveillance"</li>
+                    <li>La liste d'émargement</li>
+                    <li>Enveloppe RETOUR des PV + liste d'émargment</li>
+                    <li>Les Procès Verbauc des séances</li>
+                </ul>
+            Les PV sont à remplir par les surveillants après chaque séance et ils sont à retourner à l'IED même
+                si aucun étudiant ne s'est présenté à l'épreuve
+            </div>
+
+
+            <div class="col-xs-5 etiquette">
+                IED PARIS 8
+                <center>
+                    <h4>ENVELOPPE RETOUR</h4>
+                    DES PROCES-VERBAUX <br/>
+                    ET <br/>
+                    LA LISTE D'EMARGEMENT <br/>
+                    {% if session == '1' %}
+                        Juin
+                    {% else %}
+                        Septembre
+                    {% endif %}
+                    {% now "Y" %} <br/>
+                    {{ label }} <br/>
+                    {{ centre.label }}
+                </center>
+
+            </div>
+        </div>
+
+        <div class="row ">
+
+            <div class="col-xs-5 etiquette">
+
+                <div class="col-xs-5 etiquette">
+                IED PARIS 8
+                <center>
+                    <h4>ENVELOPPE RETOUR</h4>
+                    DES PROCES-VERBAUX <br/>
+                    ET <br/>
+                    LA LISTE D'EMARGEMENT <br/>
+                    {% if session == '1' %}
+                        Juin
+                    {% else %}
+                        Septembre
+                    {% endif %}
+                    {% now "Y" %} <br/>
+                    {{ label }} <br/>
+                    {{ centre.label }}
+                </center>
+
+            </div>
+
+            </div>
+
+            <div class="col-xs-5 etiquette">
+
+                A l'attention de {{ centres_gestion.last_name_manager }} {{ centres_gestion.first_name }} <br/>
+                {{ centres_gestion.sending_address|linebreaks }} <br/>
+                {{ centres_gestion.country }}
+
+            </div>
+        </div>
+        <div style="page-break-after:always"></div>
+                {% endfor %}
+
+        {% endfor %}
+
+    {% endfor %}
+
+</div>
+</body>
+</html>

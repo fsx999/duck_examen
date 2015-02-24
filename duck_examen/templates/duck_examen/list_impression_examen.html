@@ -10,6 +10,7 @@
             <th>Récap centre examen</th>
             <th>Impression émargement étranger</th>
             <th>Impression émargement autres</th>
+            <th>Impression étiquettes envoi centre autres</th>
 
         </tr>
         </thead>
@@ -32,6 +33,10 @@
             <td>
                 <a href="{% url 'impression_emargement' etape.cod_etp 'A' '1' %}">première session</a><br/>
                 <a href="{% url 'impression_emargement' etape.cod_etp 'A' '2' %}">deuxième session</a>
+            </td>
+            <td>
+                <a href="{% url 'impression_envoi_centre' etape.cod_etp 'A' '1' %}">première session</a><br/>
+                <a href="{% url 'impression_envoi_centre' etape.cod_etp 'A' '2' %}">deuxième session</a>
             </td>
 
         <tr>

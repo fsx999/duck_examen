@@ -92,21 +92,21 @@ class ImpressionEmargement(PDFTemplateView):
         'page-size': 'A3'
     }
     type_emargement = {
-        'E': 'emargement_etranger',
-        'P': 'emargement_presentiel',
-        'A': 'emargement_autre'
+        'E': 'etranger',
+        'P': 'presentiel',
+        'A': 'autre'
     }
 
     def get_filename(self):
         return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'))
 
-    def emargement_etranger(self, cod_etp, session):
+    def etranger(self, cod_etp, session):
         return ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
 
-    def emargement_autre(self, cod_etp, session):
+    def autre(self, cod_etp, session):
         return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session)
 
-    def emargement_presentiel(self, cod_etp, session):
+    def presentiel(self, cod_etp, session):
         return ExamCenter.objects.get_main_center_by_cod_etp_by_session(cod_etp, session)
 
     def get_context_data(self, **kwargs):
@@ -133,6 +133,22 @@ class ImpressionEmargement(PDFTemplateView):
         context['label'] = Etape.objects.get(cod_etp=cod_etp).lib_etp
 
         return context
+
+
+class ImpressionEtiquetteEnveloppe(ImpressionEmargement):
+    filename = "RecapExamen_{}_{}.pdf"
+    template_name = "duck_examen/etiquette_envoi_centre.html"
+
+    def autre(self, cod_etp, session):
+        return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session)
+
+    def get_context_data(self, **kwargs):
+        context = super(ImpressionEtiquetteEnveloppe, self).get_context_data(**kwargs)
+        cod_etp = self.kwargs.get('cod_etp', None)
+        session = self.kwargs.get('session', None)
+        type_emargement = self.kwargs.get('type', None)
+        return context
+
 
 
 class PaysFilter(RelatedFieldListFilter):
