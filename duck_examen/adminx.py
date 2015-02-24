@@ -85,20 +85,21 @@ class ImpresssionRecap(PDFTemplateView):
 
 
 class ImpressionEmargement(PDFTemplateView):
-    filename = "RecapExamen_{}_{}.pdf"
+    filename = "emargement_{}_{}_{}.pdf"
     template_name = "duck_examen/liste_emargement.html"
     cmd_options = {
         'orientation': 'landscape',
         'page-size': 'A3'
     }
-    type_emargement = {
+    typet = {
         'E': 'etranger',
         'P': 'presentiel',
         'A': 'autre'
     }
 
     def get_filename(self):
-        return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'))
+        return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'),
+                                     self.type[self.kwargs.get('type', None)])
 
     def etranger(self, cod_etp, session):
         return ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
@@ -112,10 +113,10 @@ class ImpressionEmargement(PDFTemplateView):
     def get_context_data(self, **kwargs):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
-        type_emargement = self.kwargs.get('type', None)
+        type = self.kwargs.get('type', None)
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
 
-        centres_gestions = getattr(self, self.type_emargement[type_emargement])(cod_etp, session)
+        centres_gestions = getattr(self, self.type[type])(cod_etp, session)
         # try:
         context['deroulements'] = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session).deroulement_parse()
         # except IndexError:
@@ -136,20 +137,13 @@ class ImpressionEmargement(PDFTemplateView):
 
 
 class ImpressionEtiquetteEnveloppe(ImpressionEmargement):
-    filename = "RecapExamen_{}_{}.pdf"
+    filename = "impression_centre_{}_{}_{}.pdf"
     template_name = "duck_examen/etiquette_envoi_centre.html"
 
-    def autre(self, cod_etp, session):
-        return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session)
 
-    def get_context_data(self, **kwargs):
-        context = super(ImpressionEtiquetteEnveloppe, self).get_context_data(**kwargs)
-        cod_etp = self.kwargs.get('cod_etp', None)
-        session = self.kwargs.get('session', None)
-        type_emargement = self.kwargs.get('type', None)
-        return context
-
-
+class ImpressionPv(ImpressionEtiquetteEnveloppe):
+    filename = "impression_centre_{}_{}_{}.pdf"
+    template_name = "duck_examen/etiquette_envoi_centre.html"
 
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):
