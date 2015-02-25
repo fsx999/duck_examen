@@ -91,7 +91,7 @@ class ImpressionEmargement(PDFTemplateView):
         'orientation': 'landscape',
         'page-size': 'A3'
     }
-    typet = {
+    type = {
         'E': 'etranger',
         'P': 'presentiel',
         'A': 'autre'
