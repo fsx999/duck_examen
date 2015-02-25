@@ -143,7 +143,9 @@ class ImpressionEtiquetteEnveloppe(ImpressionEmargement):
 
 class ImpressionPv(ImpressionEtiquetteEnveloppe):
     filename = "impression_centre_{}_{}_{}.pdf"
-    template_name = "duck_examen/etiquette_envoi_centre.html"
+    template_name = "duck_examen/pv_centre.html"
+    cmd_options = {
+    }
 
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):

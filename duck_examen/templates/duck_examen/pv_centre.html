@@ -1,0 +1,144 @@
+{% load static from staticfiles %}
+{% load duck_utils %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static "bootstrap3/css/bootstrap.css" %}">
+    <script src="{% static "bootstrap3/js/bootstrap.js" %}"></script>
+    <title></title>
+    <style type="text/css">
+        .etiquette {
+            margin-left: 1cm;
+            margin-top: 1cm;
+        }
+
+        {#        .expediteur{#}
+        {#        }#}
+        .destinataire {
+            margin-left: 3cm;
+            margin-right: 1cm;
+            margin-top: 1cm;
+            font-size: 18px;
+        }
+
+        .half {
+            height: 12cm;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    {% for centre in centres %}
+
+        {% for deroulement in deroulements %}
+            {% for matiere in deroulement.matieres %}
+                <div class="row">
+                    <div class="col-xs-3">IED <br/>PARIS 8</div>
+                    <div class="col-xs-8">INSTITUI D'ENSEIGNEMENT À DISTANCE DE PARIS 8 <br/>
+                        2 RUE DE LA LIBERTÉ <br/>
+                        93 526 - SAINT DENIS CEDEX 02 <br/>
+                        TÉL. : 01.49.40.62.00 FAX. : 01.49.40.62.04
+                    </div>
+                </div>
+                <center><h3>PROCES VERBAL DE SÉANCE</h3></center>
+                <div class="row">
+                    <div class="col-xs-5">EXAMEN :</div>
+                    <div class="col-xs-6">{{ label }}</div>
+                </div> <br/>
+                <div class="row">
+                    <div class="col-xs-5">UNITÉ D'ENSEIGNEMENT :</div>
+                    <div class="col-xs-6">{{ matiere.code_ec }} - {{ matiere.label }}</div>
+                </div><br/>
+                <div class="row">
+                    <div class="col-xs-5">DATE DE L'EXAMEN :</div>
+                    <div class="col-xs-6">{{ deroulement.jour }}</div>
+                </div><br/>
+                <div class="row">
+                    <div class="col-xs-5">DÉBUT DE L'ÉPREUVE :</div>
+                    <div class="col-xs-6">{{ matiere.heure_debut }}</div>
+                </div><br/>
+                <div class="row">
+                    <div class="col-xs-5">FIN DE L'ÉPREUVE :</div>
+                    <div class="col-xs-6">{{ matiere.heure_fin }}</div>
+                </div><br/>
+                <div class="row">
+                    <div class="col-xs-5">CENTRE DE L'ÉPREUVE :</div>
+                    <div class="col-xs-6">{{ centre.label }} {{ centre.country.lib_pay }}</div>
+                </div><br/>
+                <div class="row">
+                    <div class="col-xs-5">NOMBRE DE CANDIDAT INCRITS :</div>
+                    <div class="col-xs-6">{{ centre.nb_etudiant }}</div>
+                </div><br/>
+                <div class="row">
+                    <div class="col-xs-5">NOMBRE DE CANDIDAT PRÉSENTS :</div>
+                    <div class="col-xs-6">..............</div>
+                </div><br/>
+                <div class="row">
+                    <div class="col-xs-5">NOMBRE DE COPIES CI-JOINTES :</div>
+                    <div class="col-xs-6">..............</div>
+                </div><br/>
+                <div>
+                    INCIDENTS :
+                    ....................................................................................................
+                    ................................................................................................................
+                    ................................................................................................................
+                    ................................................................................................................
+                </div><br/><br/>
+
+                <table class="table table-bordered">
+                    <tr>
+                        <td colspan="2">NOM - PRÉNOM - SIGNATURE DES SURVEILLANTS</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>10</td>
+                    </tr>
+                </table>
+                <div>
+                    EN FOI DE QUOI, LES SURVEILLANTS CI-DESSUS DÉNOMMÉS ONT SIGNÉ LE PRÉSENT PROCÈS VERBAL.
+                </div>
+                <div>TOURNEZ LA PAGE, S.V.P</div>
+                <div>A COMPLETER</div>
+                <div style="page-break-after:always"></div>
+                <div>indiquer les nom et prénom des candidats ayant remis une copie blanche</div>
+                <table class="table table-bordered">
+                    <tr>
+                        <td>NOM ET PRÉNOM DES CANDIDATS AYANT REMIS UNE COPIE BLANCHE</td>
+                        <td>NOM ET PRÉNOM DES CANDIDATS AYANT REMIS UNE COPIE BLANCHE</td>
+                    </tr>
+                    {% for x in 15|get_range %}
+                        <tr>
+                            <td>{{ x|add:1 }}</td>
+                            <td>{{ x|add:16 }}</td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+                <div style="page-break-after:always"></div>
+            {% endfor %}
+
+        {% endfor %}
+
+    {% endfor %}
+
+</div>
+</body>
+</html>
