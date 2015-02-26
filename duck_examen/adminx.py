@@ -1,9 +1,13 @@
 # coding=utf-8
+from django.conf import settings
+from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.utils.encoding import smart_unicode
 from django.views.decorators.cache import never_cache
 from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
+from duck_examen.forms import EnvoiEMailCenterViewForm
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
@@ -323,6 +327,53 @@ class DeroulementAdmin(object):
         if not self.user.is_superuser:
             query = query.filter(etape__in=self.user.setting_user.etapes.all())
         return query
+
+class EnvoiEMailCenterView(views.FormAdminView):
+    form = EnvoiEMailCenterViewForm
+    title = 'Envoi email centre examen'
+
+    def get_redirect_url(self):
+        return self.get_admin_url('envoi_email_center')
+
+    def post(self, request, *args, **kwargs):
+        self.instance_forms()
+        self.setup_forms()
+        if self.valid_forms():
+            data = self.form_obj.cleaned_data
+            exam_centers = ExamCenter.objects.get_by_cod_etp_by_session(data['etape'].cod_etp, data['session'])
+            if not exam_centers:
+                self.message_user('Il n\'y a pas de centre pour cette étape.', 'error')
+                return self.get_response()
+
+            for center in exam_centers:
+                if settings.DEBUG:
+                    recipients = (settings.EMAIL_DEV,)
+                else:
+                    recipients = (center.email,)
+
+                mail = EmailMessage(subject=data['subject'], body=data['text'],
+                                    from_email='nepasrepondre@iedparis8.net',
+                                    to=recipients)
+                if data['attachment']:
+                    data['attachment']
+                    mail.attach(filename=data['attachment'].name,
+                                content=data['attachment'].read())
+
+                mail.send()
+                if settings.DEBUG: # we send only one mail
+                    break
+
+            self.message_user('Email envoyé.', 'success')
+            return HttpResponseRedirect(self.get_redirect_url())
+
+        return self.get_response()
+
+    def get_context(self):
+        context = super(EnvoiEMailCenterView, self).get_context()
+        context['has_file_field'] = True
+        return context
+
+xadmin.site.register_view(r'^examen/mail/$', EnvoiEMailCenterView, 'envoi_email_center')
 
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
