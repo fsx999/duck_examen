@@ -241,7 +241,7 @@ class DeroulementExamenModel(models.Model):
 # class RecapitulatifExamenModel(models.Model):
 #     etape = models.ForeignKey(Etape)
 #     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
-#     centre = models.ForeignKey(CentreGestionExamen)
+#     centre = models.ForeignKey(ExamCenter)
 #     date_envoie = models.DateField("date envoie des envellopes", null=True, blank=True)
 #     date_reception = models.DateField("date réception des enveloppes", null=True, blank=True)
 #     anomalie = models.CharField('anomalie', max_length=200, null=True, blank=True)
@@ -249,7 +249,6 @@ class DeroulementExamenModel(models.Model):
 #     nb_colis = models.IntegerField(null=True, blank=True)
 #
 #     class Meta:
-#         app_label = 'core'
 #         verbose_name = 'Recap envoie'
 #         verbose_name_plural = 'Recaps envoie'
 #         ordering = ['centre__pays__lib_pay']
