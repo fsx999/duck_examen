@@ -401,7 +401,7 @@ date_reception.short_description = "Valider la date de reception"
 
 class EtapeFilter(RelatedFieldListFilter):
     def choices(self):
-        self.lookup_choices = [(x.pk, x.lib_etp) for x in Etape.objects.by_centre_gestion('IED').all()]
+        self.lookup_choices = [(x.pk, x.lib_etp) for x in Etape.objects.by_centre_gestion('IED').all().order_by('lib_etp')]
         return super(EtapeFilter, self).choices()
 
 
