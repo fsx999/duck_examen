@@ -13,8 +13,6 @@
             margin-top: 1cm;
         }
 
-        {#        .expediteur{#}
-        {#        }#}
         .destinataire {
             margin-left: 3cm;
             margin-right: 1cm;
@@ -23,7 +21,7 @@
         }
 
         .half {
-            height: 12cm;
+            height: 13cm;
         }
 
     </style>
@@ -32,7 +30,7 @@
 <div class="container">
 {% counter assign='a' silent=True %}
     {% for centre in centres %}
-        <div class="row half">
+        <div class="row half etiquette">
             <div class="col-xs-5 etiquette">
             IED PARIS 8
                     <center>
@@ -88,10 +86,9 @@
         {% for deroulement in deroulements %}
 
                 {% for matiere in deroulement.matieres %}
-                <div class="row ">
+                <div class="row half etiquette">
                     <div class="col-xs-5 etiquette">
 
-                        <div class="col-xs-5 etiquette">
                         IED PARIS 8
                         <center>
                         {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
@@ -102,7 +99,6 @@
                             {{ matiere.label }} <br/>
                             {{ centre.label }}
                         </center>
-                        </div>
                     </div>
 
                     <div class="col-xs-5 etiquette">
@@ -111,7 +107,7 @@
                         <center>
                         {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
                             RETOUR ENVELOPPE <br/>
-                            {{ deroulement.jour }} <br/>
+                            {{ deroulement.date }} <br/>
                             de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
                             {{ label }} <br/>
@@ -120,7 +116,6 @@
                         </center>
                     </div>
                 </div>
-                    {{ a }}
                     {% if a|divisibleby:'2' %}
                     <div style="page-break-after:always"></div>
                     {% endif %}
