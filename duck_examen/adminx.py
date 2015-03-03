@@ -342,16 +342,26 @@ class EnvoiEMailCenterView(views.FormAdminView):
         self.setup_forms()
         if self.valid_forms():
             data = self.form_obj.cleaned_data
-            exam_centers = ExamCenter.objects.get_by_cod_etp_by_session(data['etape'].cod_etp, data['session'])
+            exam_centers = ExamCenter.objects.get_incorporation_by_cod_etp_by_session(data['etape'].cod_etp, data['session'])
             if not exam_centers:
                 self.message_user('Il n\'y a pas de centre pour cette étape.', 'error')
+                return self.get_response()
+
+            if exam_centers.filter(email__isnull=True).exists():
+                msg = ''
+                for center in exam_centers.filter(email__isnull=True):
+                    msg += "Le centre {} n'a pas d'email. <br />".format(center.label)
+                self.message_user(msg, 'error')
                 return self.get_response()
 
             for center in exam_centers:
                 if settings.DEBUG:
                     recipients = (settings.EMAIL_DEV,)
                 else:
-                    recipients = (center.email,)
+                    if center.email:
+                        recipients = (center.email,)
+                    elif center.email_bis:
+                        recipients = (center.email_bis,)
 
                 mail = EmailMessage(subject=data['subject'], body=data['text'],
                                     from_email='nepasrepondre@iedparis8.net',
@@ -364,6 +374,7 @@ class EnvoiEMailCenterView(views.FormAdminView):
                 mail.send()
                 if settings.DEBUG: # we send only one mail
                     break
+
 
             self.message_user('Email envoyé.', 'success')
             return HttpResponseRedirect(self.get_redirect_url())
@@ -388,13 +399,21 @@ def date_reception(modeladmin, request, queryset):
 date_reception.short_description = "Valider la date de reception"
 
 
+class EtapeFilter(RelatedFieldListFilter):
+    def choices(self):
+        self.lookup_choices = [(x.pk, x.lib_etp) for x in Etape.objects.by_centre_gestion('IED').all()]
+        return super(EtapeFilter, self).choices()
+
+
 class RecapitulatifExamenAdmin(object):
     actions = [date_envoi, date_reception]
-    list_filter = ['etape', 'session']
+    list_filter = [('etape', EtapeFilter), 'session']
     list_display = ('__str__', 'date_envoie', 'date_reception', 'nb_enveloppe', 'nb_colis', 'anomalie')
     list_editable = ('nb_enveloppe', 'anomalie', 'date_envoie', 'nb_colis')
     list_per_page = 20
     remove_permissions = ['delete', 'add']
+    show_bookmarks = False
+
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
 xadmin.site.register(DeroulementExamenModel, DeroulementAdmin)
