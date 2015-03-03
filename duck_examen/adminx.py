@@ -1,4 +1,5 @@
 # coding=utf-8
+import datetime
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
@@ -8,7 +9,8 @@ from django.views.decorators.cache import never_cache
 from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
 from duck_examen.forms import EnvoiEMailCenterViewForm
-from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel
+from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel, \
+    RecapitulatifExamenModel
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
 from xadmin.layout import Layout, Container, Col, Fieldset
@@ -375,6 +377,24 @@ class EnvoiEMailCenterView(views.FormAdminView):
 
 xadmin.site.register_view(r'^examen/mail/$', EnvoiEMailCenterView, 'envoi_email_center')
 
+
+def date_envoi(modeladmin, request, queryset):
+    queryset.update(date_envoie=datetime.date.today())
+date_envoi.short_description = "Valider la date d'envoi"
+
+
+def date_reception(modeladmin, request, queryset):
+    queryset.update(date_reception=datetime.date.today())
+date_reception.short_description = "Valider la date de reception"
+
+
+class RecapitulatifExamenAdmin(object):
+    actions = [date_envoi, date_reception]
+    list_filter = ['etape', 'session']
+    list_display = ('__str__', 'date_envoie', 'date_reception', 'nb_enveloppe', 'nb_colis', 'anomalie')
+    list_editable = ('nb_enveloppe', 'anomalie', 'date_envoie', 'nb_colis')
+
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
 xadmin.site.register(DeroulementExamenModel, DeroulementAdmin)
+xadmin.site.register(RecapitulatifExamenModel, RecapitulatifExamenAdmin)

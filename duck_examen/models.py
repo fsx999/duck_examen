@@ -89,6 +89,7 @@ class RattachementCentreExamen(models.Model):
                     if etp:
                         RattachementCentreExamen.objects.get_or_create(inscription=etp, session=self.session, centre=self.centre)
 
+        RecapitulatifExamenModel.objects.get_or_create(session=self.session, centre=self.centre, etape=Etape.objects.get(cod_etp=self.inscription.cod_etp))
         super(RattachementCentreExamen, self).save(force_insert, force_update, using, update_fields)
 
 
@@ -236,23 +237,24 @@ class DeroulementExamenModel(models.Model):
     def __str__(self):
         return '{} session {}'.format(self.etape, self.session)
 
-#
-# @python_2_unicode_compatible
-# class RecapitulatifExamenModel(models.Model):
-#     etape = models.ForeignKey(Etape)
-#     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
-#     centre = models.ForeignKey(ExamCenter)
-#     date_envoie = models.DateField("date envoie des envellopes", null=True, blank=True)
-#     date_reception = models.DateField("date réception des enveloppes", null=True, blank=True)
-#     anomalie = models.CharField('anomalie', max_length=200, null=True, blank=True)
-#     nb_enveloppe = models.IntegerField(null=True, blank=True)
-#     nb_colis = models.IntegerField(null=True, blank=True)
-#
-#     class Meta:
-#         verbose_name = 'Recap envoie'
-#         verbose_name_plural = 'Recaps envoie'
-#         ordering = ['centre__pays__lib_pay']
-#
-#     def __str__(self):
-#         return '{} {} {}'.format(self.centre.name_by_pays(), self.etape_id, self.session)
-#
+
+@python_2_unicode_compatible
+class RecapitulatifExamenModel(models.Model):
+    etape = models.ForeignKey(Etape)
+    session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
+    centre = models.ForeignKey(ExamCenter)
+    date_envoie = models.DateField("date envoie des envellopes", null=True, blank=True)
+    date_reception = models.DateField("date réception des enveloppes", null=True, blank=True)
+    anomalie = models.CharField('anomalie', max_length=200, null=True, blank=True)
+    nb_enveloppe = models.IntegerField(null=True, blank=True)
+    nb_colis = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        #app_label = 'core'
+        verbose_name = 'Recap envoie'
+        verbose_name_plural = 'Recaps envoie'
+        ordering = ['centre__country__lib_pay']
+
+    def __str__(self):
+        return '{} {} {}'.format(self.centre.name_by_pays(), self.etape_id, self.session)
+
