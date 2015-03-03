@@ -411,6 +411,7 @@ class RecapitulatifExamenAdmin(object):
     list_display = ('__str__', 'date_envoie', 'date_reception', 'nb_enveloppe', 'nb_colis', 'anomalie')
     list_editable = ('nb_enveloppe', 'anomalie', 'date_envoie', 'nb_colis')
     list_per_page = 20
+    readonly_fields = ['etape', 'session', 'centre']
     remove_permissions = ['delete', 'add']
     show_bookmarks = False
 
