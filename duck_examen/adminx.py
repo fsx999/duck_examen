@@ -393,7 +393,8 @@ class RecapitulatifExamenAdmin(object):
     list_filter = ['etape', 'session']
     list_display = ('__str__', 'date_envoie', 'date_reception', 'nb_enveloppe', 'nb_colis', 'anomalie')
     list_editable = ('nb_enveloppe', 'anomalie', 'date_envoie', 'nb_colis')
-
+    list_per_page = 20
+    remove_permissions = ['delete', 'add']
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
 xadmin.site.register(DeroulementExamenModel, DeroulementAdmin)

@@ -89,7 +89,7 @@ class RattachementCentreExamen(models.Model):
                     if etp:
                         RattachementCentreExamen.objects.get_or_create(inscription=etp, session=self.session, centre=self.centre)
 
-        RecapitulatifExamenModel.objects.get_or_create(session=self.session, centre=self.centre, etape=Etape.objects.get(cod_etp=self.inscription.cod_etp))
+        RecapitulatifExamenModel.objects.get_or_create(session=self.session, centre=self.centre, etape_id=self.inscription.cod_etp)
         super(RattachementCentreExamen, self).save(force_insert, force_update, using, update_fields)
 
 
