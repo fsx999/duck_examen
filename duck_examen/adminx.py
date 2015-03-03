@@ -132,6 +132,7 @@ class ImpressionEmargement(PDFTemplateView):
             nb_matiere += len(jour['matieres'])
         context['nb_matiere'] = [0] * nb_matiere
         for centre in centres_gestions:
+
             centre.etudiants = centre.etudiant_by_step_session(cod_etp, session)
             centre.nb_etudiant = centre.etudiants.count()
             centre.nb_ligne_vide = [nb + centre.nb_etudiant + 1 for nb in range(15-centre.nb_etudiant)]

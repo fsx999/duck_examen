@@ -1,4 +1,5 @@
 {% load static from staticfiles %}
+{% load duck_utils %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,13 +30,9 @@
 </head>
 <body>
 <div class="container">
+{% counter assign='a' silent=True %}
     {% for centre in centres %}
-
-        {% for deroulement in deroulements %}
-                {% for matiere in deroulement.matieres %}
-
-                <div class="row half">
-
+        <div class="row half">
             <div class="col-xs-5 etiquette">
             IED PARIS 8
                     <center>
@@ -87,43 +84,51 @@
 
             </div>
         </div>
-        <div class="row ">
-            <div class="col-xs-5 etiquette">
 
-                <div class="col-xs-5 etiquette">
-                IED PARIS 8
-                <center>
-                {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
-                    {{ deroulement.jour }} <br/>
-                    de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
+        {% for deroulement in deroulements %}
 
-                    {{ label }} <br/>
-                    {{ matiere.label }} <br/>
-                    {{ centre.label }}
-                </center>
+                {% for matiere in deroulement.matieres %}
+                <div class="row ">
+                    <div class="col-xs-5 etiquette">
+
+                        <div class="col-xs-5 etiquette">
+                        IED PARIS 8
+                        <center>
+                        {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
+                            {{ deroulement.jour }} <br/>
+                            de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
+
+                            {{ label }} <br/>
+                            {{ matiere.label }} <br/>
+                            {{ centre.label }}
+                        </center>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-5 etiquette">
+
+                        IED PARIS 8
+                        <center>
+                        {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
+                            RETOUR ENVELOPPE <br/>
+                            {{ deroulement.jour }} <br/>
+                            de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
+
+                            {{ label }} <br/>
+                            {{ matiere.label }} <br/>
+                            {{ centre.label }}
+                        </center>
+                    </div>
                 </div>
-            </div>
-
-            <div class="col-xs-5 etiquette">
-
-                IED PARIS 8
-                <center>
-                {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
-                    RETOUR ENVELOPPE <br/>
-                    {{ deroulement.jour }} <br/>
-                    de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
-
-                    {{ label }} <br/>
-                    {{ matiere.label }} <br/>
-                    {{ centre.label }}
-                </center>
-            </div>
-        </div>
-        <div style="page-break-after:always"></div>
-                {% endfor %}
+                    {{ a }}
+                    {% if a|divisibleby:'2' %}
+                    <div style="page-break-after:always"></div>
+                    {% endif %}
+                    {% counter assign='a' silent=True %}
+            {% endfor %}
 
         {% endfor %}
-
+        <div style="page-break-after:always"></div>
     {% endfor %}
 
 </div>
