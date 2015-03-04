@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+{#    <link href="{% static "bootstrap3/css/bootstrap.min.css" %}" rel="stylesheet">#}
+    <style type="text/css">
+        div.break {
+            page-break-after: always
+        }
+{#        #ma_table {#}
+{#            overflow: visible !important;#}
+{#        }#}
+        thead {
+            display: table-header-group;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% for page in pages %}
+
+        <table class="table table-bordered table-striped">
+
+            <tr class="entete">
+                <td class="entete" colspan="100%">
+                    <div class="pull-left"><img class="signature " src="{% static 'images/logo-ied.jpg' %}"></div>
+                    <center><h3>Session {{ session }} - {{ label }} </h3>
+
+                        <h3>{{ page }}</h3><br/></center>
+                </td>
+            </tr>
+        </table>
+                    <table class="table table-bordered table-striped" id="ma_table">
+                    <thead>
+                    <tr>
+                        <th colspan="5" rowspan="2"></th>
+                        {% for deroulement in deroulements %}
+                            <th colspan="{{ deroulement.matieres|length }}">{{ deroulement.date }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for deroulement in deroulements %}
+                            {% for matiere in deroulement.matieres %}
+                                <th>{{ matiere.heure_debut|safe }}-{{ matiere.heure_fin|safe }} </th>
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>NOM</th>
+                        <th>NOM D'ÉPOUSE</th>
+                        <th>PRÉNOM</th>
+                        <th>N° ÉTUDIANT</th>
+                        {% for deroulement in deroulements %}
+                            {% for matiere in deroulement.matieres %}
+                                <th>{{ matiere.label|safe }} </th>
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+        {% with page.object_list as etudiants %}
+
+
+            {% for etudiant in etudiants %}
+{#                {% if forloop.first or forloop.counter|divisibleby:21 %}#}
+{##}
+{#                {% endif %}#}
+            <tr>
+                <td colspan="1">{{ forloop.counter }}</td>
+                <td>{{ etudiant.nom }}</td>
+                <td>{{ etudiant.nom_epoux }}</td>
+                <td>{{ etudiant.prenom }}</td>
+                <td>{{ etudiant.cod_etu }}</td>
+                {% for x in nb_matiere %}
+                    <td></td>
+                {% endfor %}
+            </tr>
+
+{#            {% if forloop.last or forloop.counter|divisibleby:20 %}#}
+{#                </table>#}
+{#                <div class="break"></div>#}
+{#            {% endif %}#}
+            {% endfor %}
+
+            {#    {% for nb in centre.nb_ligne_vide %}#}
+            {#        <tr>#}
+            {#            <td>{{ nb }}</td>#}
+            {#            <td></td>#}
+            {#            <td></td>#}
+            {#            <td></td>#}
+            {#            <td></td>#}
+            {#            {% for x in nb_matiere %}#}
+            {#            <td></td>#}
+            {#            {% endfor %}#}
+            {#        </tr>#}
+            {#    {% endfor %}#}
+
+        {% endwith %}
+
+        </tbody>
+        </table>
+        <div class="break"></div>
+    {% endfor %}
+
+</div>
+</body>
+</html>
+

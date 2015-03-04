@@ -10,7 +10,8 @@ from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
 from duck_examen.forms import EnvoiEMailCenterViewForm
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel, \
-    RecapitulatifExamenModel
+    RecapitulatifExamenModel, EtapeExamenModel
+from duck_examen.utils import get_etudiant_pagine
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
 from xadmin.layout import Layout, Container, Col, Fieldset
@@ -114,7 +115,8 @@ class ImpressionEmargement(PDFTemplateView):
         return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session)
 
     def presentiel(self, cod_etp, session):
-        return ExamCenter.objects.get_main_center_by_cod_etp_by_session(cod_etp, session)
+        etape = EtapeExamenModel.objects.get(cod_etp=cod_etp)
+        return get_etudiant_pagine(etape.get_etudiant_presentiel(session), nb_amphi=3, nb_table=3)
 
     def get_context_data(self, **kwargs):
         cod_etp = self.kwargs.get('cod_etp', None)
@@ -131,12 +133,21 @@ class ImpressionEmargement(PDFTemplateView):
         for jour in context['deroulements']:
             nb_matiere += len(jour['matieres'])
         context['nb_matiere'] = [0] * nb_matiere
-        for centre in centres_gestions:
 
-            centre.etudiants = centre.etudiant_by_step_session(cod_etp, session)
-            centre.nb_etudiant = centre.etudiants.count()
-            centre.nb_ligne_vide = [nb + centre.nb_etudiant + 1 for nb in range(15-centre.nb_etudiant)]
-        context['centres'] = centres_gestions
+        if type != 'P':
+            for centre in centres_gestions:
+
+                centre.etudiants = centre.etudiant_by_step_session(cod_etp, session)
+                centre.nb_etudiant = centre.etudiants.count()
+                centre.nb_ligne_vide = [nb + centre.nb_etudiant + 1 for nb in range(15-centre.nb_etudiant)]
+            context['centres'] = centres_gestions
+
+        else: # if type == 'P'
+            etape = EtapeExamenModel.objects.get(cod_etp=cod_etp)
+            self.template_name = "duck_examen/liste_emargement_presentiel.html"
+            context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session),
+                                                   nb_amphi=3, nb_table=3)
+
         context['session'] = session
         context['label'] = Etape.objects.get(cod_etp=cod_etp).lib_etp
 

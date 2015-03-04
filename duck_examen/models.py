@@ -1,4 +1,6 @@
 # coding=utf-8
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.db import models
 from django_apogee.models import Pays, InsAdmEtp, Etape
@@ -6,6 +8,7 @@ from django_apogee.models import Pays, InsAdmEtp, Etape
 # from core.utils import paginator_etudiant
 from duck_examen.managers import ExamenCenterManager
 import re
+from duck_examen.utils import paginator_etudiant
 
 
 class EtapeExamen(InsAdmEtp):
@@ -95,10 +98,10 @@ class RattachementCentreExamen(models.Model):
 
 
 
-# class EtapeExamenModel(Etape):
-#     """
-#     utiliser pour les examen
-#     """
+class EtapeExamenModel(Etape):
+    """
+    utiliser pour les examen
+    """
 #     objects = EtapeExamenManager()
 #
 #     def get_centre_exament_etranger(self):
@@ -127,7 +130,7 @@ class RattachementCentreExamen(models.Model):
 #         return self.get_centre(2)
 #
 #     def get_centre_exception(self, session):
-#         query = CentreGestionException.objects.filter(etudiantcentreexamenexception__inscription__COD_ETP=self.cod_etp,
+#         query = CentreGestionException.objects.filter(etudiantcentreexamenexception_                                                                                                                                                      _inscription__COD_ETP=self.cod_etp,
 #                                                       etudiantcentreexamenexception__session=session)
 #         if self.cod_etp[0] == 'L' and int(self.cod_etp[1]) < 3:
 #             code_etp = self.cod_etp[0] + str(int(self.cod_etp[1]) + 1) + self.cod_etp[2:]
@@ -146,13 +149,18 @@ class RattachementCentreExamen(models.Model):
 #         qs = INS_ADM_ETP_IED.inscrits_condi.filter(COD_ETP=self.cod_etp)\
 #             .exclude(etudiantcentreexamenexception__session=session).exclude(etudiantcentreexamen__session=session)
 #         return qs.distinct()
-#
-#     def get_etudiant_presentiel_pagine(self, session, nb_amphi, nb_table):
-#         t = []
-#         result = paginator_etudiant(self.get_etudiant_presentiel(session).order_by('COD_IND__LIB_NOM_PAT_IND'), nb_amphi)
-#         for x in result:
-#             t.extend(paginator_etudiant(x.object_list, nb_table))
-#         return t
+    def get_etudiant_presentiel(self, session):
+        qs = InsAdmEtp.inscrits_condi.filter(cod_etp=self.cod_etp,
+                                             rattachementcentreexamen__centre__is_main_center=True,
+                                             rattachementcentreexamen__session=session)
+        return qs.distinct()
+    #
+    # def get_etudiant_presentiel_pagine(self, session, nb_amphi, nb_table):
+    #     t = []
+    #     result = paginator_etudiant(self.get_etudiant_presentiel(session).order_by('cod_ind__LIB_NOM_PAT_IND'), nb_amphi)
+    #     for x in result:
+    #         t.extend(paginator_etudiant(x.object_list, nb_table))
+    #     return t
 #
 #     def has_centre_exament_etranger(self):
 #         return True if self.get_centre_exament_etranger().count() else False
@@ -181,12 +189,13 @@ class RattachementCentreExamen(models.Model):
 #     def get_url_pdf_paris_emargement_premiere_session(self):
 #         return reverse('pdf_paris_emargement', kwargs={'etape': self.cod_etp, 'session': 1})
 #
+
 #     def get_url_pdf_paris_emargement_deuxieme_session(self):
 #         return reverse('pdf_paris_emargement', kwargs={'etape': self.cod_etp, 'session': 2})
 #
-#     class Meta:
-#         proxy = True
-#         ordering = ['cod_etp']
+    class Meta:
+        proxy = True
+        ordering = ['cod_etp']
 
 
 
@@ -258,3 +267,27 @@ class RecapitulatifExamenModel(models.Model):
     def __str__(self):
         return '{} {} {}'.format(self.centre.name_by_pays(), self.etape_id, self.session)
 
+@receiver(post_save, sender=InsAdmEtp)
+def create_centre_rattachement_if_does_not_exist(sender, **kwargs):
+    instance = kwargs.get('instance', None)
+    if instance.tem_iae_prm == 'O':
+        if not instance.rattachementcentreexamen_set.count():
+            # il faut detecter s il y a des enfants
+            code_etp_actuel = instance.cod_etp
+            ec_manquant = False
+            if code_etp_actuel[0] == 'L' and code_etp_actuel != 'L3NEDU':
+                if code_etp_actuel[1] in ['2', '3']:
+                    code_etp_anterieur = code_etp_actuel[0] + str(int(code_etp_actuel[1]) - 1) + code_etp_actuel[2:]
+                    cod_ind = instance.cod_ind
+                    etp = InsAdmEtp.inscrits_condi.filter(cod_ind=cod_ind, cod_etp=code_etp_anterieur).first()
+                    ec_manquant = bool(etp)
+
+            default_exam_center = ExamCenter.objects.get(is_main_center=True)
+            RattachementCentreExamen.objects.create(inscription=instance,
+                                                    centre=default_exam_center,
+                                                    session=1,
+                                                    ec_manquant=ec_manquant)
+            RattachementCentreExamen.objects.create(inscription=instance,
+                                                    centre=default_exam_center,
+                                                    session=2,
+                                                    ec_manquant=ec_manquant)
