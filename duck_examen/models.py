@@ -163,10 +163,10 @@ class TypeExamen(models.Model):
 
 class DetailDeroulement(models.Model):
     deroulement = models.ForeignKey(DeroulementExamenModel, null=True)
+    type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
 
     deroulement_contenu = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
                                    blank=True)
-    type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
 
     def deroulement_parse(self):
         if not self.deroulement:
@@ -223,8 +223,8 @@ class RecapitulatifExamenModel(models.Model):
 class EtapeSettingsDerouleModel(models.Model):
     etape = models.ForeignKey(Etape)
     cod_anu = models.CharField(max_length=4, default='2014')
-    deroule = models.FileField(null=True, upload_to='deroule_examen')
-    date_envoi_convocation = models.DateField(null=True) # for session 1
+    deroule = models.FileField(null=True, upload_to='deroule_examen', blank=True)
+    date_envoi_convocation = models.DateField(null=True, blank=True) # for session 1
     envoi_convocation_processed = models.BooleanField(default=False) # If the command has been already executed or not
     type_examen = models.ForeignKey(TypeExamen)
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))

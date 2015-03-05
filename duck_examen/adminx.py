@@ -203,6 +203,10 @@ class RattachementCentreExamenAdmin(object):
             for x in self.model_instance.rattachementcentreexamen_set.all():
                 query = query | ExamCenter.objects.filter(pk=x.centre_id)
             return db_field.formfield(queryset=query, **dict(attrs, **kwargs))
+        if db_field.name == 'type_examen':
+            type_examen = EtapeSettingsDerouleModel.objects.filter(etape__cod_etp=self.org_obj.cod_etp).distinct('type_examen').values_list('type_examen', flat=True)
+            query = TypeExamen.objects.filter(name__in=type_examen)
+            return db_field.formfield(queryset=query,  **dict(attrs, **kwargs))
         return db_field.formfield(**dict(attrs, **kwargs))
 
 
@@ -306,7 +310,20 @@ class ExamenCenterAdmin(object):
 class DetailDeroulementAdmin(object):
     model = DetailDeroulement
     extra = 0
+    @filter_hook
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        # If it uses an intermediary model that isn't auto created, don't show
+        # a field in admin.
 
+        if isinstance(db_field, models.ManyToManyField) and not db_field.rel.through._meta.auto_created:
+            return None
+        attrs = self.get_field_attrs(db_field, **kwargs)
+        if db_field.name == 'type_examen':
+
+            type_examen = self.org_obj.etape.etapesettingsderoulemodel_set.distinct('type_examen').values_list('type_examen', flat=True)
+            query = TypeExamen.objects.filter(name__in=type_examen)
+            return db_field.formfield(queryset=query,  **dict(attrs, **kwargs))
+        return db_field.formfield(**dict(attrs, **kwargs))
 
 class DeroulementAdmin(object):
     hidden_menu = True
@@ -446,12 +463,19 @@ class RecapitulatifExamenAdmin(object):
 
 class EtapeSettingsDerouleModelAdmin(object):
     list_filter = [('etape', EtapeFilter), 'session']
+
     def queryset(self):
         qs = super(EtapeSettingsDerouleModelAdmin, self).queryset()
         if not self.user.is_superuser:
             qs = qs.filter(etape__in=self.user.setting_user.etapes.all())
 
         return qs
+
+    @filter_hook
+    def get_field_attrs(self, db_field, **kwargs):
+        if db_field.name == 'etape':
+            return {'queryset': Etape.objects.by_centre_gestion('IED')}
+        return super(EtapeSettingsDerouleModelAdmin, self).get_field_attrs(db_field, **kwargs)
 
 xadmin.site.register(EtapeSettingsDerouleModel, EtapeSettingsDerouleModelAdmin)
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
