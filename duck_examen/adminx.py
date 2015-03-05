@@ -10,7 +10,7 @@ from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
 from duck_examen.forms import EnvoiEMailCenterViewForm
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel, \
-    RecapitulatifExamenModel, EtapeExamenModel
+    RecapitulatifExamenModel, EtapeExamenModel, DetailDeroulement, TypeExamen
 from duck_examen.utils import get_etudiant_pagine
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
@@ -302,6 +302,8 @@ class ExamenCenterAdmin(object):
     ordering = ['country__lib_pay']
     list_filter = [('country', PaysFilter)]
 
+class DetailDeroulementAdmin(object):
+    model = DetailDeroulement
 
 class DeroulementAdmin(object):
     hidden_menu = True
@@ -427,6 +429,7 @@ class EtapeFilter(RelatedFieldListFilter):
 
 
 class RecapitulatifExamenAdmin(object):
+    hidden_menu = True
     actions = [date_envoi, date_reception]
     list_filter = [('etape', EtapeFilter), 'session']
     list_display = ('__str__', 'date_envoie', 'date_reception', 'nb_enveloppe', 'nb_colis', 'anomalie')
@@ -440,3 +443,4 @@ xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
 xadmin.site.register(DeroulementExamenModel, DeroulementAdmin)
 xadmin.site.register(RecapitulatifExamenModel, RecapitulatifExamenAdmin)
+xadmin.site.register(TypeExamen)

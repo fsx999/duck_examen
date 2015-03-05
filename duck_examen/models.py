@@ -41,27 +41,21 @@ class ExamCenter(models.Model):
                                             help_text=u"l'étudiant doit faire une demande de rattachement")
     is_main_center = models.BooleanField(default=False)
     objects = ExamenCenterManager()
-    # @property
-    # def adresse_envoi_html(self):
-    #     return ''.join([x+'<br>' for x in self.adresse_envoi_materiel.splitlines()])[:-4]
 
     class Meta:
         verbose_name = "Centre examen"
         verbose_name_plural = "Centres examens"
-        # ordering = ['pays__lib_pay']
 
     def __str__(self):
         return u"{} {}".format(smart_text(self.label), self.country)
 
     def name_by_pays(self):
         return u"{} {}".format(self.country, smart_text(self.label))
-#
-#     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-#         if not self.adresse_envoi_materiel:
-#             self.adresse_envoi_materiel = self.adresse
-#
-#         super(CentreGestionExamen, self).save(force_insert, force_update, using, update_fields)
-#
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.sending_address:
+            self.sending_address = self.mailling_address
+        super(ExamCenter, self).save(force_insert, force_update, using, update_fields)
 
     def etudiant_by_step_session(self, cod_etp, session):
         query = self.rattachementcentreexamen_set.filter(inscription__cod_etp=cod_etp, session=session)
@@ -96,103 +90,16 @@ class RattachementCentreExamen(models.Model):
         super(RattachementCentreExamen, self).save(force_insert, force_update, using, update_fields)
 
 
-
-
 class EtapeExamenModel(Etape):
     """
     utiliser pour les examen
     """
-#     objects = EtapeExamenManager()
-#
-#     def get_centre_exament_etranger(self):
-#
-#         query = CentreGestionExamen.objects.filter(etudiantcentreexamen__inscription__COD_ETP=self.cod_etp)
-#         if self.cod_etp[0] == 'L' and int(self.cod_etp[1]) < 3:
-#             code_etp = self.cod_etp[0] + str(int(self.cod_etp[1]) + 1) + self.cod_etp[2:]
-#             query |= CentreGestionExamen.objects.filter(etudiantcentreexamen__inscription__COD_ETP=code_etp,
-#                                                         etudiantcentreexamen__ec_manquant=True)
-#         return query.distinct()
-#
-#     def get_centre(self, session):
-#         query = CentreGestionExamen.objects.filter(etudiantcentreexamen__inscription__COD_ETP=self.cod_etp,
-#                                                    etudiantcentreexamen__session=session)
-#         if self.cod_etp[0] == 'L' and int(self.cod_etp[1]) < 3:
-#             code_etp = self.cod_etp[0] + str(int(self.cod_etp[1]) + 1) + self.cod_etp[2:]
-#             query |= CentreGestionExamen.objects.filter(etudiantcentreexamen__inscription__COD_ETP=code_etp,
-#                                                         etudiantcentreexamen__ec_manquant=True,
-#                                                         etudiantcentreexamen__session=session)
-#         return query.distinct()
-#
-#     def get_centre_premier_session(self):
-#         return self.get_centre(1)
-#
-#     def get_centre_deuxieme_session(self):
-#         return self.get_centre(2)
-#
-#     def get_centre_exception(self, session):
-#         query = CentreGestionException.objects.filter(etudiantcentreexamenexception_                                                                                                                                                      _inscription__COD_ETP=self.cod_etp,
-#                                                       etudiantcentreexamenexception__session=session)
-#         if self.cod_etp[0] == 'L' and int(self.cod_etp[1]) < 3:
-#             code_etp = self.cod_etp[0] + str(int(self.cod_etp[1]) + 1) + self.cod_etp[2:]
-#             query |= CentreGestionException.objects.filter(
-#                 etudiantcentreexamenexception__inscription__COD_ETP=code_etp,
-#                 etudiantcentreexamenexception__ec_manquant=True, etudiantcentreexamenexception__session=session)
-#         return query.distinct()
-#
-#     def get_centre_exception_premiere_session(self):
-#         return self.get_centre_exception(1)
-#
-#     def get_centre_exception_deuxieme_session(self):
-#         return self.get_centre_exception(2)
-#
-#     def get_etudiant_presentiel(self, session):
-#         qs = INS_ADM_ETP_IED.inscrits_condi.filter(COD_ETP=self.cod_etp)\
-#             .exclude(etudiantcentreexamenexception__session=session).exclude(etudiantcentreexamen__session=session)
-#         return qs.distinct()
     def get_etudiant_presentiel(self, session):
         qs = InsAdmEtp.inscrits_condi.filter(cod_etp=self.cod_etp,
                                              rattachementcentreexamen__centre__is_main_center=True,
                                              rattachementcentreexamen__session=session)
         return qs.distinct()
-    #
-    # def get_etudiant_presentiel_pagine(self, session, nb_amphi, nb_table):
-    #     t = []
-    #     result = paginator_etudiant(self.get_etudiant_presentiel(session).order_by('cod_ind__LIB_NOM_PAT_IND'), nb_amphi)
-    #     for x in result:
-    #         t.extend(paginator_etudiant(x.object_list, nb_table))
-    #     return t
-#
-#     def has_centre_exament_etranger(self):
-#         return True if self.get_centre_exament_etranger().count() else False
-#
-#     def get_url_pdf_centre_etranger(self):
-#         return reverse('pdf_centre_etranger', kwargs={'etape': self.cod_etp})
-#
-#     def get_url_pdf_centre_etranger_recap_premiere_session(self):
-#         return reverse('pdf_centre_etranger_recap', kwargs={'etape': self.cod_etp, 'session': 1})
-#
-#     def get_url_pdf_centre_etranger_recap_deuxieme_session(self):
-#         return reverse('pdf_centre_etranger_recap', kwargs={'etape': self.cod_etp, 'session': 2})
-#
-#     def get_url_pdf_centre_etranger_emargement_premiere_session(self):
-#         return reverse('pdf_centre_etranger_emargement', kwargs={'etape': self.cod_etp, 'session': 1})
-#
-#     def get_url_pdf_centre_etranger_emargement_deuxieme_session(self):
-#         return reverse('pdf_centre_etranger_emargement', kwargs={'etape': self.cod_etp, 'session': 2})
-#
-#     def get_url_pdf_centre_dom_tom_emargement_premiere_session(self):
-#         return reverse('pdf_centre_dom_tom_emargement', kwargs={'etape': self.cod_etp, 'session': 1})
-#
-#     def get_url_pdf_centre_dom_tom_emargement_deuxieme_session(self):
-#         return reverse('pdf_centre_dom_tom_emargement', kwargs={'etape': self.cod_etp, 'session': 2})
-#
-#     def get_url_pdf_paris_emargement_premiere_session(self):
-#         return reverse('pdf_paris_emargement', kwargs={'etape': self.cod_etp, 'session': 1})
-#
 
-#     def get_url_pdf_paris_emargement_deuxieme_session(self):
-#         return reverse('pdf_paris_emargement', kwargs={'etape': self.cod_etp, 'session': 2})
-#
     class Meta:
         proxy = True
         ordering = ['cod_etp']
@@ -245,6 +152,44 @@ class DeroulementExamenModel(models.Model):
 
     def __str__(self):
         return '{} session {}'.format(self.etape, self.session)
+
+
+class TypeExamen(models.Model):
+    name = models.CharField(max_length=1, primary_key=True)
+
+
+class DetailDeroulement(models.Model):
+    deroulement = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
+                                   blank=True)
+    type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
+
+    def deroulement_parse(self):
+        if not self.deroulement:
+            return []
+        text = self.deroulement.encode('utf-8')
+        text = text.replace('\r\n', '').strip()
+        resultat = []
+        text = re.split(r'(\[[^]]*])', text)[1:]
+        for i, token in enumerate(text):
+            if i % 2 == 0:
+                jour = {'date': text[i][1:-1], 'matieres': []}
+                suite = text[i+1]
+                suite = re.split(r'(<[^>]*>)', suite)[1:]
+                for j, token2 in enumerate(suite):
+                    if j % 2 == 0:
+                        heure = suite[j].strip('< >'.encode('utf-8')).split(r'-')
+                        r = {
+                            'heure_debut': heure[0],
+                            'heure_fin': heure[1]
+                        }
+                        deroule = re.split(r'\|', suite[j+1])
+                        r['code_ec'] = deroule[0]
+                        r['label'] = deroule[1]
+                        r['prof'] = deroule[2]
+                        jour['matieres'].append(r)
+                resultat.append(jour)
+        return resultat
+
 
 
 @python_2_unicode_compatible
