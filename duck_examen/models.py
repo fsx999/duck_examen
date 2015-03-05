@@ -156,7 +156,7 @@ class DeroulementExamenModel(models.Model):
 
 @python_2_unicode_compatible
 class TypeExamen(models.Model):
-    name = models.CharField(max_length=1, primary_key=True)
+    name = models.CharField(max_length=3, primary_key=True)
     label = models.CharField(max_length=30)
 
     def __str__(self):
