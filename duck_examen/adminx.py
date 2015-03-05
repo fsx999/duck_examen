@@ -366,7 +366,12 @@ class EnvoiEMailCenterView(views.FormAdminView):
                 self.message_user(msg, 'error')
                 return self.get_response()
 
+            idx = 0
+            name = data['attachment'].name
+            content = data['attachment'].read()
+            mimetype = data['attachment'].content_type
             for center in exam_centers:
+
                 if settings.DEBUG:
                     recipients = (settings.EMAIL_DEV,)
                 else:
@@ -380,12 +385,16 @@ class EnvoiEMailCenterView(views.FormAdminView):
                                     to=recipients)
                 if data['attachment']:
                     data['attachment']
-                    mail.attach(filename=data['attachment'].name,
-                                content=data['attachment'].read())
+                    mail.attach(filename=name,
+                                content=content,
+                                mimetype=mimetype)
 
                 mail.send()
-                if settings.DEBUG: # we send only one mail
-                    break
+                if settings.DEBUG: # we send at most 5 mail
+                    if idx == 5:
+                        break
+                    else:
+                        idx += 1
 
 
             self.message_user('Email envoyé.', 'success')
