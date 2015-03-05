@@ -479,6 +479,12 @@ class EtapeSettingsDerouleModelAdmin(object):
             return {'queryset': Etape.objects.by_centre_gestion('IED')}
         return super(EtapeSettingsDerouleModelAdmin, self).get_field_attrs(db_field, **kwargs)
 
+    def get_readonly_fields(self):
+        if self.user.is_superuser:
+            return []
+
+        return ['etape', 'cod_anu', 'type_examen', 'session', 'envoi_convocation_processed']
+
 xadmin.site.register(EtapeSettingsDerouleModel, EtapeSettingsDerouleModelAdmin)
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
