@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
-from django_apogee.models import Pays
-from duck_examen.models import DeroulementExamenModel, RattachementCentreExamen, DetailDeroulement
+from django_apogee.models import Pays, Etape
+from duck_examen.models import DeroulementExamenModel, RattachementCentreExamen, DetailDeroulement, \
+    EtapeSettingsDerouleModel
 
 
 class Command(BaseCommand):
@@ -44,3 +45,8 @@ class Command(BaseCommand):
         # print 'fini'
         for x in DeroulementExamenModel.objects.all():
             DetailDeroulement.objects.get_or_create(deroulement=x, deroulement_contenu=x.deroulement)
+        for x in Etape.objects.by_centre_gestion('IED'):
+            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=1, type_examen_id='D')
+            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=2, type_examen_id='D')
+            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=1, type_examen_id='H')
+            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=2, type_examen_id='H')
