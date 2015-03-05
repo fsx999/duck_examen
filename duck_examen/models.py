@@ -229,6 +229,8 @@ class EtapeSettingsDerouleModel(models.Model):
     type_examen = models.ForeignKey(TypeExamen)
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
 
+    def __str__(self):
+        return "{} {} {} {}".format(self.etape, self.cod_anu, self.type_examen, self.session)
 
 @receiver(post_save, sender=InsAdmEtp)
 def create_centre_rattachement_if_does_not_exist(sender, **kwargs):
