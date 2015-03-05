@@ -68,6 +68,7 @@ class RattachementCentreExamen(models.Model):
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
     centre = models.ForeignKey(ExamCenter)
     ec_manquant = models.BooleanField(default=False, blank=True)
+    type_examen = models.ForeignKey('TypeExamen', default='D')
 
     def __str__(self):
         return u"{} session : {} ec manquant : {}".format(self.centre, self.session, "oui" if self.ec_manquant else 'non')
@@ -194,6 +195,8 @@ class DetailDeroulement(models.Model):
                 resultat.append(jour)
         return resultat
 
+    def __str__(self):
+        return "{} {} {}".format(self.deroulement.etape, self.type_examen, self.deroulement.session)
 
 
 @python_2_unicode_compatible

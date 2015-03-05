@@ -17,20 +17,19 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'duck_examen', ['DetailDeroulement'])
 
-        # # Adding model 'TypeExamen'
-        # db.create_table(u'duck_examen_typeexamen', (
-        #     ('name', self.gf('django.db.models.fields.CharField')(max_length=3, primary_key=True)),
-        #     ('label', self.gf('django.db.models.fields.CharField')(max_length=30)),
-        # ))
-        # db.send_create_signal(u'duck_examen', ['TypeExamen'])
-
+        # Adding model 'TypeExamen'
+        db.create_table(u'duck_examen_typeexamen', (
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=3, primary_key=True)),
+            ('label', self.gf('django.db.models.fields.CharField')(max_length=30)),
+        ))
+        db.send_create_signal(u'duck_examen', ['TypeExamen'])
 
     def backwards(self, orm):
         # Deleting model 'DetailDeroulement'
         db.delete_table(u'duck_examen_detailderoulement')
 
         # Deleting model 'TypeExamen'
-        # db.delete_table(u'duck_examen_typeexamen')
+        db.delete_table(u'duck_examen_typeexamen')
 
 
     models = {

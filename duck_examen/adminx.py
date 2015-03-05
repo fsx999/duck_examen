@@ -302,8 +302,11 @@ class ExamenCenterAdmin(object):
     ordering = ['country__lib_pay']
     list_filter = [('country', PaysFilter)]
 
+
 class DetailDeroulementAdmin(object):
     model = DetailDeroulement
+    extra = 0
+
 
 class DeroulementAdmin(object):
     hidden_menu = True
@@ -317,6 +320,7 @@ class DeroulementAdmin(object):
                                            'salle_examen',
                                            css_class="unsort no_title"),
                                        horizontal=True, span=12)))
+    inlines = [DetailDeroulementAdmin]
 
     @filter_hook
     def save_models(self):
@@ -343,6 +347,7 @@ class DeroulementAdmin(object):
         if not self.user.is_superuser:
             query = query.filter(etape__in=self.user.setting_user.etapes.all())
         return query
+
 
 class EnvoiEMailCenterView(views.FormAdminView):
     form = EnvoiEMailCenterViewForm

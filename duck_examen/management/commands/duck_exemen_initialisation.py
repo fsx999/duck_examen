@@ -43,4 +43,4 @@ class Command(BaseCommand):
         #     x.save()
         # print 'fini'
         for x in DeroulementExamenModel.objects.all():
-            DetailDeroulement.objects.get_or_create(d)
+            DetailDeroulement.objects.get_or_create(deroulement=x, deroulement_contenu=x.deroulement)
