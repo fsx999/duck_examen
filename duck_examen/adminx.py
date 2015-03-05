@@ -10,7 +10,7 @@ from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
 from duck_examen.forms import EnvoiEMailCenterViewForm
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel, \
-    RecapitulatifExamenModel, EtapeExamenModel, DetailDeroulement, TypeExamen
+    RecapitulatifExamenModel, EtapeExamenModel, DetailDeroulement, TypeExamen, EtapeSettingsDerouleModel
 from duck_examen.utils import get_etudiant_pagine
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
@@ -444,6 +444,16 @@ class RecapitulatifExamenAdmin(object):
     remove_permissions = ['delete', 'add']
     show_bookmarks = False
 
+class EtapeSettingsDerouleModelAdmin(object):
+    list_filter = [('etape', EtapeFilter), 'session']
+    def queryset(self):
+        qs = super(EtapeSettingsDerouleModelAdmin, self).queryset()
+        if not self.user.is_superuser:
+            qs = qs.filter(etape__in=self.user.setting_user.etapes.all())
+
+        return qs
+
+xadmin.site.register(EtapeSettingsDerouleModel, EtapeSettingsDerouleModelAdmin)
 xadmin.site.register(EtapeExamen, EtapeExamenAdmin)
 xadmin.site.register(ExamCenter, ExamenCenterAdmin)
 xadmin.site.register(DeroulementExamenModel, DeroulementAdmin)
