@@ -19,6 +19,7 @@ class Migration(SchemaMigration):
         # Adding model 'TypeExamen'
         db.create_table(u'duck_examen_typeexamen', (
             ('name', self.gf('django.db.models.fields.CharField')(max_length=1, primary_key=True)),
+            ('label', self.gf('django.db.models.fields.CharField')(max_length=30)),
         ))
         db.send_create_signal(u'duck_examen', ['TypeExamen'])
 
@@ -166,6 +167,7 @@ class Migration(SchemaMigration):
         },
         u'duck_examen.typeexamen': {
             'Meta': {'object_name': 'TypeExamen'},
+            'label': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '1', 'primary_key': 'True'})
         }
     }
