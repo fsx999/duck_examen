@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django_apogee.models import Pays
-from duck_examen.models import DeroulementExamenModel, RattachementCentreExamen
+from duck_examen.models import DeroulementExamenModel, RattachementCentreExamen, DetailDeroulement
 
 
 class Command(BaseCommand):
@@ -39,6 +39,8 @@ class Command(BaseCommand):
         #     )
         # for d in DeroulementExamenModel.objects.using('pal2').all():
         #     d.save(using='default')
-        for x in RattachementCentreExamen.objects.all():
-            x.save()
-        print 'fini'
+        # for x in RattachementCentreExamen.objects.all():
+        #     x.save()
+        # print 'fini'
+        for x in DeroulementExamenModel.objects.all():
+            DetailDeroulement.objects.get_or_create(d)

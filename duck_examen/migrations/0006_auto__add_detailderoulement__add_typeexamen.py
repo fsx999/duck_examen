@@ -11,17 +11,18 @@ class Migration(SchemaMigration):
         # Adding model 'DetailDeroulement'
         db.create_table(u'duck_examen_detailderoulement', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('deroulement', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('deroulement', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['duck_examen.DeroulementExamenModel'], null=True)),
+            ('deroulement_contenu', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('type_examen', self.gf('django.db.models.fields.related.ForeignKey')(default='D', to=orm['duck_examen.TypeExamen'], null=True)),
         ))
         db.send_create_signal(u'duck_examen', ['DetailDeroulement'])
 
-        # Adding model 'TypeExamen'
-        db.create_table(u'duck_examen_typeexamen', (
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=3, primary_key=True)),
-            ('label', self.gf('django.db.models.fields.CharField')(max_length=30)),
-        ))
-        db.send_create_signal(u'duck_examen', ['TypeExamen'])
+        # # Adding model 'TypeExamen'
+        # db.create_table(u'duck_examen_typeexamen', (
+        #     ('name', self.gf('django.db.models.fields.CharField')(max_length=3, primary_key=True)),
+        #     ('label', self.gf('django.db.models.fields.CharField')(max_length=30)),
+        # ))
+        # db.send_create_signal(u'duck_examen', ['TypeExamen'])
 
 
     def backwards(self, orm):
@@ -29,7 +30,7 @@ class Migration(SchemaMigration):
         db.delete_table(u'duck_examen_detailderoulement')
 
         # Deleting model 'TypeExamen'
-        db.delete_table(u'duck_examen_typeexamen')
+        # db.delete_table(u'duck_examen_typeexamen')
 
 
     models = {
@@ -124,7 +125,8 @@ class Migration(SchemaMigration):
         },
         u'duck_examen.detailderoulement': {
             'Meta': {'object_name': 'DetailDeroulement'},
-            'deroulement': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'deroulement': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['duck_examen.DeroulementExamenModel']", 'null': 'True'}),
+            'deroulement_contenu': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'type_examen': ('django.db.models.fields.related.ForeignKey', [], {'default': "'D'", 'to': u"orm['duck_examen.TypeExamen']", 'null': 'True'})
         },

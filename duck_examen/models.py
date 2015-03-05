@@ -4,11 +4,8 @@ from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.db import models
 from django_apogee.models import Pays, InsAdmEtp, Etape
-# from core.managers.managers_examen import EtapeExamenManager
-# from core.utils import paginator_etudiant
 from duck_examen.managers import ExamenCenterManager
 import re
-from duck_examen.utils import paginator_etudiant
 
 
 class EtapeExamen(InsAdmEtp):
@@ -164,7 +161,9 @@ class TypeExamen(models.Model):
 
 
 class DetailDeroulement(models.Model):
-    deroulement = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
+    deroulement = models.ForeignKey(DeroulementExamenModel, null=True)
+
+    deroulement_contenu = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
                                    blank=True)
     type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
 
