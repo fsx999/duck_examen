@@ -229,6 +229,20 @@ class EtapeSettingsDerouleModel(models.Model):
     type_examen = models.ForeignKey(TypeExamen)
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        try:
+            d = DeroulementExamenModel.objects.get(etape=self.etape, session=self.session)
+            contenu = DetailDeroulement.objects.filter(deroulement=d).first().deroulement_contenu
+            derou, created = DetailDeroulement.objects.get_or_create(deroulement=d, type_examen=self.type_examen)
+            if created:
+                derou.deroulement_contenu = contenu
+                derou.save()
+        except DeroulementExamenModel.DoesNotExist:
+            pass
+
+        super(EtapeSettingsDerouleModel, self).save(force_insert, force_update, using, update_fields)
+
+
     def __str__(self):
         return "{} {} {} {}".format(self.etape, self.cod_anu, self.type_examen, self.session)
 

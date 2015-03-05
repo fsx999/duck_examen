@@ -43,10 +43,13 @@ class Command(BaseCommand):
         # for x in RattachementCentreExamen.objects.all():
         #     x.save()
         # print 'fini'
-        for x in DeroulementExamenModel.objects.all():
-            DetailDeroulement.objects.get_or_create(deroulement=x, deroulement_contenu=x.deroulement)
+        # for x in DeroulementExamenModel.objects.all():
+        #     DetailDeroulement.objects.get_or_create(deroulement=x, deroulement_contenu=x.deroulement)
+            # DetailDeroulement.objects.get_or_create(deroulement=x, deroulement_contenu=x.deroulement, type_examen_id='H')
         for x in Etape.objects.by_centre_gestion('IED'):
             EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=1, type_examen_id='D')
             EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=2, type_examen_id='D')
             EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=1, type_examen_id='H')
             EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=2, type_examen_id='H')
+        for x in EtapeSettingsDerouleModel.objects.all():
+            x.save()
