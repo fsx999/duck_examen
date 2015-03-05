@@ -335,7 +335,7 @@ class DeroulementAdmin(object):
                                            "",
                                            'etape', 'session',
                                            'nb_salle', 'nb_table',
-                                           'deroulement', 'date_examen',
+                                           'date_examen',
                                            'salle_examen',
                                            css_class="unsort no_title"),
                                        horizontal=True, span=12)))
