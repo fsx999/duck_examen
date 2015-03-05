@@ -219,6 +219,17 @@ class RecapitulatifExamenModel(models.Model):
     def __str__(self):
         return '{} {} {}'.format(self.centre.name_by_pays(), self.etape_id, self.session)
 
+
+class EtapeSettingsDerouleModel(models.Model):
+    etape = models.ForeignKey(Etape)
+    cod_anu = models.CharField(max_length=4, default='2014')
+    deroule = models.FileField(null=True, upload_to='deroule_examen')
+    date_envoi_convocation = models.DateField(null=True) # for session 1
+    envoi_convocation_processed = models.BooleanField(default=False) # If the command has been already executed or not
+    type_examen = models.ForeignKey(TypeExamen)
+    session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
+
+
 @receiver(post_save, sender=InsAdmEtp)
 def create_centre_rattachement_if_does_not_exist(sender, **kwargs):
     instance = kwargs.get('instance', None)
@@ -243,3 +254,4 @@ def create_centre_rattachement_if_does_not_exist(sender, **kwargs):
                                                     centre=default_exam_center,
                                                     session=2,
                                                     ec_manquant=ec_manquant)
+
