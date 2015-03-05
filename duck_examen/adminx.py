@@ -310,6 +310,10 @@ class ExamenCenterAdmin(object):
 class DetailDeroulementAdmin(object):
     model = DetailDeroulement
     extra = 0
+
+    def has_add_permission(self):
+        return True
+
     @filter_hook
     def formfield_for_dbfield(self, db_field, **kwargs):
         # If it uses an intermediary model that isn't auto created, don't show
