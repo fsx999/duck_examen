@@ -24,6 +24,7 @@ class ListImpressionView(views.Dashboard):
     base_template = 'duck_examen/list_impression_examen.html'
     widget_customiz = False
     title = 'Liste des impressions'
+
     @filter_hook
     def get_breadcrumb(self):
         return [{'url': self.get_admin_url('index'), 'title': 'Accueil'},
@@ -164,6 +165,7 @@ class ImpressionPv(ImpressionEtiquetteEnveloppe):
     template_name = "duck_examen/pv_centre.html"
     cmd_options = {
     }
+
 
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):
