@@ -310,21 +310,7 @@ class ExamenCenterAdmin(object):
 class DetailDeroulementAdmin(object):
     model = DetailDeroulement
     extra = 0
-
-    @filter_hook
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        # If it uses an intermediary model that isn't auto created, don't show
-        # a field in admin.
-
-        if isinstance(db_field, models.ManyToManyField) and not db_field.rel.through._meta.auto_created:
-            return None
-        attrs = self.get_field_attrs(db_field, **kwargs)
-        if db_field.name == 'type_examen':
-
-            type_examen = self.org_obj.etape.etapesettingsderoulemodel_set.distinct('type_examen').values_list('type_examen', flat=True)
-            query = TypeExamen.objects.filter(name__in=type_examen)
-            return db_field.formfield(queryset=query,  **dict(attrs, **kwargs))
-        return db_field.formfield(**dict(attrs, **kwargs))
+    readonly_fields = ['type_examen']
 
 
 class DeroulementAdmin(object):
