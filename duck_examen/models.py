@@ -151,6 +151,12 @@ class DeroulementExamenModel(models.Model):
     def __str__(self):
         return '{} session {}'.format(self.etape, self.session)
 
+    def get_deroulement_parse(self, type_examen):
+        return self.get_deroulement(type_examen=type_examen).deroulement_parse()
+
+    def get_deroulement(self, type_examen):
+        return self.detailderoulement_set.get(type_examen=type_examen)
+
 
 @python_2_unicode_compatible
 class TypeExamen(models.Model):
@@ -169,9 +175,9 @@ class DetailDeroulement(models.Model):
                                    blank=True)
 
     def deroulement_parse(self):
-        if not self.deroulement:
+        if not self.deroulement_contenu:
             return []
-        text = self.deroulement.encode('utf-8')
+        text = self.deroulement_contenu.encode('utf-8')
         text = text.replace('\r\n', '').strip()
         resultat = []
         text = re.split(r'(\[[^]]*])', text)[1:]
@@ -242,6 +248,11 @@ class EtapeSettingsDerouleModel(models.Model):
 
         super(EtapeSettingsDerouleModel, self).save(force_insert, force_update, using, update_fields)
 
+    def get_deroulement(self):
+        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement(type_examen=self.type_examen)
+
+    def get_deroulement_parse(self):
+        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement_parse(type_examen=self.type_examen)
 
     def __str__(self):
         return "{} {} {} {}".format(self.etape, self.cod_anu, self.type_examen, self.session)

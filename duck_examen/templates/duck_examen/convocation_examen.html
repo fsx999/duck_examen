@@ -1,0 +1,138 @@
+<html>
+<head>
+    <title></title>
+    <style type="text/css">
+        body {
+            text-align: justify;
+            font-size: 12px;
+        }
+        .entette{
+            margin-left: 10cm;
+            border-width: 1px;
+            border-color: #000000;
+            border-style: dashed;
+            padding: 10px;
+            text-align: center;
+            font-size: 10px;
+
+        }
+        .light{
+            font-size: 6pt;
+            padding: 0;
+            margin: 0;
+            
+        }
+        #logo_ied{
+            zoom:70%;
+        }
+        .cadre{
+            border-top-style: dashed;
+            border-top-width: 1px;
+            border-top-color: #000000;
+            border-bottom-style: dashed;
+            border-bottom-width: 1px;
+            border-bottom-color: #000000;
+            border-left-style: dashed;
+            border-left-width: 1px;
+            border-left-color: #000000;
+            border-right-style: dashed;
+            border-right-width: 1px;
+            border-right-color: #000000;
+            padding: 3px;
+            margin-bottom: 10px;
+        }
+        .font{
+            font-size: 15px;
+        }
+        table {
+            font-size: 10px ;
+        }
+        .red{
+            color: red;
+        }
+        td {
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<table>
+    <tr>
+        <td><img id="logo_ied" src="{{ static }}/logo-ied.jpg"/></td>
+        <td>CONVOCATION AUX EXAMENS 2013<br>
+            LICENCE PSYCHOLOGIE L1
+        </td>
+    </tr>
+</table>
+
+<div >
+    En cas d'erreur sur votre nom ou adresse, veuillez informer le service de la scolarité de l’IED :<br>
+    <i class="light">
+        UNIVERSITE PARIS 8 <br>
+        INSTITUT D’ENSEIGNEMENT A DISTANCE <br>
+        BAT. D, 2ème étage<br>
+        2 RUE DE LA LIBERTE<br>
+        93 526 SAINT DENIS CEDEX <br>
+        {{ coordonnee_de_contact }}
+    </i>
+</div>
+<div class="entette">
+Nom : {{ individu.lib_nom_pat_ind }} <br>
+Prénom : {{ individu.lib_pr1_ind }}<br>
+Numéro étudiant : {{ individu.cod_etu }} <br>
+    {{ individu.get_adresse_html|safe }}
+</div>
+
+<div>
+Vous êtes prié(e) de vous présenter, muni(e) de <br>
+- votre carte d’étudiant(e) ou votre certificat de scolarité<br>
+- une pièce d’identité avec photographie<br>
+- la présente convocation<br>
+pour passer vos épreuves d’examen aux dates, heures et adresses suivantes :<br>
+</div>
+    <table class="cadre">
+        <tr>
+            <td>1ère SESSION</td>
+            <td>CENTRE D’EXAMEN</td>
+            <td>
+                REPARTITION DANS LES SALLES 
+                (Les femmes mariées se placeront en fonction
+                de leur nom de naissance)
+            </td>
+        </tr>
+        <tr>
+            <td>{{ jours1 }}
+            <td>
+               {{ salle1|safe }}
+            </td>
+            <td>
+            </td>
+        </tr>
+    </table>
+    <table class="cadre">
+        <tr>
+            <td>2ème SESSION </td>
+            <td>CENTRE D’EXAMEN</td>
+            <td>REPARTITION DANS LES SALLES 
+                (Les femmes mariées se placeront en fonction
+                 de leur nom de naissance)
+            </td>
+        </tr>
+        <tr>
+            <td>{{ jours2 }}</td>
+            <td>{{ salle|safe }}
+            </td>
+            <td>
+            </td>
+        </tr>
+    </table>
+<div>
+Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la conservent jusqu’en septembre.
+Les horaires de convocation ainsi que le programme des épreuves figurent dans le document joint.
+Il est rappelé aux étudiants qu’ils doivent faire eux-mêmes le point sur les EC à repasser.
+</div>
+<div align="right"><b>Le Directeur de l’IED Gilles BERNARD</b></div>
+
+</body>
+</html>
