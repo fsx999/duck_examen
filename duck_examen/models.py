@@ -6,6 +6,7 @@ from django.db import models
 from django_apogee.models import Pays, InsAdmEtp, Etape
 from duck_examen.managers import ExamenCenterManager
 import re
+from duck_utils.models import Salle
 
 
 class EtapeExamen(InsAdmEtp):
@@ -69,9 +70,20 @@ class RattachementCentreExamen(models.Model):
     centre = models.ForeignKey(ExamCenter)
     ec_manquant = models.BooleanField(default=False, blank=True)
     type_examen = models.ForeignKey('TypeExamen', default='D')
+    salle = models.ForeignKey(Salle, blank=True, null=True)
 
     def __str__(self):
         return u"{} session : {} ec manquant : {}".format(self.centre, self.session, "oui" if self.ec_manquant else 'non')
+
+    def get_salle(self):
+        if self.salle:
+            return self.salle.label
+        elif not self.centre.is_main_center:
+            return ""
+        else:
+            return DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp,
+                                               session=self.session).salle_examen
+            # recuperer le deroule et sa salle
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.ec_manquant:
@@ -152,9 +164,9 @@ class DeroulementExamenModel(models.Model):
         return '{} session {}'.format(self.etape, self.session)
 
     def get_deroulement_parse(self, type_examen):
-        return self.get_deroulement(type_examen=type_examen).deroulement_parse()
+        return self.get_deroulement_detail(type_examen=type_examen).deroulement_parse()
 
-    def get_deroulement(self, type_examen):
+    def get_deroulement_detail(self, type_examen):
         return self.detailderoulement_set.get(type_examen=type_examen)
 
 
@@ -200,6 +212,13 @@ class DetailDeroulement(models.Model):
                         jour['matieres'].append(r)
                 resultat.append(jour)
         return resultat
+
+    def get_jours(self):
+        deroulement = self.deroulement_parse()
+        res = []
+        for d in deroulement:
+            res.append(d['date'])
+        return res
 
     def __str__(self):
         return "{} {} {}".format(self.deroulement.etape, self.type_examen, self.deroulement.session)
@@ -249,7 +268,7 @@ class EtapeSettingsDerouleModel(models.Model):
         super(EtapeSettingsDerouleModel, self).save(force_insert, force_update, using, update_fields)
 
     def get_deroulement(self):
-        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement(type_examen=self.type_examen)
+        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement_detail(type_examen=self.type_examen)
 
     def get_deroulement_parse(self):
         return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement_parse(type_examen=self.type_examen)

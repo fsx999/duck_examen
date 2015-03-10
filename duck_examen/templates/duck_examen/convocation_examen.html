@@ -1,6 +1,8 @@
+{% load static %}
 <html>
 <head>
     <title></title>
+    <link href="{% static "bootstrap3/css/bootstrap.min.css" %}" rel="stylesheet">
     <style type="text/css">
         body {
             text-align: justify;
@@ -78,10 +80,10 @@
     </i>
 </div>
 <div class="entette">
-Nom : {{ individu.lib_nom_pat_ind }} <br>
-Prénom : {{ individu.lib_pr1_ind }}<br>
-Numéro étudiant : {{ individu.cod_etu }} <br>
-    {{ individu.get_adresse_html|safe }}
+Nom : {{ inscription.nom }} <br>
+Prénom : {{ inscription.prenom }}<br>
+Numéro étudiant : {{ inscription.cod_etu }} <br>
+    {{ inscription.adresse|safe }}
 </div>
 
 <div>
@@ -93,7 +95,7 @@ pour passer vos épreuves d’examen aux dates, heures et adresses suivantes :<b
 </div>
     <table class="cadre">
         <tr>
-            <td>1ère SESSION</td>
+            <td>SESSION {{ session }}</td>
             <td>CENTRE D’EXAMEN</td>
             <td>
                 REPARTITION DANS LES SALLES 
@@ -102,33 +104,17 @@ pour passer vos épreuves d’examen aux dates, heures et adresses suivantes :<b
             </td>
         </tr>
         <tr>
-            <td>{{ jours1 }}
+            <td>{{ jours }}
             <td>
-               {{ salle1|safe }}
-            </td>
-            <td>
-            </td>
-        </tr>
-    </table>
-    <table class="cadre">
-        <tr>
-            <td>2ème SESSION </td>
-            <td>CENTRE D’EXAMEN</td>
-            <td>REPARTITION DANS LES SALLES 
-                (Les femmes mariées se placeront en fonction
-                 de leur nom de naissance)
-            </td>
-        </tr>
-        <tr>
-            <td>{{ jours2 }}</td>
-            <td>{{ salle|safe }}
+               {{ salles|safe }}
             </td>
             <td>
             </td>
         </tr>
     </table>
+
 <div>
-Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la conservent jusqu’en septembre.
+Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la conserve jusqu’en septembre.
 Les horaires de convocation ainsi que le programme des épreuves figurent dans le document joint.
 Il est rappelé aux étudiants qu’ils doivent faire eux-mêmes le point sur les EC à repasser.
 </div>
