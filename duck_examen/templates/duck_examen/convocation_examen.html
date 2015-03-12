@@ -8,7 +8,8 @@
             text-align: justify;
             font-size: 12px;
         }
-        .entette{
+
+        .entette {
             margin-left: 10cm;
             border-width: 1px;
             border-color: #000000;
@@ -18,16 +19,19 @@
             font-size: 10px;
 
         }
-        .light{
+
+        .light {
             font-size: 6pt;
             padding: 0;
             margin: 0;
-            
+
         }
-        #logo_ied{
-            zoom:70%;
+
+        #logo_ied {
+            zoom: 70%;
         }
-        .cadre{
+
+        .cadre {
             border-top-style: dashed;
             border-top-width: 1px;
             border-top-color: #000000;
@@ -43,15 +47,19 @@
             padding: 3px;
             margin-bottom: 10px;
         }
-        .font{
+
+        .font {
             font-size: 15px;
         }
+
         table {
-            font-size: 10px ;
+            font-size: 10px;
         }
-        .red{
+
+        .red {
             color: red;
         }
+
         td {
             padding: 10px;
         }
@@ -61,14 +69,14 @@
 <body>
 <table>
     <tr>
-        <td><img id="logo_ied" src="{{ static }}/logo-ied.jpg"/></td>
-        <td>CONVOCATION AUX EXAMENS 2013<br>
+        <td><img id="logo_ied" src="{% static "images/logo-ied.jpg" %} "/></td>
+        <td>CONVOCATION AUX EXAMENS {{ annee }}<br>
             LICENCE PSYCHOLOGIE L1
         </td>
     </tr>
 </table>
 
-<div >
+<div>
     En cas d'erreur sur votre nom ou adresse, veuillez informer le service de la scolarité de l’IED :<br>
     <i class="light">
         UNIVERSITE PARIS 8 <br>
@@ -76,49 +84,91 @@
         BAT. D, 2ème étage<br>
         2 RUE DE LA LIBERTE<br>
         93 526 SAINT DENIS CEDEX <br>
-        {{ coordonnee_de_contact }}
+        {{ coordonnee_de_contact|safe }}
     </i>
 </div>
 <div class="entette">
-Nom : {{ inscription.nom }} <br>
-Prénom : {{ inscription.prenom }}<br>
-Numéro étudiant : {{ inscription.cod_etu }} <br>
-    {{ inscription.adresse|safe }}
+    Nom : {{ inscription.nom }} <br>
+    Prénom : {{ inscription.prenom }}<br>
+    Numéro étudiant : {{ inscription.cod_etu }} <br>
+    {{ inscription.dico_adresse.lib_ad1 }}<br>
+    {% if inscription.dico_adresse.lib_ad2 %}
+        {{ inscription.dico_adresse.lib_ad2 }}<br>
+    {% endif %}
+    {% if inscription.dico_adresse.lib_ad3 %}
+        {{ inscription.dico_adresse.lib_ad3 }}<br>
+    {% endif %}
+    {% if inscription.dico_adresse.lib_ade %}
+        {{ inscription.dico_adresse.lib_ade }}<br>
+    {% else %}
+        {{ inscription.dico_adresse.cod_bdi }} {{ inscription.dico_adresse.lib_ach }}<br>
+    {% endif %}
+    {{ inscription.dico_adresse.lib_pay }}
+
+
 </div>
 
 <div>
-Vous êtes prié(e) de vous présenter, muni(e) de <br>
-- votre carte d’étudiant(e) ou votre certificat de scolarité<br>
-- une pièce d’identité avec photographie<br>
-- la présente convocation<br>
-pour passer vos épreuves d’examen aux dates, heures et adresses suivantes :<br>
+    Vous êtes prié(e) de vous présenter, muni(e) de <br>
+    - votre carte d’étudiant(e) ou votre certificat de scolarité<br>
+    - une pièce d’identité avec photographie<br>
+    - la présente convocation<br>
+    pour passer vos épreuves d’examen aux dates, heures et adresses suivantes :<br>
 </div>
-    <table class="cadre">
-        <tr>
-            <td>SESSION {{ session }}</td>
-            <td>CENTRE D’EXAMEN</td>
-            <td>
-                REPARTITION DANS LES SALLES 
-                (Les femmes mariées se placeront en fonction
-                de leur nom de naissance)
-            </td>
-        </tr>
-        <tr>
-            <td>{{ jours }}
-            <td>
-               {{ salles|safe }}
-            </td>
-            <td>
-            </td>
-        </tr>
-    </table>
+<table class="table table-bordered">
+    <tr>
+        <td>SESSION {{ session }}</td>
+        <td>CENTRE D’EXAMEN</td>
+        <td>
+            REPARTITION DANS LES SALLES 
+            (Les femmes mariées se placeront en fonction
+            de leur nom de naissance)
+        </td>
+    </tr>
+    <tr>
+        <td>{{ jours }}
+        <td>
+            {{ centre }}
+        </td>
+        <td>
+            {{ salles }}
+        </td>
+    </tr>
+</table>
 
 <div>
-Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la conserve jusqu’en septembre.
-Les horaires de convocation ainsi que le programme des épreuves figurent dans le document joint.
-Il est rappelé aux étudiants qu’ils doivent faire eux-mêmes le point sur les EC à repasser.
+    Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la conserve
+    jusqu’en septembre.
+    Les horaires de convocation ainsi que le programme des épreuves figurent dans le document joint.
+    Il est rappelé aux étudiants qu’ils doivent faire eux-mêmes le point sur les EC à repasser.
 </div>
 <div align="right"><b>Le Directeur de l’IED Gilles BERNARD</b></div>
+<div style="page-break-after: always"></div>
+
+<table class="table table-bordered">
+    <tr>
+        <td>Jour</td>
+        <td>Heure</td>
+        <td>Libellé</td>
+    </tr>
+    {% for d in deroule %}
+        <tr>
+            <td rowspan="{{ d.matieres|length }}">{{ d.date }}</td>
+            {% for m in d.matieres %}
+                {% if forloop.first %}
+                    <td>{{ m.heure_debut }} - {{ m.heure_fin }}</td>
+                    <td>{{ m.label }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>{{ m.heure_debut }} - {{ m.heure_fin }}</td>
+                    <td>{{ m.label }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+    {% endfor %}
+</table>
+
 
 </body>
 </html>
