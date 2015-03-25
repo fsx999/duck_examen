@@ -33,7 +33,19 @@ class ListImpressionView(views.Dashboard):
     @filter_hook
     def get_context(self):
         context = super(ListImpressionView, self).get_context()
-        context['etapes'] = Etape.objects.by_centre_gestion('IED').order_by('cod_cur')
+        etapes = []
+        for etape in Etape.objects.by_centre_gestion('IED').order_by('cod_cur'):
+            r = []
+            for settings in etape.etapesettingsderoulemodel_set.filter(cod_anu=2014, session=1):
+                r.append(settings.type_examen)
+            etape.types_examen_1 = r
+            r = []
+            for settings in etape.etapesettingsderoulemodel_set.filter(cod_anu=2014, session=2):
+                r.append(settings.type_examen)
+            etape.types_examen_2 = r
+            etapes.append(etape)
+        context['etapes'] = etapes
+
         return context
 
     @never_cache
@@ -123,6 +135,7 @@ class ImpressionEmargement(PDFTemplateView):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         type = self.kwargs.get('type', None)
+        type_examen = self.kwargs.get('type', None)
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
 
         centres_gestions = getattr(self, self.type[type])(cod_etp, session)

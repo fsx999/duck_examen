@@ -29,16 +29,58 @@
                 <a href="{% url 'impression_recap' etape.cod_etp '2' %}">deuxième session</a>
             </td>
             <td>
-                <a href="{% url 'impression_emargement' etape.cod_etp 'E' '1' %}">première session</a><br/>
-                <a href="{% url 'impression_emargement' etape.cod_etp 'E' '2' %}">deuxième session</a>
+                première session
+                <ul>
+                    {% for type_examen in etape.types_examen_1 %}
+                        <li> <a href="{% url 'impression_emargement' etape.cod_etp 'E' '1' type_examen.name %}">{{ type_examen }}</a><br/></li>
+                    {% endfor %}
+
+                </ul>
+                deuxième session
+                <ul>
+                    {% for type_examen in etape.types_examen_2 %}
+                        <li> <a href="{% url 'impression_emargement' etape.cod_etp 'E' '2' type_examen.name %}">{{ type_examen }}</a><br/></li>
+                    {% endfor %}
+
+                </ul>
+{#                <a href="{% url 'impression_emargement' etape.cod_etp 'E' '1' %}">première session</a><br/>#}
+{#                <a href="{% url 'impression_emargement' etape.cod_etp 'E' '2' %}">deuxième session</a>#}
             </td>
             <td>
-                <a href="{% url 'impression_emargement' etape.cod_etp 'A' '1' %}">première session</a><br/>
-                <a href="{% url 'impression_emargement' etape.cod_etp 'A' '2' %}">deuxième session</a>
+                première session
+                <ul>
+                    {% for type_examen in etape.types_examen_1 %}
+                        <li> <a href="{% url 'impression_emargement' etape.cod_etp 'A' '1' type_examen.name %}">{{ type_examen }}</a><br/></li>
+                    {% endfor %}
+
+                </ul>
+                deuxième session
+                <ul>
+                    {% for type_examen in etape.types_examen_2 %}
+                        <li> <a href="{% url 'impression_emargement' etape.cod_etp 'A' '2' type_examen.name %}">{{ type_examen }}</a><br/></li>
+                    {% endfor %}
+
+                </ul>
+{#                <a href="{% url 'impression_emargement' etape.cod_etp 'A' '1' %}">première session</a><br/>#}
+{#                <a href="{% url 'impression_emargement' etape.cod_etp 'A' '2' %}">deuxième session</a>#}
             </td>
             <td>
-                <a href="{% url 'impression_emargement' etape.cod_etp 'P' '1' %}">première session</a><br/>
-                <a href="{% url 'impression_emargement' etape.cod_etp 'P' '2' %}">deuxième session</a>
+                première session
+                <ul>
+                    {% for type_examen in etape.types_examen_1 %}
+                        <li> <a href="{% url 'impression_emargement' etape.cod_etp 'P' '1' type_examen.name %}">{{ type_examen }}</a><br/></li>
+                    {% endfor %}
+
+                </ul>
+                deuxième session
+                <ul>
+                    {% for type_examen in etape.types_examen_2 %}
+                        <li> <a href="{% url 'impression_emargement' etape.cod_etp 'P' '2' type_examen.name %}">{{ type_examen }}</a><br/></li>
+                    {% endfor %}
+
+                </ul>
+{#                <a href="{% url 'impression_emargement' etape.cod_etp 'P' '1' %}">première session</a><br/>#}
+{#                <a href="{% url 'impression_emargement' etape.cod_etp 'P' '2' %}">deuxième session</a>#}
             </td>
             <td>
                 <a href="{% url 'impression_envoi_centre' etape.cod_etp 'A' '1' %}">première session</a><br/>
