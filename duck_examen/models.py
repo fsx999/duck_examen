@@ -85,16 +85,27 @@ class RattachementCentreExamen(models.Model):
                                                session=self.session).salle_examen
             # recuperer le deroule et sa salle
 
+    def get_etp_ant(self):
+        code_etp_actuel = self.inscription.cod_etp
+        if code_etp_actuel[0] == 'L' and code_etp_actuel != 'L3NEDU':
+            if code_etp_actuel[1] in ['2', '3']:
+                code_etp_anterieur = code_etp_actuel[0] + str(int(code_etp_actuel[1]) - 1) + code_etp_actuel[2:]
+                cod_ind = self.inscription.cod_ind
+                etp = InsAdmEtp.inscrits_condi.filter(cod_ind=cod_ind, cod_etp=code_etp_anterieur).first()
+            if etp:
+                return etp
+
+        return None
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        code_etp_actuel = self.inscription.cod_etp
         if self.ec_manquant:
-            code_etp_actuel = self.inscription.cod_etp
-            if code_etp_actuel[0] == 'L' and code_etp_actuel != 'L3NEDU':
-                if code_etp_actuel[1] in ['2', '3']:
-                    code_etp_anterieur = code_etp_actuel[0] + str(int(code_etp_actuel[1]) - 1) + code_etp_actuel[2:]
-                    cod_ind = self.inscription.cod_ind
-                    etp = InsAdmEtp.inscrits_condi.filter(cod_ind=cod_ind, cod_etp=code_etp_anterieur).first()
-                    if etp:
-                        RattachementCentreExamen.objects.get_or_create(inscription=etp, session=self.session, centre=self.centre)
+            etp = self.get_etp_ant()
+            if code_etp_actuel:
+                r = RattachementCentreExamen.objects.get_or_create(inscription=etp, session=self.session)[0]
+                r.centre = self.centre
+                r.type_examen = self.type_examen
+                r.save()
 
         RecapitulatifExamenModel.objects.get_or_create(session=self.session, centre=self.centre, etape_id=self.inscription.cod_etp)
         super(RattachementCentreExamen, self).save(force_insert, force_update, using, update_fields)
