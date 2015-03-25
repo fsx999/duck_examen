@@ -98,10 +98,9 @@ class RattachementCentreExamen(models.Model):
         return None
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        code_etp_actuel = self.inscription.cod_etp
         if self.ec_manquant:
             etp = self.get_etp_ant()
-            if code_etp_actuel:
+            if etp:
                 r = RattachementCentreExamen.objects.get_or_create(inscription=etp, session=self.session)[0]
                 r.centre = self.centre
                 r.type_examen = self.type_examen
