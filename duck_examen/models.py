@@ -82,7 +82,7 @@ class RattachementCentreExamen(models.Model):
             return ""
         else:
             return DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp,
-                                               session=self.session).salle_examen
+                                                      session=self.session).salle_examen
             # recuperer le deroule et sa salle
 
     def get_etp_ant(self):
@@ -287,6 +287,7 @@ class EtapeSettingsDerouleModel(models.Model):
     def __str__(self):
         return "{} {} {} {}".format(self.etape, self.cod_anu, self.type_examen, self.session)
 
+
 @receiver(post_save, sender=InsAdmEtp)
 def create_centre_rattachement_if_does_not_exist(sender, **kwargs):
     instance = kwargs.get('instance', None)
@@ -303,12 +304,9 @@ def create_centre_rattachement_if_does_not_exist(sender, **kwargs):
                     ec_manquant = bool(etp)
 
             default_exam_center = ExamCenter.objects.get(is_main_center=True)
-            RattachementCentreExamen.objects.create(inscription=instance,
-                                                    centre=default_exam_center,
-                                                    session=1,
-                                                    ec_manquant=ec_manquant)
-            RattachementCentreExamen.objects.create(inscription=instance,
-                                                    centre=default_exam_center,
-                                                    session=2,
-                                                    ec_manquant=ec_manquant)
-
+            for i in [1, 2]:
+                r = RattachementCentreExamen.objects.get_or_create(inscription=instance,
+                                                                    session=i,
+                                                                    ec_manquant=ec_manquant)[0]
+                r.centre=default_exam_center
+                r.save()
