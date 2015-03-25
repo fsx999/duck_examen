@@ -396,7 +396,7 @@ class EnvoiEMailCenterView(views.FormAdminView):
 
                 mail = EmailMessage(subject=data['subject'], body=data['text'],
                                     from_email='nepasrepondre@iedparis8.net',
-                                    to=recipients)
+                                    to=recipients, bcc=['examens@iedparis8.net'])
                 if data['attachment']:
                     data['attachment']
                     mail.attach(filename=name,
