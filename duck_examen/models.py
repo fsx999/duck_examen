@@ -114,10 +114,11 @@ class EtapeExamenModel(Etape):
     """
     utiliser pour les examen
     """
-    def get_etudiant_presentiel(self, session):
+    def get_etudiant_presentiel(self, session, type_examen):
         qs = InsAdmEtp.inscrits_condi.filter(cod_etp=self.cod_etp,
                                              rattachementcentreexamen__centre__is_main_center=True,
-                                             rattachementcentreexamen__session=session)
+                                             rattachementcentreexamen__session=session,
+                                             rattachementcentreexamen__type_examen__name=type_examen)
         return qs.distinct()
 
     class Meta:

@@ -121,26 +121,27 @@ class ImpressionEmargement(PDFTemplateView):
         return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'),
                                      self.type[self.kwargs.get('type', None)])
 
-    def etranger(self, cod_etp, session):
-        return ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session).order_by('country__lib_pay')
+    def etranger(self, cod_etp, session, type_examen):
+        return ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session, type_examen).order_by('country__lib_pay')
 
-    def autre(self, cod_etp, session):
-        return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session)
+    def autre(self, cod_etp, session, type_examen):
+        return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session, type_examen)
 
-    def presentiel(self, cod_etp, session):
+    def presentiel(self, cod_etp, session, type_examen):
         etape = EtapeExamenModel.objects.get(cod_etp=cod_etp)
-        return get_etudiant_pagine(etape.get_etudiant_presentiel(session), nb_amphi=3, nb_table=3)
+        return get_etudiant_pagine(etape.get_etudiant_presentiel(session, type_examen), nb_amphi=3, nb_table=3)
 
     def get_context_data(self, **kwargs):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         type = self.kwargs.get('type', None)
-        type_examen = self.kwargs.get('type', None)
+        type_examen = self.kwargs.get('type_examen', None)
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
 
-        centres_gestions = getattr(self, self.type[type])(cod_etp, session)
+        centres_gestions = getattr(self, self.type[type])(cod_etp, session, type_examen)
         # try:
-        context['deroulements'] = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session).deroulement_parse()
+        deroulement = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session)
+        context['deroulements'] = deroulement.get_deroulement_parse(TypeExamen.objects.get(name=type_examen))
         # except IndexError:
         #     pass
         nb_matiere = 0
@@ -151,7 +152,7 @@ class ImpressionEmargement(PDFTemplateView):
         if type != 'P':
             for centre in centres_gestions:
 
-                centre.etudiants = centre.etudiant_by_step_session(cod_etp, session)
+                centre.etudiants = centre.etudiant_by_step_session(cod_etp, session, type_examen)
                 centre.nb_etudiant = centre.etudiants.count()
                 centre.nb_ligne_vide = [nb + centre.nb_etudiant + 1 for nb in range(15-centre.nb_etudiant)]
             context['centres'] = centres_gestions
@@ -159,8 +160,12 @@ class ImpressionEmargement(PDFTemplateView):
         else: # if type == 'P'
             etape = EtapeExamenModel.objects.get(cod_etp=cod_etp)
             self.template_name = "duck_examen/liste_emargement_presentiel.html"
-            context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session),
-                                                   nb_amphi=3, nb_table=3)
+            if type_examen == 'H':
+                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, type_examen),
+                                                   nb_amphi=1, nb_table=1)
+            else:
+                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, type_examen),
+                                                   nb_amphi=deroulement.nb_salle, nb_table=deroulement.nb_table)
 
         context['session'] = session
         context['label'] = Etape.objects.get(cod_etp=cod_etp).lib_etp
