@@ -55,12 +55,12 @@ class ExamCenter(models.Model):
             self.sending_address = self.mailling_address
         super(ExamCenter, self).save(force_insert, force_update, using, update_fields)
 
-    def etudiant_by_step_session(self, cod_etp, session):
-        query = self.rattachementcentreexamen_set.filter(inscription__cod_etp=cod_etp, session=session)
+    def etudiant_by_step_session(self, cod_etp, session, type_examen='D'):
+        query = self.rattachementcentreexamen_set.filter(inscription__cod_etp=cod_etp, session=session, type_examen__name=type_examen)
         return query.order_by('inscription__cod_ind__lib_nom_pat_ind').distinct()
 
-    def nb_etudiant(self, cod_etp, session):
-        return self.etudiant_by_step_session(cod_etp, session).count()
+    def nb_etudiant(self, cod_etp, session, type_examen='D'):
+        return self.etudiant_by_step_session(cod_etp, session, type_examen).count()
 
 
 @python_2_unicode_compatible
