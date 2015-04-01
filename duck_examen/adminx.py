@@ -141,7 +141,7 @@ class ImpressionEmargement(PDFTemplateView):
         centres_gestions = getattr(self, self.type[type])(cod_etp, session, type_examen)
         # try:
         deroulement = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session)
-        context['deroulements'] = deroulement.get_deroulement_parse(TypeExamen.objects.get(name=type_examen))
+        context['deroulements'] = deroulement.get_deroulement_parse(TypeExamen.objects.get(name='D'))
         # except IndexError:
         #     pass
         nb_matiere = 0
@@ -176,6 +176,8 @@ class ImpressionEmargement(PDFTemplateView):
 class ImpressionEtiquetteEnveloppe(ImpressionEmargement):
     filename = "impression_centre_{}_{}_{}.pdf"
     template_name = "duck_examen/etiquette_envoi_centre.html"
+
+
 
 
 class ImpressionPv(ImpressionEtiquetteEnveloppe):
