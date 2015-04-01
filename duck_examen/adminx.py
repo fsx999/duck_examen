@@ -350,18 +350,6 @@ class DeroulementAdmin(object):
     inlines = [DetailDeroulementAdmin]
 
     @filter_hook
-    def save_models(self):
-        super(DeroulementAdmin, self).save_models()
-
-        try:
-            result = self.new_obj.deroulement_parse()
-            if not result:
-                raise IndexError
-        except IndexError:
-            self.message_user(u'La syntaxe du déroulé n\'est pas valide', 'error')
-
-
-    @filter_hook
     def get_readonly_fields(self):
         if self.user.is_superuser:
             return []
