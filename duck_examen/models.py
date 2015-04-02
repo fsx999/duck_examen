@@ -305,8 +305,15 @@ def create_centre_rattachement_if_does_not_exist(sender, **kwargs):
 
             default_exam_center = ExamCenter.objects.get(is_main_center=True)
             for i in [1, 2]:
-                r = RattachementCentreExamen.objects.get_or_create(inscription=instance,
-                                                                    session=i,
-                                                                    ec_manquant=ec_manquant)[0]
-                r.centre=default_exam_center
-                r.save()
+                try:
+                    r = RattachementCentreExamen.objects.get(inscription=instance,
+                                                                        session=i,
+                                                                        ec_manquant=ec_manquant)
+                    r.centre = default_exam_center
+                    r.save()
+                except RattachementCentreExamen.DoesNotExist:
+                    r = RattachementCentreExamen(inscription=instance,
+                                                session=i,
+                                                ec_manquant=ec_manquant)
+                    r.centre = default_exam_center
+                    r.save()
