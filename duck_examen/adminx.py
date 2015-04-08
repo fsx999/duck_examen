@@ -389,9 +389,10 @@ class EnvoiEMailCenterView(views.FormAdminView):
                 return self.get_response()
 
             idx = 0
-            name = data['attachment'].name
-            content = data['attachment'].read()
-            mimetype = data['attachment'].content_type
+            if data['attachment']:
+                name = data['attachment'].name
+                content = data['attachment'].read()
+                mimetype = data['attachment'].content_type
             for center in exam_centers:
 
                 if settings.DEBUG:
@@ -406,7 +407,6 @@ class EnvoiEMailCenterView(views.FormAdminView):
                                     from_email='nepasrepondre@iedparis8.net',
                                     to=recipients, bcc=['examens@iedparis8.net'])
                 if data['attachment']:
-                    data['attachment']
                     mail.attach(filename=name,
                                 content=content,
                                 mimetype=mimetype)
@@ -458,6 +458,7 @@ class RecapitulatifExamenAdmin(object):
     readonly_fields = ['etape', 'session', 'centre']
     remove_permissions = ['delete', 'add']
     show_bookmarks = False
+
 
 class EtapeSettingsDerouleModelAdmin(object):
     list_filter = [('etape', EtapeFilter), 'session']
