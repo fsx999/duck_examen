@@ -20,6 +20,7 @@ from django.db import models
 from xadmin import views
 
 
+
 class ListImpressionView(views.Dashboard):
     base_template = 'duck_examen/list_impression_examen.html'
     widget_customiz = False
