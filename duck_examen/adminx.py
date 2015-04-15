@@ -179,8 +179,6 @@ class ImpressionEtiquetteEnveloppe(ImpressionEmargement):
     template_name = "duck_examen/etiquette_envoi_centre.html"
 
 
-
-
 class ImpressionPv(ImpressionEtiquetteEnveloppe):
     filename = "impression_centre_{}_{}_{}.pdf"
     template_name = "duck_examen/pv_centre.html"
