@@ -68,7 +68,7 @@
             <tbody>
                 <tr>
                     <td>1ère SESSION JUIN 2015</td>
-                    <td>{{ etape1.date1|safe|linebreaksbr10018236 }}</td>
+                    <td>{{ etape1.date1|safe|linebreaksbr }}</td>
                     <td>{{ etape1.adresse1|safe }}</td>
                     <td>{{ etape1.salle1|safe|linebreaksbr }}</td>
                 </tr>
@@ -111,6 +111,7 @@
                 </tr>
             </tbody>
         </table>
+            {% else %}
         {% endif %}
         <br>
 

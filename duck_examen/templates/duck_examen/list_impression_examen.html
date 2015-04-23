@@ -12,7 +12,9 @@
             <th> Émargement autres</th>
             <th> Émargement présentiel</th>
             <th> Étiquettes envoi centre autres</th>
+            <th> Pv centre étranger</th>
             <th> Pv centre autres</th>
+            <th> Pv centre presentiel</th>
 
         </tr>
         </thead>
@@ -89,6 +91,14 @@
             <td>
                 <a href="{% url 'impression_pv' etape.cod_etp 'E' '1' %}">première session</a><br/>
                 <a href="{% url 'impression_pv' etape.cod_etp 'E' '2' %}">deuxième session</a>
+            </td>
+            <td>
+                <a href="{% url 'impression_pv' etape.cod_etp 'A' '1' %}">première session</a><br/>
+                <a href="{% url 'impression_pv' etape.cod_etp 'A' '2' %}">deuxième session</a>
+            </td>
+            <td>
+                <a href="{% url 'impression_pv' etape.cod_etp 'P' '1' %}">première session</a><br/>
+                <a href="{% url 'impression_pv' etape.cod_etp 'P' '2' %}">deuxième session</a>
             </td>
 
         <tr>
