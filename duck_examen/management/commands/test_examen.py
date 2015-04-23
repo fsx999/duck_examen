@@ -29,7 +29,7 @@ Université de Saint-Denis
             if deroule_anterieur_session_1:
                 etape_ant = deroule_anterieur_session_1.etape.lib_etp
 
-            inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp).first()
+            inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp)
             i=0
             for ins in inscriptions:
                 context = dict()
