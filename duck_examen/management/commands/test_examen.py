@@ -12,6 +12,7 @@ class Command(BaseCommand):
     help = "My shiny new management command."
 
     def handle(self, *args, **options):
+        debug = False
         template_mail = Mail.objects.get(name='mail_envoi_convocation')
         adresse = """
 Université de Saint-Denis
@@ -24,12 +25,16 @@ Université de Saint-Denis
             deroule_sesion1 = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=1)
 
             deroule_sesion2 = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=2)
+
             deroule_anterieur_session_1 = deroule_sesion1.deroulement_etape_anterieur()
             deroule_anterieur_session_2 = deroule_sesion2.deroulement_etape_anterieur()
             if deroule_anterieur_session_1:
                 etape_ant = deroule_anterieur_session_1.etape.lib_etp
 
-            inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp)
+            if debug:
+                inscriptions = [InsAdmEtp.inscrits.filter(cod_etp=cod_etp).first()]
+            else:
+                inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp)
             i=0
             for ins in inscriptions:
                 context = dict()
@@ -47,30 +52,37 @@ Université de Saint-Denis
                         context['etape1']['adresse1'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
                         context['etape2']['adresse1'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
                         context['etape1']['date1'] = '\n'.join(self.get_dates(deroule_sesion1, rattachement))
+                        context['etape1']['deroule1'] = deroule_sesion1.get_deroulement_parse(rattachement.type_examen)
                         if deroule_anterieur_session_1:
                             context['etape2']['date1'] = '\n'.join(self.get_dates(deroule_anterieur_session_1, rattachement))
                             context['etape2']['salle1'] = self.get_salles(deroule_anterieur_session_1, rattachement)
+                            context['etape2']['deroule1'] = deroule_anterieur_session_1.get_deroulement_parse(rattachement.type_examen)
                     else:
                         context['etape1']['salle2'] = rattachement.get_salle()
                         context['etape1']['adresse2'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
                         context['etape2']['adresse2'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
                         context['etape1']['date2'] = '\n'.join(self.get_dates(deroule_sesion2, rattachement))
+                        context['etape1']['deroule2'] = deroule_sesion2.get_deroulement_parse(rattachement.type_examen)
                         if deroule_anterieur_session_2:
                             context['etape2']['date2'] = '\n'.join(self.get_dates(deroule_anterieur_session_2, rattachement))
                             context['etape2']['salle2'] = self.get_salles(deroule_anterieur_session_2, rattachement)
+                            context['etape2']['deroule2'] = deroule_anterieur_session_2.get_deroulement_parse(rattachement.type_examen)
 
-
-                recipients = get_recipients(ins.cod_ind, ins.cod_anu)
-                mail = template_mail.make_message(recipients=recipients)
-                pdf = make_pdf("duck_examen/convocation_examen_bis.html", context)
-                mail.attach(filename="convocation_{}.pdf".format(cod_etp),
-                                content=pdf)
-                mail.send()
-                if i == 100:
-                    sleep(1)
-                    i = 0
-                i += 1
-
+                if debug:
+                    f = open('toto.pdf', 'w')
+                    f.write(make_pdf("duck_examen/convocation_examen_bis.html", context))
+                    f.close()
+                else:
+                    recipients = get_recipients(ins.cod_ind, ins.cod_anu)
+                    mail = template_mail.make_message(recipients=recipients)
+                    pdf = make_pdf("duck_examen/convocation_examen_bis.html", context)
+                    mail.attach(filename="convocation_{}.pdf".format(cod_etp),
+                                    content=pdf)
+                    mail.send()
+                    if i == 100:
+                        sleep(1)
+                        i = 0
+                    i += 1
 
     def get_dates(self, deroule, rattachement):
         d = deroule.get_deroulement_parse(rattachement.type_examen)

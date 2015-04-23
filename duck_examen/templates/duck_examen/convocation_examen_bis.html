@@ -5,26 +5,57 @@
 <head>
     <meta charset="utf-8">
     <link href="{% static "bootstrap3/css/bootstrap.min.css" %}" rel="stylesheet">
-    <link rel="stylesheet" href="{% static "css/pdf.css" %}">
+    {#    <link rel="stylesheet" href="{% static "css/pdf.css" %}">#}
+    <style type="text/css">
+
+        body {
+            font-size: 12px;
+        }
+
+        div.break {
+            page-break-after: always
+        }
+
+        .table-bordered > tbody > tr > td,
+        .table-bordered > tbody > tr > th,
+        .table-bordered > tfoot > tr > td,
+        .table-bordered > tfoot > tr > th,
+        .table-bordered > thead > tr > td,
+        .table-bordered > thead > tr > th {
+        {#    border: 1px solid #000000;#} padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .table > caption + thead > tr:first-child > td,
+        .table > caption + thead > tr:first-child > th,
+        .table > colgroup + thead > tr:first-child > td,
+        .table > colgroup + thead > tr:first-child > th,
+        .table > thead:first-child > tr:first-child > td,
+        .table > thead:first-child > tr:first-child > th {
+        {#    border-top: 1px solid #000000;#} padding-top: 0;
+            padding-bottom: 0;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-3">
-                <img class="logo_ied" src="{% static "images/logo-ied.jpg" %}" alt="">
+<div class="container">
+    <div class="row">
+        <div class="col-xs-3">
+            <img class="logo_ied" src="{% static "images/logo-ied.jpg" %}" alt="">
 
-            </div>
-
-            <div class="col-xs-9"><br> CONVOCATION AUX EXAMENS 2014/2015 {{ etape }}
-            </div>
         </div>
-        <small>
+
+        <div class="col-xs-9"><br> CONVOCATION AUX EXAMENS 2014/2015 {{ etape }}
+        </div>
+    </div>
+    <small>
         <div class="row">
             <div class="col-xs-12">
                 <table class="table table-bordered">
                     <tr>
-                        <td width=50%>En cas d'erreur sur votre nom, prénom ou numéro d'étudiant, informez-en le service de la scolarité de l'IED
+                        <td width=50%>En cas d'erreur sur votre nom, prénom ou numéro d'étudiant, informez-en le service
+                            de la scolarité de l'IED
                         </td>
                         <td width=50%>NOM : {{ ins.nom }}
                             <br> PRÉNOM : {{ ins.prenom }}
@@ -47,55 +78,52 @@
         </div>
 
 
-
-
         <div> Pour passer vos epreuvres d'examen de
             <br>
 
-            <b>{{ etape }}</b> </div>
-
+            <b>{{ etape }}</b></div>
 
 
         <table class="table table-bordered">
             <thead>
-                <tr>
-                    <th>SESSION</th>
-                    <th>DATES</th>
-                    <th>ADRESSE CENTRE D'EXAMENS</th>
-                    <th>SALLE D'EXAMENS</th>
-                </tr>
+            <tr>
+                <th>SESSION</th>
+                <th>DATES</th>
+                <th>ADRESSE CENTRE D'EXAMENS</th>
+                <th>SALLE D'EXAMENS</th>
+            </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1ère SESSION JUIN 2015</td>
-                    <td>{{ etape1.date1|safe|linebreaksbr }}</td>
-                    <td>{{ etape1.adresse1|safe }}</td>
-                    <td>{{ etape1.salle1|safe|linebreaksbr }}</td>
-                </tr>
-                <tr>
-                    <td>2ème SESSION SEPTEMBRE 2015</td>
-                    <td>{{ etape1.date2|safe|linebreaksbr }}</td>
-                    <td>{{ etape1.adresse2|safe }}</td>
-                    <td>{{ etape1.salle2|safe|linebreaksbr }}</td>
-                </tr>
+            <tr>
+                <td>1ère SESSION JUIN 2015</td>
+                <td>{{ etape1.date1|safe|linebreaksbr }}</td>
+                <td>{{ etape1.adresse1|safe }}</td>
+                <td>{{ etape1.salle1|safe|linebreaksbr }}</td>
+            </tr>
+            <tr>
+                <td>2ème SESSION SEPTEMBRE 2015</td>
+                <td>{{ etape1.date2|safe|linebreaksbr }}</td>
+                <td>{{ etape1.adresse2|safe }}</td>
+                <td>{{ etape1.salle2|safe|linebreaksbr }}</td>
+            </tr>
             </tbody>
         </table>
 
         {% if etape_bis %}
-        <div> Si vous êtes inscrit en {{ etape }} conditionnelle, pour passer vos épreuves d’examen de
+            <div> Si vous êtes inscrit en {{ etape }} conditionnelle, pour passer vos épreuves d’examen de
 
-            <b>{{ etape_ant }} aux dates, heures et adresses suivantes :</b> </div>
+                <b>{{ etape_ant }} aux dates, heures et adresses suivantes :</b></div>
 
-        <table class="table table-bordered">
-            <thead>
+            <table class="table table-bordered">
+                <thead>
                 <tr>
                     <th>SESSION</th>
                     <th>DATES ET HEURES D'EXAMENS</th>
                     <th>ADRESSE CENTRE D'EXAMENS</th>
                     <th>SALLE D'EXAMENS</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr>
                     <td>1ère SESSION JUIN 2015</td>
                     <td>{{ etape2.date1|safe|linebreaksbr }}</td>
@@ -108,24 +136,143 @@
                     <td>{{ etape2.adresse2|safe }}</td>
                     <td>{{ etape2.salle2|safe|linebreaksbr }}</td>
                 </tr>
-            </tbody>
-        </table>
-            {% else %}
-
+                </tbody>
+            </table>
+        {% else %}
+            <br/><br/><br/><br/><br/><br/>
         {% endif %}
         <br>
-      </small>
-        <p>Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la conservent jusqu’en septembre.
-            <br> Les horaires de convocation ainsi que le programme des épreuves figurent au verso de cette page
-            <br> Les étudiants qui n’ont pas la possibilité de passer les examens en juin peuvent les passer directement en septembre.
-            <br> Les étudiants peuvent aussi passer une partie des EC en juin et le reste directement en septembre sans aucune démarche administrative. </p>
+    </small>
+    <p>Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la
+        conservent jusqu’en septembre.
+        <br> Les horaires de convocation ainsi que le programme des épreuves figurent au verso de cette page
+        <br> Les étudiants qui n’ont pas la possibilité de passer les examens en juin peuvent les passer directement en
+        septembre.
+        <br> Les étudiants peuvent aussi passer une partie des EC en juin et le reste directement en septembre sans
+        aucune démarche administrative. </p>
 
 
-            <br>
+    <br>
 
-            <p align="right"><small><i>Gilles BERNARD</i><br>
-								Directeur de l'IED</small></p>
+    <p align="right">
+        <small><i>Gilles BERNARD</i><br>
+            Directeur de l'IED
+        </small>
+    </p>
 
-    </div>
+
+    <div class="break"></div>
+    <small>
+        <center><h4>DÉROULEMENT DES ÉPREUVES</h4></center>
+        <center><h4>{{ etape|upper }} première session</h4></center>
+        <table class="table table-bordered">
+            <tr>
+                <th>JOUR</th>
+                <th>HEURE DÉBUT</th>
+                <th>HEURE FIN</th>
+                <th>CODE EC</th>
+                <th>INTITULÉ</th>
+                <th>ENSEIGNANT</th>
+            </tr>
+            {% for jour in etape1.deroule1 %}
+
+                {% for matiere in jour.matieres %}
+                    <tr>
+                        <td>{{ jour.date }}</td>
+                        <td>{{ matiere.heure_debut }}</td>
+                        <td>{{ matiere.heure_fin }}</td>
+                        <td>{{ matiere.code_ec }}</td>
+                        <td>{{ matiere.label }}</td>
+                        <td>{{ matiere.prof }}</td>
+                    </tr>
+                {% endfor %}
+
+            {% endfor %}
+
+        </table>
+        <center><h4>{{ etape|upper }} deuxième session</h4></center>
+        <table class="table table-bordered">
+            <tr>
+                <th>JOUR</th>
+                <th>HEURE DÉBUT</th>
+                <th>HEURE FIN</th>
+                <th>CODE EC</th>
+                <th>INTITULÉ</th>
+                <th>ENSEIGNANT</th>
+            </tr>
+            {% for jour in etape1.deroule2 %}
+
+                {% for matiere in jour.matieres %}
+                    <tr>
+                        <td>{{ jour.date }}</td>
+                        <td>{{ matiere.heure_debut }}</td>
+                        <td>{{ matiere.heure_fin }}</td>
+                        <td>{{ matiere.code_ec }}</td>
+                        <td>{{ matiere.label }}</td>
+                        <td>{{ matiere.prof }}</td>
+                    </tr>
+                {% endfor %}
+
+            {% endfor %}
+
+        </table>
+        {% if etape_bis %}
+            <div class="break"></div>
+            <center><h4>DÉROULEMENT DES ÉPREUVES</h4></center>
+            <center><h4>{{ etape_ant|upper }} première session</h4></center>
+            <table class="table table-bordered">
+                <tr>
+                    <th>JOUR</th>
+                    <th>HEURE DÉBUT</th>
+                    <th>HEURE FIN</th>
+                    <th>CODE EC</th>
+                    <th>INTITULÉ</th>
+                    <th>ENSEIGNANT</th>
+                </tr>
+                {% for jour in etape2.deroule1 %}
+
+                    {% for matiere in jour.matieres %}
+                        <tr>
+                            <td>{{ jour.date }}</td>
+                            <td>{{ matiere.heure_debut }}</td>
+                            <td>{{ matiere.heure_fin }}</td>
+                            <td>{{ matiere.code_ec }}</td>
+                            <td>{{ matiere.label }}</td>
+                            <td>{{ matiere.prof }}</td>
+                        </tr>
+                    {% endfor %}
+
+                {% endfor %}
+
+            </table>
+            <center><h4>{{ etape_ant|upper }} deuxième session</h4></center>
+            <table class="table table-bordered">
+                <tr>
+                    <th>JOUR</th>
+                    <th>HEURE DÉBUT</th>
+                    <th>HEURE FIN</th>
+                    <th>CODE EC</th>
+                    <th>INTITULÉ</th>
+                    <th>ENSEIGNANT</th>
+                </tr>
+                {% for jour in etape2.deroule2 %}
+
+                    {% for matiere in jour.matieres %}
+                        <tr>
+                            <td>{{ jour.date }}</td>
+                            <td>{{ matiere.heure_debut }}</td>
+                            <td>{{ matiere.heure_fin }}</td>
+                            <td>{{ matiere.code_ec }}</td>
+                            <td>{{ matiere.label }}</td>
+                            <td>{{ matiere.prof }}</td>
+                        </tr>
+                    {% endfor %}
+
+                {% endfor %}
+
+            </table>
+        {% endif %}
+    </small>
+</div>
 </body>
 
