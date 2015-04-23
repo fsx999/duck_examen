@@ -86,7 +86,12 @@ Université de Saint-Denis
                     i += 1
 
     def get_dates(self, deroule, rattachement):
-        d = deroule.get_deroulement_parse(rattachement.type_examen)
+        try:
+
+            d = deroule.get_deroulement_parse(rattachement.type_examen)
+        except Exception as e:
+            print rattachement.type_examen
+            raise e
         return [date['date'] for date in d]
 
     def get_salles(self, deroule, rattachement):
