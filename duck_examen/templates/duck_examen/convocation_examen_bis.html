@@ -1,0 +1,130 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <link href="{% static "bootstrap3/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static "css/pdf.css" %}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-3">
+                <img class="logo_ied" src="{% static "images/logo-ied.jpg" %}" alt="">
+
+            </div>
+
+            <div class="col-xs-9"><br> CONVOCATION AUX EXAMENS 2014/2015 {{ etape }}
+            </div>
+        </div>
+        <small>
+        <div class="row">
+            <div class="col-xs-12">
+                <table class="table table-bordered">
+                    <tr>
+                        <td width=50%>En cas d'erreur sur votre nom, prénom ou numéro d'étudiant, informez-en le service de la scolarité de l'IED
+                        </td>
+                        <td width=50%>NOM : {{ ins.nom }}
+                            <br> PRÉNOM : {{ ins.prenom }}
+                            <br> N° D'ÉTUDIANT : {{ ins.cod_etu }}
+                            <br>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div>
+
+            <p> Pous êtes prié(e) de vous présenter, muni(e) de :
+                <br> votre carte d’étudiant(e)
+                <br> une pièce d’identité avec photographie
+                <br> la présente convocation
+                <br>
+            </p>
+        </div>
+
+
+
+
+        <div> Pour Passer vos epreuvres d'examen de
+            <br>
+
+            <b>{{ etape }}</b> </div>
+
+
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>SESSION</th>
+                    <th>DATES</th>
+                    <th>ADRESSE CENTRE D'EXAMENS</th>
+                    <th>SALLE D'EXAMENS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1ère SESSION JUIN 2015</td>
+                    <td>{{ etape1.date1|safe|linebreaksbr10018236 }}</td>
+                    <td>{{ etape1.adresse1|safe }}</td>
+                    <td>{{ etape1.salle1|safe|linebreaksbr }}</td>
+                </tr>
+                <tr>
+                    <td>2ème SESSION SEPTEMBRE 2015</td>
+                    <td>{{ etape1.date2|safe|linebreaksbr }}</td>
+                    <td>{{ etape1.adresse2|safe }}</td>
+                    <td>{{ etape1.salle2|safe|linebreaksbr }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% if etape_bis %}
+        <div> Si vous êtes inscrit en {{ etape }} conditionnelle, pour passer vos épreuves d’examen de
+            <br>
+
+            <b>{{ etape_bis }} aux dates, heures et adresses suivantes :</b> </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>SESSION</th>
+                    <th>DATES ET HEURES D'EXAMENS</th>
+                    <th>ADRESSE CENTRE D'EXAMENS</th>
+                    <th>SALLE D'EXAMENS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1ère SESSION JUIN 2015</td>
+                    <td>{{ session2.date1|safe }}</td>
+                    <td>{{ adresse|safe }}</td>
+                    <td>{{ session2.salle1|safe }}</td>
+                </tr>
+                <tr>
+                    <td>2ème SESSION SEPTEMBRE 2015</td>
+                    <td>{{ session2.date2|safe }}</td>
+                    <td>{{ adresse|safe }}</td>
+                    <td>{{ session2.salle2|safe }}</td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+        <br>
+
+        <p>Cette convocation est valable pour les deux sessions, il est impératif en conséquence que les étudiants la conservent jusqu’en septembre.
+            <br> Les horaires de convocation ainsi que le programme des épreuves figurent au verso de cette page
+            <br> Les étudiants qui n’ont pas la possibilité de passer les examens en juin peuvent les passer directement en septembre.
+            <br> Les étudiants peuvent aussi passer une partie des 11 EC de L3 et des 12 EC de L2 en juin et le reste directement en septembre sans aucune démarche administrative. </p>
+
+
+            <br>
+
+            <p align="right"><small><i>Gilles BERNARD</i><br>
+								Directeur de l'IED</small></p>
+
+    </div>
+</body>
+

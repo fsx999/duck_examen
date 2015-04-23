@@ -72,6 +72,11 @@ class RattachementCentreExamen(models.Model):
     type_examen = models.ForeignKey('TypeExamen', default='D')
     salle = models.ForeignKey(Salle, blank=True, null=True)
 
+    def get_dates(self):
+        d = DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp, session=self.session).get_deroulement_parse(self.type_examen)
+        return [date['date'] for date in d]
+
+
     def __str__(self):
         return u"{} session : {} ec manquant : {}".format(self.centre, self.session, "oui" if self.ec_manquant else 'non')
 
@@ -79,7 +84,7 @@ class RattachementCentreExamen(models.Model):
         if self.salle:
             return self.salle.label
         elif not self.centre.is_main_center:
-            return ""
+            return "Voir le centre"
         else:
             return DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp,
                                                       session=self.session).salle_examen
