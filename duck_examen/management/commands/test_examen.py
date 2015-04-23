@@ -58,7 +58,10 @@ Université de Saint-Denis
                         if deroule_anterieur_session_1:
                             context['etape2']['date1'] = '\n'.join(self.get_dates(deroule_anterieur_session_1, rattachement))
                             context['etape2']['salle1'] = self.get_salles(deroule_anterieur_session_1, rattachement)
-                            context['etape2']['deroule1'] = deroule_anterieur_session_1.get_deroulement_parse(rattachement.type_examen)
+                            try:
+                                context['etape2']['deroule1'] = deroule_anterieur_session_1.get_deroulement_parse(rattachement.type_examen)
+                            except DetailDeroulement.DoesNotExist:
+                                context['etape2']['deroule1'] = deroule_anterieur_session_1.get_deroulement_parse('D')
                     else:
                         context['etape1']['salle2'] = rattachement.get_salle()
                         context['etape1']['adresse2'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
@@ -68,7 +71,10 @@ Université de Saint-Denis
                         if deroule_anterieur_session_2:
                             context['etape2']['date2'] = '\n'.join(self.get_dates(deroule_anterieur_session_2, rattachement))
                             context['etape2']['salle2'] = self.get_salles(deroule_anterieur_session_2, rattachement)
-                            context['etape2']['deroule2'] = deroule_anterieur_session_2.get_deroulement_parse(rattachement.type_examen)
+                            try:
+                                context['etape2']['deroule2'] = deroule_anterieur_session_2.get_deroulement_parse(rattachement.type_examen)
+                            except DetailDeroulement.DoesNotExist:
+                                context['etape2']['deroule2'] = deroule_anterieur_session_2.get_deroulement_parse('D')
 
                 if debug:
                     f = open('toto.pdf', 'w')
