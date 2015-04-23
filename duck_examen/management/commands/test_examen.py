@@ -74,7 +74,7 @@ Université de Saint-Denis
                     f.close()
                 else:
                     recipients = get_recipients(ins.cod_ind, ins.cod_anu)
-                    mail = template_mail.make_message(recipients=recipients, context={"cod_etu":ins.cod_ind.cod_etu})
+                    mail = template_mail.make_message(recipients=recipients, context={"cod_etu": ins.cod_ind.cod_etu})
                     pdf = make_pdf("duck_examen/convocation_examen_bis.html", context)
                     mail.attach(filename="convocation_{}.pdf".format(cod_etp),
                                     content=pdf)
