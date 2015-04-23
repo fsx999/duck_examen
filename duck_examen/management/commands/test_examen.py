@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from mailrobot.models import Mail
 from django_apogee.models import Pays, InsAdmEtp, Etape
-from duck_examen.models import DeroulementExamenModel, RattachementCentreExamen
+from duck_examen.models import DeroulementExamenModel, RattachementCentreExamen, DetailDeroulement
 from duck_utils.utils import make_pdf, get_recipients
 
 
@@ -53,6 +53,7 @@ Université de Saint-Denis
                         context['etape1']['adresse1'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
                         context['etape2']['adresse1'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
                         context['etape1']['date1'] = '\n'.join(self.get_dates(deroule_sesion1, rattachement))
+
                         context['etape1']['deroule1'] = deroule_sesion1.get_deroulement_parse(rattachement.type_examen)
                         if deroule_anterieur_session_1:
                             context['etape2']['date1'] = '\n'.join(self.get_dates(deroule_anterieur_session_1, rattachement))
@@ -87,11 +88,9 @@ Université de Saint-Denis
 
     def get_dates(self, deroule, rattachement):
         try:
-
             d = deroule.get_deroulement_parse(rattachement.type_examen)
-        except Exception as e:
-            print rattachement.type_examen
-            raise e
+        except DetailDeroulement.DoesNotExist:
+            d = deroule.get_deroulement_parse('D')
         return [date['date'] for date in d]
 
     def get_salles(self, deroule, rattachement):
