@@ -76,7 +76,6 @@ class RattachementCentreExamen(models.Model):
         d = DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp, session=self.session).get_deroulement_parse(self.type_examen)
         return [date['date'] for date in d]
 
-
     def __str__(self):
         return u"{} session : {} ec manquant : {}".format(self.centre, self.session, "oui" if self.ec_manquant else 'non')
 
@@ -148,6 +147,15 @@ class DeroulementExamenModel(models.Model):
         verbose_name = "Deroulement"
         verbose_name_plural = "Deroulements"
         db_table = 'core_deroulementexemenmodel'  # faute ortho déjà mis en prod
+
+    def deroulement_etape_anterieur(self):
+        code_etp_actuel = self.etape.cod_etp
+        if code_etp_actuel[0] == 'L' and code_etp_actuel[1] in ['2', '3']:
+
+            code_etp_anterieur = code_etp_actuel[0] + str(int(code_etp_actuel[1]) - 1) + code_etp_actuel[2:]
+            return DeroulementExamenModel.objects.get(etape__cod_etp=code_etp_anterieur, session=self.session)
+        else:
+            return None
 
     def deroulement_parse(self):
         if not self.deroulement:

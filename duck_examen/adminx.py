@@ -227,6 +227,7 @@ class ImpressionPv(ImpressionEtiquetteEnveloppe):
 
         return context
 
+
 class PaysFilter(RelatedFieldListFilter):
     def choices(self):
         etp = self.request.GET.get('_p_cod_etp__in', None)
