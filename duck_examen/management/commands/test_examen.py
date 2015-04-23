@@ -40,7 +40,8 @@ Université de Saint-Denis
                 context = dict()
                 context['ins'] = ins
                 context['etape'] = etape
-                context['etape_ant'] = etape_ant
+                if deroule_anterieur_session_1:
+                    context['etape_ant'] = etape_ant
                 context['etape1'] = dict()
                 context['etape2'] = dict()
                 if deroule_anterieur_session_1:
