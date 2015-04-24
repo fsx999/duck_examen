@@ -20,10 +20,10 @@ Université de Saint-Denis
 <br> 93200 – Saint-Denis
 <br> (Métro Ligne n°13 – Station Saint-Denis Université)
         """
-        lpsy = ['L1NSPY','L2NSPY','L3NSPY']
+        lpsy = ['L1NPSY','L2NPSY','L3NPSY']
         ldro = ['L3NDRO','L1NDRO','L2NDRO']
         mpsy = ['M1NPCL', 'M2NPCL', 'M1NPEA','M2NPEA', 'M1NPST', 'M2NPST']
-        total = ldro + lpsy + mpsy
+        total = lpsy + mpsy
         for cod_etp in total:
             etape = Etape.objects.get(cod_etp=cod_etp).lib_etp
             deroule_sesion1 = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=1)
