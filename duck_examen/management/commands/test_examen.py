@@ -20,7 +20,7 @@ Université de Saint-Denis
 <br> 93200 – Saint-Denis
 <br> (Métro Ligne n°13 – Station Saint-Denis Université)
         """
-        for cod_etp in ['M2NPCL', ]:
+        for cod_etp in ['M1NPEA', 'M2NPEA']:
             etape = Etape.objects.get(cod_etp=cod_etp).lib_etp
             deroule_sesion1 = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=1)
 
