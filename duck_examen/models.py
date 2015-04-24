@@ -83,7 +83,7 @@ class RattachementCentreExamen(models.Model):
         if self.salle:
             return self.salle.label
         elif not self.centre.is_main_center:
-            return "Voir le centre"
+            return self.centre.mailling_address
         else:
             return DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp,
                                                       session=self.session).salle_examen

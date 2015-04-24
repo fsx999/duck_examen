@@ -20,7 +20,11 @@ Université de Saint-Denis
 <br> 93200 – Saint-Denis
 <br> (Métro Ligne n°13 – Station Saint-Denis Université)
         """
-        for cod_etp in ['L3NDRO']:
+        lpsy = ['L1NSPY','L2NSPY','L3NSPY']
+        ldro = ['L3NDRO','L1NDRO','L2NDRO']
+        mpsy = ['M1NPCL', 'M2NPCL', 'M1NPEA','M2NPEA', 'M1NPST', 'M2NPST']
+        total = ldro + lpsy + mpsy
+        for cod_etp in total:
             etape = Etape.objects.get(cod_etp=cod_etp).lib_etp
             deroule_sesion1 = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=1)
 
@@ -34,7 +38,7 @@ Université de Saint-Denis
             if debug:
                 inscriptions = [InsAdmEtp.inscrits.filter(cod_etp=cod_etp).first()]
             else:
-                inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp)
+                inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp, rattachementcentreexamen__centre__is_main_center=False)
             i=0
             for ins in inscriptions:
                 context = dict()
@@ -103,6 +107,6 @@ Université de Saint-Denis
         if rattachement.salle:
             return rattachement.salle.label
         elif not rattachement.centre.is_main_center:
-            return "Voir le centre"
+            return rattachement.centre.mailling_address
         else:
             return deroule.salle_examen
