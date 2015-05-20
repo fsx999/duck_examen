@@ -122,7 +122,7 @@ class EtapeExamenModel(Etape):
         qs = InsAdmEtp.inscrits_condi.filter(cod_etp=self.cod_etp,
                                              rattachementcentreexamen__centre__is_main_center=True,
                                              rattachementcentreexamen__session=session,
-                                             rattachementcentreexamen__type_examen__name=type_examen)
+                                             rattachementcentreexamen__type_examen__name=type_examen).order_by('cod_ind__lib_nom_pat_ind')
         return qs.distinct()
 
     class Meta:
