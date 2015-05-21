@@ -23,7 +23,7 @@ Université de Saint-Denis
         lpsy = ['L1NPSY','L2NPSY','L3NPSY']
         ldro = ['L3NDRO','L1NDRO','L2NDRO']
         mpsy = ['M1NPCL', 'M2NPCL', 'M1NPEA','M2NPEA', 'M1NPST', 'M2NPST']
-        total = lpsy + mpsy
+        total = lpsy + mpsy + ldro
         for cod_etp in total:
             etape = Etape.objects.get(cod_etp=cod_etp).lib_etp
             deroule_sesion1 = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=1)
@@ -54,8 +54,8 @@ Université de Saint-Denis
                 for rattachement in ins.rattachementcentreexamen_set.all():
                     if rattachement.session == '1':
                         context['etape1']['salle1'] = rattachement.get_salle()
-                        context['etape1']['adresse1'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
-                        context['etape2']['adresse1'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
+                        context['etape1']['adresse1'] = rattachement.get_centre()
+                        context['etape2']['adresse1'] = rattachement.get_centre()
                         context['etape1']['date1'] = '\n'.join(self.get_dates(deroule_sesion1, rattachement))
 
                         context['etape1']['deroule1'] = deroule_sesion1.get_deroulement_parse(rattachement.type_examen)
@@ -68,8 +68,8 @@ Université de Saint-Denis
                                 context['etape2']['deroule1'] = deroule_anterieur_session_1.get_deroulement_parse('D')
                     else:
                         context['etape1']['salle2'] = rattachement.get_salle()
-                        context['etape1']['adresse2'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
-                        context['etape2']['adresse2'] = adresse if rattachement.centre.is_main_center else 'Voir centre'
+                        context['etape1']['adresse2'] = rattachement.get_centre()
+                        context['etape2']['adresse2'] = rattachement.get_centre()
                         context['etape1']['date2'] = '\n'.join(self.get_dates(deroule_sesion2, rattachement))
                         context['etape1']['deroule2'] = deroule_sesion2.get_deroulement_parse(rattachement.type_examen)
                         if deroule_anterieur_session_2:

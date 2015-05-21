@@ -87,6 +87,8 @@ class RattachementCentreExamen(models.Model):
         else:
             return DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp,
                                                       session=self.session).salle_examen
+    def get_centre(self):
+        return self.centre.mailling_address
             # recuperer le deroule et sa salle
 
     def get_etp_ant(self):
