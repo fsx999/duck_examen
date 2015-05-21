@@ -38,7 +38,7 @@ Université de Saint-Denis
             if debug:
                 inscriptions = [InsAdmEtp.inscrits.filter(cod_etp=cod_etp).first()]
             else:
-                inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp, rattachementcentreexamen__centre__is_main_center=False)
+                inscriptions = InsAdmEtp.inscrits.filter(cod_etp=cod_etp, rattachementcentreexamen__centre__is_main_center=True)
             i=0
             for ins in inscriptions:
                 context = dict()
