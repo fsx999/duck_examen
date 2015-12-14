@@ -66,6 +66,13 @@ class ExamCenter(models.Model):
 @python_2_unicode_compatible
 class RattachementCentreExamen(models.Model):
     inscription = models.ForeignKey(InsAdmEtp)
+    # cle composite insadmetp
+    cod_anu = models.CharField(max_length=4, db_column="COD_ANU")
+    cod_ind = models.CharField(max_length=8, db_column='COD_IND', primary_key=True)
+    cod_etp = models.CharField(u"(COPIED)(COPIED)Code Etape", max_length=6, null=True, db_column="COD_ETP")
+    cod_vrs_vet = models.CharField(u"(COPIED)Numero Version Etape", max_length=3, null=True, db_column="COD_VRS_VET")
+    num_occ_iae = models.CharField(u"", max_length=2, null=True, db_column="NUM_OCC_IAE")
+    #/ cle composite
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
     centre = models.ForeignKey(ExamCenter)
     ec_manquant = models.BooleanField(default=False, blank=True)
