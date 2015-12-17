@@ -1,0 +1,55 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="$close()"><span
+            aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title">Télécharger un fichier</h3>
+</div>
+
+<div class="modal-body">
+    <!-- -->
+    <div class="form-group">
+       <div class="col-sm-12">
+           Type de fichier:
+           <select class="form-control"
+                   ng-model="data.file_type"
+                   ng-change="updateUrl()">
+               <option value="csv">CSV</option>
+               <option value="xls">Excel</option>
+           </select>
+           <input type="checkbox" ng-model="data.cb_etape" ng-change="updateUrl()"> Filtrer par Étape
+            <select class="form-control"
+                    ng-if="data.cb_etape"
+                    ng-options="etape.lib_etp + ' ' + etape.cod_vrs_vet for etape in etapes"
+                    ng-model="data.monEtape"
+                    ng-change="loadEcs(data.monEtape); updateUrl()">
+            </select>
+           <div ng-if="data.cb_etape">
+               <input type="checkbox"
+                      ng-model="data.cb_ec"
+                      ng-change="updateUrl()"> Filtrer par Ec
+               <select class="form-control"
+                       ng-model="data.monEc"
+                       ng-change="updateUrl()"
+                       ng-if="data.cb_ec">
+                    <option ng-repeat="ec in ecs" value="{{ ec.id }}">{{ ec.id + ' ' + ec.lib_ec }}</option>
+               </select>
+
+            </div>
+
+            <!-- div>
+               Url:
+               <pre>{{ data.myUrl }}</pre>
+            </div -->
+       </div>
+    </div>
+
+</div>
+
+<div class="modal-footer">
+
+    <button class="btn btn-warning" ng-click="$close()"><span class="glyphicon glyphicon-remove"></span> Fermer</button>
+    <a href="{{ data.myUrl }}" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span>
+        Télécharger le fichier
+    </a>
+
+
+</div>

@@ -1,0 +1,56 @@
+<div class="container well">
+    <div ng-if="!invitation.date_acceptation">
+    <div class="alert alert-info">
+        <p>Vous avez reçu une invitation à prendre en charge un cours au sein de l'IED en {{ ec.code_ec }} {{ ec.lib_ec }}</p>
+        <p>Pour valider cette demande, nous avons besoin de votre numéro obtenu à l'adresse suivante : </p>
+        <p>Si vous n'avez pas encore créer un compte sur , Veuillez le faire et revenir ici ensuite. </p>
+    </div>
+    <div class="form-horizontal" ng-if="!personne">
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">Numéro de candidature</label>
+            <div class="col-sm-4">
+              <input type="text"
+                   ng-model="numero" placeholder="numero de candidature"
+                     ng-keyup="$event.keyCode == 13 ? searchPersonne(numero) : null"
+                   class="form-control">
+            </div>
+        </div>
+        <div class="col-sm-offset-2 col-sm-4">
+            <button class="btn btn-primary" ng-click="searchPersonne(numero)">Chercher</button>
+        </div>
+    </div>
+    <div ng-if="personne">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Veuillez verifier votre identité</h4>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-2">Numéro de candidature : </div><div class="col-sm-5">{{ personne.numero }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">Nom : </div><div class="col-sm-5">{{ personne.nom_pat }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">Prenom : </div><div class="col-sm-5">{{ personne.prenom }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">Email : </div><div class="col-sm-5">{{ personne.mail | lowercase }}</div>
+                </div>
+            </div>
+            <div class="panel-footer">
+              <div class="row">
+                    <div class="col-sm-2"><button class="btn btn-success" ng-click="confirme_personne(numero)"><span class="glyphicon glyphicon-ok"></span> Je confirme</button></div>
+                    <div class="col-sm-2"><button class="btn btn-warning" ng-click="reset()"><span class="glyphicon glyphicon-remove"></span> Je recommence</button></div>
+              </div>
+            </div>
+        </div>
+
+</div>
+    </div>
+    <div ng-if="invitation.date_acceptation">
+        <div class="alert alert-info">
+            <p>Vous avez bien valider votre invitation à prendre en charge un cours au sein de l'IED en {{ ec.code_ec }} {{ ec.lib_ec }}</p>
+        </div>
+    </div>
+</div>

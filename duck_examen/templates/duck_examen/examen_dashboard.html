@@ -1,0 +1,26 @@
+{% extends "xadmin/base_site.html" %}
+{% load staticfiles %}
+{% block extrastyle %}
+     <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+    {{ block.super }}
+    <script src="{% static "angular/angular.js" %}"></script>
+    <script src="{% static "angular/angular-route.js" %}"></script>
+    <script src="{% static "angular/angular-resource.js" %}"></script>
+    <script src="{% static "angular/ui-bootstrap-0.13.1.js" %}"></script>
+    <script src="{% static "examens/app/js/services.js" %}"></script>
+    <script src="{% static "examens/app/js/app.js" %}"></script>
+    <script src="{% static "examens/app/js/controllers.js" %}"></script>
+    <script type="text/javascript">
+    </script>
+{% endblock %}
+{% block nav_title %}Déclaration des agents{% endblock %}
+{% block content %}
+
+
+<div ng-app="myApp">
+    <div ng-view></div>
+</div>
+
+
+
+{% endblock %}

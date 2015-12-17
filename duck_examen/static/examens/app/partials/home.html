@@ -1,0 +1,76 @@
+<div class="well">
+    <div ng-if="user.is_superuser == true" class="well text-center">
+        <button class="btn btn-primary" ng-click="open_summary_download()">Télécharger ...</button>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Choisissez une étape pour selectionner les EC.
+        </div>
+        <div class="panel-body">
+            <form action="">
+            <div class="form-group">
+               <div class="col-sm-5">
+                    <select class="form-control"
+                            ng-options="etape.lib_etp + ' ' + etape.cod_vrs_vet for etape in etapes"
+                            ng-model="monEtape"
+                            ng-change="listEc(monEtape)">
+                    </select>
+               </div>
+                <label for="inputEmail3" class="col-sm-2 control-label">Filtrer les EC (code ou intitullé)</label>
+                <div class="col-sm-3">
+                    <input class="form-control" ng-model="search" placeholder="Chercher par un code EC">
+               </div>
+            </div>
+                </form>
+        </div>
+
+    </div>
+    <div class="panel panel-primary">
+    <div class="panel-body">
+    <table class="table table-bordered table-striped">
+        <tr ng-repeat="ec in ecs | filter:search">
+            <td>{{ ec.code_ec }}</td>
+            <td>{{ ec.lib_ec }}</td>
+            <td>
+                <div ng-repeat="agent in ec.agents " class="clearfix">
+
+                    <div class="pull-left">
+                        <span class="badge">agent</span>
+                        <div class="btn btn-xs btn-primary"
+                             ng-click="modify_agent(agent)">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                            {{ agent.agent_identity }}
+                        </div>
+
+                    </div>
+
+                    <div class="btn btn-xs btn-warning pull-right"
+                         ng-if="!agent.valider||user.is_superuser"
+                         ng-click="delete_agent(agent, ec)">Suprimer<span class="glyphicon glyphicon-remove"></span>
+                    </div>
+
+                    <div class="btn btn-xs btn-primary pull-right" ng-if="!agent.valider"
+                         ng-click="valider_agent(agent)">Valider <span class="glyphicon glyphicon-ok"></span>
+                    </div>
+
+                    <div class="label label-success pull-right" ng-if="agent.valider">OK</div>
+                    <hr>
+                </div>
+                <div ng-repeat="invitation in ec.invitations|filter:filter_invit " class="clearfix">
+                    <div class="pull-left"><span class="badge">invitation</span>{{ invitation.email }}  {{ invitation.date_acceptation }}</div>
+                    <div class="btn btn-xs btn-warning pull-right" ng-if="!invitation.valider||user.is_superuser"
+                                                ng-click="delete_invitation(invitation, ec)">Suprimer<span class="glyphicon glyphicon-remove"></span></div>
+                    <div class="btn btn-xs btn-primary pull-right" ng-if="!invitation.valider"
+                            ng-click="valider_invitation(invitation)">Valider <span class="glyphicon glyphicon-ok"></span></div>
+                    <div class="label label-success pull-right" ng-if="invitation.valider">OK</div>
+
+                </div>
+            </td>
+            <td>
+                <button class="btn btn-primary" ng-click="searchPersonne(ec)"><span class="glyphicon glyphicon-plus-sign"></span> Ajouter une personne</button>
+            </td>
+        </tr>
+    </table>
+        </div>
+        </div>
+</div>

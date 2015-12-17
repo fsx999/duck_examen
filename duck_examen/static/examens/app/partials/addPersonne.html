@@ -1,0 +1,74 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="$close()"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title">Ajouter une persone</h3>
+</div>
+<div class="modal-body">
+    <div ng-if="message" class="alert alert-{{ message.type == 'error' ? 'danger' : message.type }}">{{ message.message }}</div>
+    <div class="alert alert-info">Tapez le nom de la personne pour l'ec {{ ec.code_ec }} et selectionnez la personne apparaissant. <br>
+        Si la personne n'apparait pas dans la liste, veuillez l'ajouter avec le bouton bleu</div>
+    <div ng-if="errors" class="alert alert-danger">
+        <ul>
+            <li ng-repeat="(key, value) in errors">{{ key }}
+                <ul>
+                    <li ng-repeat="i in value">{{ i }}</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="well">
+        <form class="form-horizontal" novalidate name="name">
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-4 control-label"> Nom :</label>
+
+                <div class="col-sm-8">
+                    <input type="text"
+                           ng-model="pers" placeholder="Recherche chargé de cours par nom"
+                           typeahead="personne as personne.nom_pat + ' ' + personne.prenom for personne in getPersonne($viewValue)"
+                           typeahead-loading="recherche"
+                           typeahead-no-results="noResults"
+                           typeahead-min-length="3"
+                           tooltip="La recherche automatique se déclenche à partir de trois lettres."
+                           class="form-control">
+                    <i ng-show="recherche" class="glyphicon glyphicon-refresh"></i>
+
+                    <div ng-show="noResults">
+                        <i class="glyphicon glyphicon-remove"></i> aucune personne
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <div class="checkbox">
+                        <label class="active">
+                            <input type="checkbox" ng-model="forfaitaire" > Forfaitaire {{ forfaire }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-4 control-label" > Heures estimées :</label>
+
+                <div class="col-sm-8"><input type="number" ng-model="nb_heure" class="form-control" name="nb_heure">
+                    <div ng-show="form.nb_heure.$touched">
+                        <div ng-show="form.nb_heure.$error.number">Tell us your name.</div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+    <button class="btn btn-primary" ng-click="createInvitation(ec)"><span class="glyphicon glyphicon-plus-sign"></span>
+        Inviter une personne inconue du système
+    </button>
+</div>
+<div class="modal-footer">
+
+    <button class="btn btn-warning" ng-click="$close()"><span class="glyphicon glyphicon-remove"></span> Fermer</button>
+    <button class="btn btn-success" ng-click="addPersonne(pers, ec)"><span class="glyphicon glyphicon-ok"></span>
+        Valider la personne selectionnée
+    </button>
+
+
+</div>
