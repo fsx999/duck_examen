@@ -67,11 +67,11 @@ class ExamCenter(models.Model):
 class RattachementCentreExamen(models.Model):
     inscription = models.ForeignKey(InsAdmEtp)
     # cle composite insadmetp
-    cod_anu = models.CharField(max_length=4, db_column="COD_ANU")
-    cod_ind = models.CharField(max_length=8, db_column='COD_IND', primary_key=True)
-    cod_etp = models.CharField(u"(COPIED)(COPIED)Code Etape", max_length=6, null=True, db_column="COD_ETP")
-    cod_vrs_vet = models.CharField(u"(COPIED)Numero Version Etape", max_length=3, null=True, db_column="COD_VRS_VET")
-    num_occ_iae = models.CharField(u"", max_length=2, null=True, db_column="NUM_OCC_IAE")
+    # cod_anu = models.CharField(max_length=4, db_column="COD_ANU")
+    # cod_ind = models.CharField(max_length=8, db_column='COD_IND', primary_key=True)
+    # cod_etp = models.CharField(u"(COPIED)(COPIED)Code Etape", max_length=6, null=True, db_column="COD_ETP")
+    # cod_vrs_vet = models.CharField(u"(COPIED)Numero Version Etape", max_length=3, null=True, db_column="COD_VRS_VET")
+    # num_occ_iae = models.CharField(u"", max_length=2, null=True, db_column="NUM_OCC_IAE")
     #/ cle composite
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
     centre = models.ForeignKey(ExamCenter)
@@ -280,7 +280,7 @@ class RecapitulatifExamenModel(models.Model):
 
 class EtapeSettingsDerouleModel(models.Model):
     etape = models.ForeignKey(Etape)
-    cod_anu = models.CharField(max_length=4, default='2014')
+    cod_anu = models.CharField(max_length=4, default='2015')
     deroule = models.FileField(null=True, upload_to='deroule_examen', blank=True)
     date_envoi_convocation = models.DateField(null=True, blank=True) # for session 1
     envoi_convocation_processed = models.BooleanField(default=False) # If the command has been already executed or not
