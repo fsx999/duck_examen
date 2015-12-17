@@ -74,7 +74,7 @@ class RattachementCentreExamen(models.Model):
     # num_occ_iae = models.CharField(u"", max_length=2, null=True, db_column="NUM_OCC_IAE")
     #/ cle composite
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
-    centre = models.ForeignKey(ExamCenter)
+    centre = models.ForeignKey(ExamCenter, null=True)
     ec_manquant = models.BooleanField(default=False, blank=True)
     type_examen = models.ForeignKey('TypeExamen', default='D')
     salle = models.ForeignKey(Salle, blank=True, null=True)
@@ -111,6 +111,8 @@ class RattachementCentreExamen(models.Model):
         return None
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.centre:
+            self.centre = ExamCenter.objects.get(is_main_center=True)
         if self.ec_manquant:
             etp = self.get_etp_ant()
             if etp:
