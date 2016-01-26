@@ -8,8 +8,12 @@ myApp.config(['$routeProvider', '$httpProvider',
     function ($routeProvider, $httpProvider) {
         $routeProvider.
             when('/', {
-                templateUrl: '/static/recruitment/app/partials/home.html',
-                controller: 'RecruitmentCtrl'
+                templateUrl: '/static/examens/app/partials/home.html',
+                controller: 'ExamenCtrl'
+            }).
+            when('/centre_rattachement', {
+                templateUrl: '/static/examens/app/partials/rattachement.html',
+                controller: 'RattachementCtrl'
             }).
             otherwise({
                 redirectTo: '/'
@@ -17,10 +21,13 @@ myApp.config(['$routeProvider', '$httpProvider',
         $httpProvider.defaults.xsrfCookieName = 'csrftoken';
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
     }]);
-myApp.run(['$rootScope', '$http', function($rootScope, $http){
-    $http.get('/recruitment/v1/users').success(function(data){
-       if(data.length == 1){
-           $rootScope.user = data[0];
-       }
-    });
-}]);
+
+//myApp.run(['$rootScope', '$http', function($rootScope, $http){
+//    $http.get('/recruitment/v1/users').success(function(data){
+//       if(data.length == 1){
+//           $rootScope.user = data[0];
+//       }
+//    });
+//}
+//
+//]);

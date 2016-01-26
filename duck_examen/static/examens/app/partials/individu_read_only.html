@@ -1,0 +1,30 @@
+<table class="table">
+    <tr>
+        <th style="width: 25%;">Nom</th>
+        <td>{{ formatNoms(env.currentRecord.individu) }}</td>
+    </tr>
+    <tr>
+        <th>Prénom</th>
+        <td>{{ formatPrenoms(env.currentRecord.individu) }}</td>
+    </tr>
+    <tr>
+        <th>Code étudiant</th>
+        <td>{{ env.currentRecord.individu.cod_etu }}</td>
+    </tr>
+    <tr>
+        <th>Adresse</th>
+        <td>{{ env.currentRecord.adresse }}</td>
+    </tr>
+    <tr>
+        <th>Code étape</th>
+        <td>{{ env.currentRecord.inscription.cod_etp }}</td>
+    </tr>
+    <tr>
+        <th>Code centre de gestion</th>
+        <td>{{ env.currentRecord.inscription.cod_cge }}</td>
+    </tr>
+    <tr>
+        <th>État de l'inscription administrative</th>
+        <td>{{ env.currentRecord.inscription.eta_iae }}</td>
+    </tr>
+</table>

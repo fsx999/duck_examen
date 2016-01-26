@@ -1,4 +1,113 @@
 
+myApp.controller('ExamenCtrl',
+    ['$scope', '$http', 'DuckExamen',
+        function ($scope, $http, DuckExamen) {
+            $scope.env = {};
+            $scope.env.isLoaded = false;
+            $scope.env.currentPage = 1;
+            $scope.env.data = {count: 0, results: [], dirty: true};
+            $scope.env.searchPattern = "";
+            $scope.env.currentView = "home";
+            //$scope.v.currentView = "home";
+            $scope.env.currentRecord = null;
+            $scope.changePage = function () {
+                $scope.env.isLoaded = false;
+                DuckExamen.loadData($scope.env.currentPage, $scope, $scope.env.searchPattern);
+            };
+
+            $scope.formatRattachements = function(rattachements) {
+                var result = "";
+                for (var i = 0, l = rattachements.length; i < l; ++i) {
+                    result += "Session " + rattachements[i].session + ": ";
+                    result += rattachements[i].centre_label;
+                    result += ". Ec manquant: " + (rattachements[i].ec_manquant === true ? "Oui" : "Non")  + "\n";
+                }
+                return result;
+            };
+            init = function () {
+                $scope.env.isLoaded = false;
+                DuckExamen.loadData($scope.env.currentPage, $scope, $scope.env.searchPattern);
+            };
+            init();
+
+            $scope.onSearchPatternChange = function () {
+                $scope.env.isLoaded = false;
+                $scope.env.currentPage = 1;
+                DuckExamen.loadData($scope.env.currentPage, $scope, $scope.env.searchPattern);
+                $scope.env.currentSearchPattern = $scope.env.searchPattern;
+            };
+
+            $scope.mouseover = function (blop) {
+                console.log(blop);
+            };
+            $scope.changeView = function (viewName, data) {
+                $scope.env.currentView = viewName;
+                if (typeof(data) != 'undefined') {
+                    $scope.env.currentRecord = data;
+                }
+
+            };
+
+            $scope.formatPrenoms = function(individu) {
+                return (individu.lib_pr1_ind +
+                        (individu.lib_pr2_ind != "" ? (" " + individu.lib_pr2_ind ) : "") +
+                        (individu.lib_pr3_ind != "" ? (" " + individu.lib_pr3_ind): ""));
+            };
+
+            $scope.formatNoms = function(individu) {
+                return (individu.lib_nom_pat_ind +
+                        (individu.lib_nom_usu_ind != "" ? (" (" + individu.lib_nom_usu_ind + ")") : "" ));
+            };
+
+
+        }
+
+    ]);
+
+myApp.factory('DuckExamen', ['$http', '$resource', function ($http, $resource) {
+    var obj = {};
+    obj.loadData = function(page, $scope, searchPattern) {
+            var url = '/examen/api/v1/DuckExamen/?page='+page;
+            if (searchPattern != "") {
+                url += "&search=" + searchPattern
+            }
+            data = $resource(url, {}, {
+                query: {method: 'GET', params: {}, isArray: false}
+            });
+            data.query(function(response) {
+                $scope.env.data = response;
+                $scope.env.isLoaded = true;
+            });
+        };
+    return obj
+}]);
+
+
+//myApp.controller('RattachementCtrl',
+//    ['$scope', '$http', 'DuckExamen',
+//       function ($scope, $http, DuckExamen) {
+//
+//        }
+//
+//    ]);
+
+myApp.directive('individuReadOnly', function() {
+    return {
+        templateUrl: "/static/examens/app/partials/individu_read_only.html"
+    };
+});
+
+myApp.directive('rattachementsCentreExamen', function() {
+    return {
+        templateUrl: "/static/examens/app/partials/rattachements_centre_examen.html"
+    };
+});
+
+
+//myApp.controller('BlogCtrl', ['$scope', 'Blog', function($scope, Blog) {
+//    Blog.Posts.query(function(response) { $scope.posts = response });
+//}]);
+
 myApp.controller('RecruitmentCtrl',
     ['$scope', '$modal', '$http', '$log', 'Etape', 'Ec', 'PersonneDsi', 'EtatHeure', 'Invitation', '$filter',
     function ($scope, $modal, $http, $log, Etape, Ec, PersonneDsi, EtatHeure, Invitation, $filter) {

@@ -1,8 +1,15 @@
 # coding=utf-8
 from django.conf.urls import patterns, url
+from rest_framework import routers
+
 from duck_examen.adminx import ImpresssionCentre, ImpresssionRecap, ImpressionEmargement, ImpressionEtiquetteEnveloppe, \
     ImpressionPv
+from duck_examen.views import DuckExamenViewSet
 
+router = routers.SimpleRouter()
+router.register(r'api/v1/DuckExamen', DuckExamenViewSet)
+
+#urlpatterns = router.urls
 
 urlpatterns = patterns(
     '',
@@ -23,3 +30,4 @@ urlpatterns = patterns(
         name='impression_pv'),
     )
 
+urlpatterns += router.urls

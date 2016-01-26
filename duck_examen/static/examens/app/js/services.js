@@ -2,6 +2,14 @@
  * Created by paulguichon on 06/10/2015.
  */
 
+var servicesExamen = angular.module('servicesExamen', ['ngResource']);
+  servicesExamen.factory('DuckExamen', ['$resource',
+    function($resource){
+        return $resource('/recruitment/v1/etapes/:etapeId', {}, {
+            query: {method: 'GET', params: {etapeId: '@etapeId'}, isArray: true}
+        })
+    }]);
+
 var servicesRecrutement = angular.module('servicesRecrutement', ['ngResource']);
 
 servicesRecrutement.factory('Etape', ['$resource',
