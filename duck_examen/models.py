@@ -141,8 +141,6 @@ class EtapeExamenModel(Etape):
         ordering = ['cod_etp']
 
 
-
-
 @python_2_unicode_compatible
 class DeroulementExamenModel(models.Model):
     etape = models.ForeignKey(Etape)
