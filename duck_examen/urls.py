@@ -4,10 +4,12 @@ from rest_framework import routers
 
 from duck_examen.adminx import ImpresssionCentre, ImpresssionRecap, ImpressionEmargement, ImpressionEtiquetteEnveloppe, \
     ImpressionPv
-from duck_examen.views import DuckExamenViewSet
+from duck_examen.views import DuckExamenViewSet, ExamCenterViewSet, RattachementCentreExamenViewSet
 
 router = routers.SimpleRouter()
 router.register(r'api/v1/DuckExamen', DuckExamenViewSet)
+router.register(r'api/v1/ExamCenter', ExamCenterViewSet)
+router.register(r'api/v1/RattachementCentreExamen', RattachementCentreExamenViewSet)
 
 #urlpatterns = router.urls
 

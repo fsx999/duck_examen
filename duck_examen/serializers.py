@@ -2,7 +2,7 @@
 import django
 from rest_framework import serializers
 from django_apogee.serializers import InsAdmEtpInitialSerializer, IndividuSerializer
-from duck_examen.models import RattachementCentreExamen
+from duck_examen.models import RattachementCentreExamen, ExamCenter
 from django_apogee.models import Adresse, InsAdmEtp
 
 
@@ -15,6 +15,9 @@ class RattachementCentreExamenSerializer(serializers.ModelSerializer):
     def get_centre_label(self, obj):
         return obj.centre.label
 
+class ExamCenterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExamCenter
 
 ## SPECIFIC AU DUCK_EXAMEN
 

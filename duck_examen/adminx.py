@@ -10,7 +10,8 @@ from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
 from duck_examen.forms import EnvoiEMailCenterViewForm
 from duck_examen.models import EtapeExamen, RattachementCentreExamen, ExamCenter, DeroulementExamenModel, \
-    RecapitulatifExamenModel, EtapeExamenModel, DetailDeroulement, TypeExamen, EtapeSettingsDerouleModel
+    RecapitulatifExamenModel, EtapeExamenModel, DetailDeroulement, TypeExamen, EtapeSettingsDerouleModel, Parcours, \
+    AmenagementExamenModel
 from duck_examen.utils import get_etudiant_pagine
 import xadmin
 from xadmin.filters import RelatedFieldListFilter
@@ -253,6 +254,8 @@ class RattachementCentreExamenAdmin(object):
     extra = 2
     max_num = 2
 
+    #exclude = ['type_examen',] # Etre sur qu'il est bien devenu inutile
+
     @filter_hook
     def formfield_for_dbfield(self, db_field, **kwargs):
         # If it uses an intermediary model that isn't auto created, don't show
@@ -270,7 +273,19 @@ class RattachementCentreExamenAdmin(object):
             type_examen = EtapeSettingsDerouleModel.objects.filter(etape__cod_etp=self.org_obj.cod_etp).distinct('type_examen').values_list('type_examen', flat=True)
             query = TypeExamen.objects.filter(name__in=type_examen)
             return db_field.formfield(queryset=query,  **dict(attrs, **kwargs))
+        if db_field.name == 'parcours':
+            query=Parcours.objects.filter(etape__cod_etp=self.org_obj.cod_etp)
+            return db_field.formfield(queryset=query,  **dict(attrs, **kwargs))
+
         return db_field.formfield(**dict(attrs, **kwargs))
+
+    @property
+    def exclude(self):
+        exclude = ['type_examen']
+        if not Parcours.objects.filter(etape__cod_etp=self.org_obj.cod_etp).count():
+            return exclude + ['parcours']
+        else:
+            return exclude
 
 
 class EtapeExamenAdmin(object):
@@ -373,8 +388,24 @@ class ExamenCenterAdmin(object):
 class DetailDeroulementAdmin(object):
     model = DetailDeroulement
     extra = 0
-    readonly_fields = ['type_examen']
+    # readonly_fields = ['type_examen']
 
+    @property
+    def exclude(self):
+        exclude = ['type_examen']
+        if not Parcours.objects.filter(etape__cod_etp=self.org_obj.etape.cod_etp).count():
+            return exclude + ['parcours']
+        else:
+            return exclude
+
+
+    @filter_hook
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        attrs = self.get_field_attrs(db_field, **kwargs)
+        if db_field.name == 'parcours':
+            query=Parcours.objects.filter(etape__cod_etp=self.org_obj.etape.cod_etp)
+            return db_field.formfield(queryset=query,  **dict(attrs, **kwargs))
+        return db_field.formfield(**dict(attrs, **kwargs))
 
 class DeroulementAdmin(object):
     hidden_menu = True
@@ -549,3 +580,15 @@ class ExamentDashboard(views.Dashboard):
         return self.template_response(self.base_template, self.get_context())
 
 xadmin.site.register_view(r'^examens/$', ExamentDashboard, 'examens_dashboard')
+
+class ParcoursAdmin(object):
+    @filter_hook
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        attrs = self.get_field_attrs(db_field, **kwargs)
+        if db_field.name == 'etape':
+            query = Etape.objects.filter(etpgerercge__cod_cmp='034').order_by('cod_etp')
+            return db_field.formfield(queryset=query,  **dict(attrs, **kwargs))
+
+        return db_field.formfield(**dict(attrs, **kwargs))
+
+xadmin.site.register(Parcours, ParcoursAdmin)

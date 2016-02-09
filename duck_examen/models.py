@@ -63,6 +63,25 @@ class ExamCenter(models.Model):
         return self.etudiant_by_step_session(cod_etp, session, type_examen).count()
 
 
+class AmenagementExamenModel(models.Model):
+    TYPE_AMENAGEMENT = (
+        ('N', 'Normal'),
+        ('T', 'Tiers-temps')
+    )
+    type_amenagement = models.CharField(max_length=2,
+                                        choices=TYPE_AMENAGEMENT, default='N',
+                                        primary_key=True)
+
+    def __str__(self):
+        return "{}".format(self.get_type_amenagement_display())
+
+class Parcours(models.Model):
+    etape = models.ForeignKey(Etape)
+    label = models.CharField(max_length=256, default="NO NAME")
+
+    def __str__(self):
+        return "{} {} ".format(self.etape, self.label)
+
 @python_2_unicode_compatible
 class RattachementCentreExamen(models.Model):
     inscription = models.ForeignKey(InsAdmEtp)
@@ -78,6 +97,9 @@ class RattachementCentreExamen(models.Model):
     ec_manquant = models.BooleanField(default=False, blank=True)
     type_examen = models.ForeignKey('TypeExamen', default='D')
     salle = models.ForeignKey(Salle, blank=True, null=True)
+    handicap = models.BooleanField(default=False)
+    type_amenagement = models.ForeignKey('AmenagementExamenModel', default='N')
+    parcours = models.ForeignKey('Parcours', null=True, blank=True)
 
     def get_dates(self):
         d = DeroulementExamenModel.objects.get(etape__cod_etp=self.inscription.cod_etp, session=self.session).get_deroulement_parse(self.type_examen)
@@ -215,6 +237,8 @@ class TypeExamen(models.Model):
 class DetailDeroulement(models.Model):
     deroulement = models.ForeignKey(DeroulementExamenModel, null=True)
     type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
+    amenagement_examen = models.ForeignKey(AmenagementExamenModel, default='N')
+    parcours = models.ForeignKey(Parcours, null=True, default=None)
 
     deroulement_contenu = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
                                    blank=True)

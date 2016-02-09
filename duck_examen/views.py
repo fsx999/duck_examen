@@ -1,8 +1,11 @@
 from django_apogee.models import InsAdmEtpInitial, Individu
 from rest_framework import filters
 from rest_framework import viewsets
-from duck_examen.serializers import DuckExamenSerializer
-
+from duck_examen.serializers import (DuckExamenSerializer,
+                                     RattachementCentreExamenSerializer,
+                                     ExamCenterSerializer,
+                                     )
+from models import RattachementCentreExamen, ExamCenter
 
 class DuckExamenViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = InsAdmEtpInitial.objects.using('oracle').filter(cod_cge="IED", cod_anu=2015)
@@ -27,7 +30,14 @@ class DuckExamenViewSet(viewsets.ReadOnlyModelViewSet):
     #
     #     return super(DuckExamenViewSet, self).list(request)
 
+class RattachementCentreExamenViewSet(viewsets.ModelViewSet):
+    queryset = RattachementCentreExamen.objects.all()
+    serializer_class = RattachementCentreExamenSerializer
+    paginate_by = 100
 
+class ExamCenterViewSet(viewsets.ModelViewSet):
+    queryset = ExamCenter.objects.all()
+    serializer_class = ExamCenterSerializer
 
 class RattachementAppViewSet(viewsets.ViewSet):
 #     """
