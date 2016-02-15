@@ -26,11 +26,11 @@ class Command(BaseCommand):
         deroules = {}
         for code_individu in args:
 
-            for inscription in InsAdmEtp.inscrits_condi.filter(cod_ind=code_individu,
+            for inscription in InsAdmEtp.inscrits_condi.filter(cod_ind__cod_etu=code_individu,
                                                                         ).distinct():
                 recipients = get_recipients(inscription.cod_ind, inscription.cod_anu)
-                rattachement = RattachementCentreExamen.objects.filter(InsAdmEtp=inscription)
-                deroulement = DeroulementExamenModel.objects.filter(etape=inscription.etape)
+                rattachement = RattachementCentreExamen.objects.filter(inscription=inscription)
+                deroulement = DeroulementExamenModel.objects.filter(etape__cod_etp=inscription.cod_etp)
 
                 for de in deroulement.etape.deroulementexamenmodel_set.all(): #DeroulementExamenModel.objects.filter(etape=esd.etape):
                     deroules[de.session] = de.get_deroulement_detail(rattachement.type_amenagement, rattachement.parcours)
