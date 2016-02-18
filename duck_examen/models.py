@@ -6,6 +6,7 @@ from django.db import models
 from django_apogee.models import Pays, InsAdmEtp, Etape
 from duck_examen.managers import ExamenCenterManager
 import re
+import yaml
 from duck_utils.models import Salle
 
 
@@ -268,6 +269,45 @@ class DetailDeroulement(models.Model):
                         r['prof'] = deroule[2]
                         jour['matieres'].append(r)
                 resultat.append(jour)
+        return resultat
+
+    def deroulement_parse2(self):
+        """
+        Ex: Liste de liste pour garder l'ordre des elements du fichier (le dico ne le permet pas)
+- "JEUDI 03 SEPTEMBRE 2015":
+    - "9h00 - 10h30":
+        - AAAAAAAA|PSYCHO-SOCIO-PRAGMATIQUE DE LA COMMUNICATION|E. MARQUEZ
+        - BBBBBBBB|INTERACTIONS SOCIALES|JL. TAVANI
+    - "11h00 - 12h30":
+        - CCCCCCCC|PSYCHOLOGIE DES ORGANISATIONS|B. VALLÉE
+    - "14h00 - 15h30":
+        - DDDDDDDD|PSYCHOLOGIE SOCIALE DE LA SANTÉ|L. DAGOT
+
+- "VENDREDI 04 SEPTEMBRE 2015":
+    - "7h00 - 8h30":
+        - EEEEEEEE|ANGLAIS SPÉCIALISÉ|T. SAIAS
+
+        """
+        if not self.deroulement_contenu:
+            return []
+        text = self.deroulement_contenu.encode('utf-8')
+        ylist = yaml.load(text.strip().rstrip())
+        resultat = []
+        for deroule_jour in ylist:
+            jour = {'date': deroule_jour.keys()[0].strip().rstrip(), 'matieres': []}
+            for j in deroule_jour[deroule_jour.keys()[0]]:
+                heures = j.keys()[0].split('-')
+                r = {
+                    'heure_debut': heures[0].strip().rstrip(),
+                    'heure_fin': heures[1].strip().rstrip(),
+                    'ecs': []
+                }
+                for mat in j[j.keys()[0]]:
+                    code_ec, label, prof = mat.split('|')
+                    r['ecs'].append({'code_ec': code_ec, 'label': label, 'prof': prof})
+                jour['matieres'].append(r)
+
+            resultat.append(jour)
         return resultat
 
     def get_jours(self):
