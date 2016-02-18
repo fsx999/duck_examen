@@ -287,6 +287,33 @@ class DetailDeroulement(models.Model):
     - "7h00 - 8h30":
         - EEEEEEEE|ANGLAIS SPÉCIALISÉ|T. SAIAS
 
+SORTIE:
+[{'date': 'JEUDI 03 SEPTEMBRE 2015',
+  'matieres': [{'ecs': [{'code_ec': 'AAAAAAAA',
+                         'label': 'PSYCHO-SOCIO-PRAGMATIQUE DE LA COMMUNICATION',
+                         'prof': 'E. MARQUEZ'},
+                        {'code_ec': 'BBBBBBBB',
+                         'label': 'INTERACTIONS SOCIALES',
+                         'prof': 'JL. TAVANI'}],
+                'heure_debut': '9h00',
+                'heure_fin': '10h30'},
+               {'ecs': [{'code_ec': u'CCCCCCCC',
+                         'label': u'PSYCHOLOGIE DES ORGANISATIONS',
+                         'prof': u'B. VALL\xc9E'}],
+                'heure_debut': '11h00',
+                'heure_fin': '12h30'},
+               {'ecs': [{'code_ec': u'DDDDDDDD',
+                         'label': u'PSYCHOLOGIE SOCIALE DE LA SANT\xc9',
+                         'prof': u'L. DAGOT'}],
+                'heure_debut': '14h00',
+                'heure_fin': '15h30'}]},
+ {'date': 'VENDREDI 04 SEPTEMBRE 2015',
+  'matieres': [{'ecs': [{'code_ec': u'EEEEEEEE',
+                         'label': u'ANGLAIS SP\xc9CIALIS\xc9',
+                         'prof': u'T. SAIAS'}],
+                'heure_debut': '7h00',
+                'heure_fin': '8h30'}]}]
+
         """
         if not self.deroulement_contenu:
             return []
