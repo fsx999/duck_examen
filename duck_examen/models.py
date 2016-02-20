@@ -208,10 +208,10 @@ class DeroulementExamenModel(models.Model):
     def __str__(self):
         return '{} session {}'.format(self.etape, self.session)
 
-    def get_deroulement_parse(self, amenagement_examen=AmenagementExamenModel.objects.get(type_amenagement='N'), parcours=None):
+    def get_deroulement_parse(self, amenagement_examen, parcours=None):
         return self.detailderoulement_set.get(amenagement_examen=amenagement_examen, parcours=parcours).deroulement_parse2()
 
-    def get_deroulement_detail(self, amenagement_examen=AmenagementExamenModel.objects.get(type_amenagement='N'), parcours=None):
+    def get_deroulement_detail(self, amenagement_examen, parcours=None):
         return self.detailderoulement_set.get(amenagement_examen=amenagement_examen, parcours=parcours)
 
 
