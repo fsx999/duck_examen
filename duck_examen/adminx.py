@@ -37,14 +37,12 @@ class ListImpressionView(views.Dashboard):
         context = super(ListImpressionView, self).get_context()
         etapes = []
         for etape in Etape.objects.by_centre_gestion('IED').order_by('cod_cur'):
-            r = []
-            for settings in etape.etapesettingsderoulemodel_set.filter(cod_anu=2014, session=1):
-                r.append(settings.type_examen)
-            etape.types_examen_1 = r
-            r = []
-            for settings in etape.etapesettingsderoulemodel_set.filter(cod_anu=2014, session=2):
-                r.append(settings.type_examen)
-            etape.types_examen_2 = r
+            try:
+                etape.types_examen_1 = etape.deroulementexamenmodel_set.get(annee=2015, session=1).derouler_par_parcours()
+                etape.types_examen_2 = etape.deroulementexamenmodel_set.get(annee=2015, session=2).derouler_par_parcours()
+            except DeroulementExamenModel.DoesNotExist:
+                pass
+
             etapes.append(etape)
         context['etapes'] = etapes
 
@@ -392,7 +390,7 @@ class DetailDeroulementAdmin(object):
 
     @property
     def exclude(self):
-        exclude = ['type_examen']
+        exclude = []
         if not Parcours.objects.filter(etape__cod_etp=self.org_obj.etape.cod_etp).count():
             return exclude + ['parcours']
         else:
@@ -409,11 +407,11 @@ class DetailDeroulementAdmin(object):
 
 class DeroulementAdmin(object):
     hidden_menu = True
-    readonly_fields = ['etape', 'session']
+    # readonly_fields = ['etape', 'session']
     form_layout = Layout(Container(Col('full',
                                        Fieldset(
                                            "",
-                                           'etape', 'session',
+                                           'etape', 'session', 'annee',
                                            'nb_salle', 'nb_table',
                                            'date_examen',
                                            'salle_examen',
@@ -536,7 +534,7 @@ class EtapeSettingsDerouleModelAdmin(object):
     list_filter = [('etape', EtapeFilter), 'session']
 
     def queryset(self):
-        qs = super(EtapeSettingsDerouleModelAdmin, self).queryset()
+        qs = super(EtapeSettingsDerouleModelAdmin, self).queryset().filter(cod_anu=2015)
         if not self.user.is_superuser:
             qs = qs.filter(etape__in=self.user.setting_user.etapes.all())
 

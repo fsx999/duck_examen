@@ -63,7 +63,7 @@ class ExamCenter(models.Model):
     def nb_etudiant(self, cod_etp, session, type_examen='D'):
         return self.etudiant_by_step_session(cod_etp, session, type_examen).count()
 
-
+@python_2_unicode_compatible
 class AmenagementExamenModel(models.Model):
     TYPE_AMENAGEMENT = (
         ('N', 'Normal'),
@@ -76,6 +76,7 @@ class AmenagementExamenModel(models.Model):
     def __str__(self):
         return "{}".format(self.get_type_amenagement_display())
 
+@python_2_unicode_compatible
 class Parcours(models.Model):
     etape = models.ForeignKey(Etape)
     label = models.CharField(max_length=256, default="NO NAME")
@@ -167,6 +168,7 @@ class EtapeExamenModel(Etape):
 @python_2_unicode_compatible
 class DeroulementExamenModel(models.Model):
     etape = models.ForeignKey(Etape)
+    annee = models.CharField(max_length=4, default=2015, blank=True)
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
     nb_salle = models.IntegerField('nombre de salle', null=True, blank=True)
     nb_table = models.IntegerField('nombre de table par salle', null=True, blank=True)
@@ -180,6 +182,20 @@ class DeroulementExamenModel(models.Model):
         verbose_name_plural = "Deroulements"
         db_table = 'core_deroulementexemenmodel'  # faute ortho déjà mis en prod
 
+    def derouler_par_parcours(self):
+        result = {}
+        if self.etape.parcours_set.count():
+            for detail in self.detailderoulement_set.all():
+                try:
+                    result.setdefault(detail.parcours.label, []).append(detail)
+                except AttributeError:
+                    result.setdefault('Normal', []).append(detail)
+        else:
+            for detail in self.detailderoulement_set.all():
+                result.setdefault('Normal', []).append(detail)
+        return result
+
+
     def deroulement_etape_anterieur(self):
         code_etp_actuel = self.etape.cod_etp
         if code_etp_actuel[0] == 'L' and code_etp_actuel[1] in ['2', '3']:
@@ -189,41 +205,14 @@ class DeroulementExamenModel(models.Model):
         else:
             return None
 
-    def deroulement_parse(self):
-        if not self.deroulement:
-            return []
-        text = self.deroulement.encode('utf-8')
-        text = text.replace('\r\n', '').strip()
-        resultat = []
-        text = re.split(r'(\[[^]]*])', text)[1:]
-        for i, token in enumerate(text):
-            if i % 2 == 0:
-                jour = {'date': text[i][1:-1], 'matieres': []}
-                suite = text[i+1]
-                suite = re.split(r'(<[^>]*>)', suite)[1:]
-                for j, token2 in enumerate(suite):
-                    if j % 2 == 0:
-                        heure = suite[j].strip('< >'.encode('utf-8')).split(r'-')
-                        r = {
-                            'heure_debut': heure[0],
-                            'heure_fin': heure[1]
-                        }
-                        deroule = re.split(r'\|', suite[j+1])
-                        r['code_ec'] = deroule[0]
-                        r['label'] = deroule[1]
-                        r['prof'] = deroule[2]
-                        jour['matieres'].append(r)
-                resultat.append(jour)
-        return resultat
-
     def __str__(self):
         return '{} session {}'.format(self.etape, self.session)
 
-    def get_deroulement_parse(self, type_examen):
-        return self.get_deroulement_detail(type_examen=type_examen).deroulement_parse()
+    def get_deroulement_parse(self, amenagement_examen=AmenagementExamenModel.objects.get(type_amenagement='N'), parcours=None):
+        return self.detailderoulement_set.get(amenagement_examen=amenagement_examen, parcours=parcours).deroulement_parse2()
 
-    def get_deroulement_detail(self, type_examen):
-        return self.detailderoulement_set.get(type_examen=type_examen)
+    def get_deroulement_detail(self, amenagement_examen=AmenagementExamenModel.objects.get(type_amenagement='N'), parcours=None):
+        return self.detailderoulement_set.get(amenagement_examen=amenagement_examen, parcours=parcours)
 
 
 @python_2_unicode_compatible
@@ -235,41 +224,42 @@ class TypeExamen(models.Model):
         return self.label
 
 
+@python_2_unicode_compatible
 class DetailDeroulement(models.Model):
-    deroulement = models.ForeignKey(DeroulementExamenModel, null=True)
-    type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
-    amenagement_examen = models.ForeignKey(AmenagementExamenModel, default='N')
-    parcours = models.ForeignKey(Parcours, null=True, default=None)
-
+    deroulement = models.ForeignKey(DeroulementExamenModel, null=True, blank=True)
+    # type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
+    amenagement_examen = models.ForeignKey(AmenagementExamenModel, default='N', blank=True)
+    parcours = models.ForeignKey(Parcours, null=True, default=None, blank=True)
+    # deroule = models.FileField(null=True, upload_to='deroule_examen', blank=True)
     deroulement_contenu = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
                                    blank=True)
 
-    def deroulement_parse(self):
-        if not self.deroulement_contenu:
-            return []
-        text = self.deroulement_contenu.encode('utf-8')
-        text = text.replace('\r\n', '').strip()
-        resultat = []
-        text = re.split(r'(\[[^]]*])', text)[1:]
-        for i, token in enumerate(text):
-            if i % 2 == 0:
-                jour = {'date': text[i][1:-1], 'matieres': []}
-                suite = text[i+1]
-                suite = re.split(r'(<[^>]*>)', suite)[1:]
-                for j, token2 in enumerate(suite):
-                    if j % 2 == 0:
-                        heure = suite[j].strip('< >'.encode('utf-8')).split(r'-')
-                        r = {
-                            'heure_debut': heure[0],
-                            'heure_fin': heure[1]
-                        }
-                        deroule = re.split(r'\|', suite[j+1])
-                        r['code_ec'] = deroule[0]
-                        r['label'] = deroule[1]
-                        r['prof'] = deroule[2]
-                        jour['matieres'].append(r)
-                resultat.append(jour)
-        return resultat
+    # def deroulement_parse(self):
+    #     if not self.deroulement_contenu:
+    #         return []
+    #     text = self.deroulement_contenu.encode('utf-8')
+    #     text = text.replace('\r\n', '').strip()
+    #     resultat = []
+    #     text = re.split(r'(\[[^]]*])', text)[1:]
+    #     for i, token in enumerate(text):
+    #         if i % 2 == 0:
+    #             jour = {'date': text[i][1:-1], 'matieres': []}
+    #             suite = text[i+1]
+    #             suite = re.split(r'(<[^>]*>)', suite)[1:]
+    #             for j, token2 in enumerate(suite):
+    #                 if j % 2 == 0:
+    #                     heure = suite[j].strip('< >'.encode('utf-8')).split(r'-')
+    #                     r = {
+    #                         'heure_debut': heure[0],
+    #                         'heure_fin': heure[1]
+    #                     }
+    #                     deroule = re.split(r'\|', suite[j+1])
+    #                     r['code_ec'] = deroule[0]
+    #                     r['label'] = deroule[1]
+    #                     r['prof'] = deroule[2]
+    #                     jour['matieres'].append(r)
+    #             resultat.append(jour)
+    #     return resultat
 
     def deroulement_parse2(self):
         """
@@ -345,7 +335,7 @@ SORTIE:
         return res
 
     def __str__(self):
-        return "{} {} {}".format(self.deroulement.etape, self.type_examen, self.deroulement.session)
+        return "{} {} {}".format(self.deroulement.etape, self.amenagement_examen , self.deroulement.session)
 
 
 @python_2_unicode_compatible
@@ -372,33 +362,20 @@ class RecapitulatifExamenModel(models.Model):
 class EtapeSettingsDerouleModel(models.Model):
     etape = models.ForeignKey(Etape)
     cod_anu = models.CharField(max_length=4, default='2015')
-    deroule = models.FileField(null=True, upload_to='deroule_examen', blank=True)
+
     date_envoi_convocation = models.DateField(null=True, blank=True) # for session 1
     envoi_convocation_processed = models.BooleanField(default=False) # If the command has been already executed or not
-    type_examen = models.ForeignKey(TypeExamen)
     session = models.CharField(max_length=2, choices=(('1', 'Première session'), ('2', 'Seconde session')))
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        try:
-            d = DeroulementExamenModel.objects.get(etape=self.etape, session=self.session)
-            contenu = DetailDeroulement.objects.filter(deroulement=d).first().deroulement_contenu
-            derou, created = DetailDeroulement.objects.get_or_create(deroulement=d, type_examen=self.type_examen)
-            if created:
-                derou.deroulement_contenu = contenu
-                derou.save()
-        except DeroulementExamenModel.DoesNotExist:
-            pass
-
-        super(EtapeSettingsDerouleModel, self).save(force_insert, force_update, using, update_fields)
 
     def get_deroulement(self):
-        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement_detail(type_examen=self.type_examen)
+        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement_detail()
 
     def get_deroulement_parse(self):
-        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement_parse(type_examen=self.type_examen)
+        return self.etape.deroulementexamenmodel_set.get(session=self.session).get_deroulement_parse()
 
     def __str__(self):
-        return "{} {} {} {}".format(self.etape, self.cod_anu, self.type_examen, self.session)
+        return "{} {} {}".format(self.etape, self.cod_anu, self.session)
 
 
 @receiver(post_save, sender=InsAdmEtp)

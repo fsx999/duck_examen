@@ -47,9 +47,16 @@ class Command(BaseCommand):
         #     DetailDeroulement.objects.get_or_create(deroulement=x, deroulement_contenu=x.deroulement)
             # DetailDeroulement.objects.get_or_create(deroulement=x, deroulement_contenu=x.deroulement, type_examen_id='H')
         for x in Etape.objects.by_centre_gestion('IED'):
-            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=1, type_examen_id='D')
-            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=2, type_examen_id='D')
-            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=1, type_examen_id='H')
-            EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=2, type_examen_id='H')
-        for x in EtapeSettingsDerouleModel.objects.all():
-            x.save()
+            a = EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=1, cod_anu=2015)[0]
+            b = EtapeSettingsDerouleModel.objects.get_or_create(etape=x, session=2, cod_anu=2015)[0]
+            if x.parcours_set.count():
+                for p in x.parcours_set.all():
+                    for derou in x.deroulementexamenmodel_set.filter(annee=2015):
+                        DetailDeroulement.objects.get_or_create(parcours=p, deroulement=derou, amenagement_examen_id='N')
+                        DetailDeroulement.objects.get_or_create(parcours=p, deroulement=derou, amenagement_examen_id='T')
+        #     else:
+        #         for derou in x.deroulementexamenmodel_set.filter(annee=2015):
+        #             DetailDeroulement.objects.get_or_create(deroulement=derou, amenagement_examen_id='N')
+        #             DetailDeroulement.objects.get_or_create(deroulement=derou, amenagement_examen_id='T')
+        # # for x in EtapeSettingsDerouleModel.objects.all():
+        #     x.save()
