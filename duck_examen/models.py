@@ -1,9 +1,12 @@
 # coding=utf-8
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.db import models
 from django_apogee.models import Pays, InsAdmEtp, Etape
+from yaml.parser import ParserError
+
 from duck_examen.managers import ExamenCenterManager
 import re
 import yaml
@@ -56,12 +59,24 @@ class ExamCenter(models.Model):
             self.sending_address = self.mailling_address
         super(ExamCenter, self).save(force_insert, force_update, using, update_fields)
 
-    def etudiant_by_step_session(self, cod_etp, session, type_examen='D'):
-        query = self.rattachementcentreexamen_set.filter(inscription__cod_etp=cod_etp, session=session, type_examen__name=type_examen)
+    def etudiant_by_step_session(self, cod_etp, session, amenagement_examen=None, parcours=-1):
+        # type (int, int, AmenagementExamenModel,Parcours) -> django.db.models.query.QuerySet
+        filters = {
+            'inscription__cod_etp': cod_etp,
+            'inscription__cod_anu': 2015,
+            'session': session,
+        }
+        if amenagement_examen:
+            filters['type_amenagement'] = amenagement_examen
+        if parcours != -1:
+            filters['parcours'] = parcours
+
+        query = self.rattachementcentreexamen_set.filter(** filters)
         return query.order_by('inscription__cod_ind__lib_nom_pat_ind').distinct()
 
-    def nb_etudiant(self, cod_etp, session, type_examen='D'):
-        return self.etudiant_by_step_session(cod_etp, session, type_examen).count()
+    def nb_etudiant(self, cod_etp, session, amenagement_examen=None, parcours=-1):
+        # type (int, int, AmenagementExamenModel,Parcours) -> django.db.models.query.QuerySet
+        return self.etudiant_by_step_session(cod_etp, session, amenagement_examen=amenagement_examen, parcours=parcours).count()
 
 @python_2_unicode_compatible
 class AmenagementExamenModel(models.Model):
@@ -308,7 +323,10 @@ SORTIE:
         if not self.deroulement_contenu:
             return []
         text = self.deroulement_contenu.encode('utf-8')
-        ylist = yaml.load(text.strip().rstrip())
+        try:
+            ylist = yaml.load(text.strip().rstrip())
+        except ParserError:
+            return []
         resultat = []
         for deroule_jour in ylist:
             jour = {'date': deroule_jour.keys()[0].strip().rstrip(), 'matieres': []}
@@ -328,7 +346,7 @@ SORTIE:
         return resultat
 
     def get_jours(self):
-        deroulement = self.deroulement_parse()
+        deroulement = self.deroulement_parse2()
         res = []
         for d in deroulement:
             res.append(d['date'])

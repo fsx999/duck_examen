@@ -2,9 +2,7 @@
 import datetime
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.utils.encoding import smart_unicode
 from django.views.decorators.cache import never_cache
 from wkhtmltopdf.views import PDFTemplateView
 from django_apogee.models import Pays, Etape
@@ -19,7 +17,6 @@ from xadmin.layout import Layout, Container, Col, Fieldset
 from xadmin.views import filter_hook
 from django.db import models
 from xadmin import views
-
 
 
 class ListImpressionView(views.Dashboard):
@@ -121,11 +118,14 @@ class ImpressionEmargement(PDFTemplateView):
         return self.filename.format(self.kwargs.get('cod_etp', 'Anomalie'), self.kwargs.get('session', 'Anomalie'),
                                      self.type[self.kwargs.get('type', None)])
 
-    def etranger(self, cod_etp, session, type_examen):
-        return ExamCenter.objects.get_incorporation_by_cod_etp_by_session(cod_etp, session, type_examen).order_by('country__lib_pay')
+    def etranger(self, cod_etp, session, parcours):
+        return ExamCenter.objects.get_incorporation_by_cod_etp_by_session(
+            cod_etp=cod_etp,
+            session=session,
+            parcours=parcours).order_by('country__lib_pay')
 
-    def autre(self, cod_etp, session, type_examen):
-        return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp, session, type_examen)
+    def autre(self, cod_etp, session, parcours):
+        return ExamCenter.objects.get_autre_by_cod_etp_by_session(cod_etp=cod_etp, session=session, parcours=parcours)
 
     def presentiel(self, cod_etp, session, type_examen):
         etape = EtapeExamenModel.objects.get(cod_etp=cod_etp)
@@ -135,21 +135,21 @@ class ImpressionEmargement(PDFTemplateView):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         type = self.kwargs.get('type', None)
-        type_examen = self.kwargs.get('type_examen', 'D')
+        pk = self.kwargs.get('pk')
+        type_examen = None  # TODO a changer
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
-
-        centres_gestions = getattr(self, self.type[type])(cod_etp, session, type_examen)
-        # try:
-        deroulement = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session)
-        context['deroulements'] = deroulement.get_deroulement_parse(TypeExamen.objects.get(name=type_examen))
-        # except IndexError:
-        #     pass
+        f_centre_examen = getattr(self, self.type[type])
+        deroulement = DetailDeroulement.objects.get(pk=pk)
+        context['deroulements'] = deroulement.deroulement_parse2()
         nb_matiere = 0
         for jour in context['deroulements']:
             nb_matiere += len(jour['matieres'])
         context['nb_matiere'] = [0] * nb_matiere
 
         if type != 'P':
+
+            centres_gestions = f_centre_examen(cod_etp, session, parcours=deroulement.parcours)
+
             for centre in centres_gestions:
 
                 centre.etudiants = centre.etudiant_by_step_session(cod_etp, session, type_examen)
@@ -324,6 +324,7 @@ class EtapeExamenAdmin(object):
         if not self.user.is_superuser:
             return query.filter(cod_etp__in=self.user.setting_user.etapes.values_list('cod_etp', flat=True))
         return query
+
     @filter_hook
     def model_admin_url(self, name, *args, **kwargs):
         url = super(EtapeExamenAdmin, self).model_admin_url(name, *args, **kwargs)

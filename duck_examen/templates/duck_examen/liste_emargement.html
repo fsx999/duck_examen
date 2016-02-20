@@ -39,9 +39,15 @@
         <td>NOM D'ÉPOUSE</td>
         <td>PRÉNOM</td>
         <td>N° ÉTUDIANT</td>
+{#        <td>{{ deroulements|pprint }}</td>#}
         {% for deroulement in deroulements %}
             {% for matiere in deroulement.matieres %}
-                <td>{{ matiere.label|safe }} </td>
+                <td>
+                    {% for ec in matiere.ecs %}
+                        {{ ec.label|safe }} {% if not forloop.last %}/{% endif %}
+                    {% endfor %}
+
+                </td>
             {% endfor %}
         {% endfor %}
     </tr>
