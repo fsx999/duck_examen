@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             ],
 
         ),
-        migrations.RunPython(forwards_func, reverse_func),
+        # migrations.RunPython(forwards_func, reverse_func),
 
 
     ]
