@@ -7,10 +7,13 @@ class ExamenCenterManager(models.Manager):
     def get_by_cod_etp_by_session(self, cod_etp, session, type_examen):
         if type_examen:
             return self.filter(rattachementcentreexamen__inscription__cod_etp=cod_etp,
-                           rattachementcentreexamen__session=session, rattachementcentreexamen__type_examen__name=type_examen).distinct()
+                               rattachementcentreexamen__inscription__cod_anu=2015,
+                               rattachementcentreexamen__session=session,
+                               rattachementcentreexamen__type_examen__name=type_examen).distinct()
         else:
             return self.filter(rattachementcentreexamen__inscription__cod_etp=cod_etp,
-                           rattachementcentreexamen__session=session).distinct()
+                               rattachementcentreexamen__inscription__cod_anu=2015,
+                               rattachementcentreexamen__session=session).distinct()
 
     def get_incorporation_by_cod_etp_by_session(self, cod_etp, session, type_examen=None):
         return self.get_by_cod_etp_by_session(cod_etp, session, type_examen).filter(has_incorporation=True).distinct()
