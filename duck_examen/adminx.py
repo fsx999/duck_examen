@@ -136,7 +136,6 @@ class ImpressionEmargement(PDFTemplateView):
         session = self.kwargs.get('session', None)
         type = self.kwargs.get('type', None)
         pk = self.kwargs.get('pk')
-        type_examen = None  # TODO a changer
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
         f_centre_examen = getattr(self, self.type[type])
         deroulement = DetailDeroulement.objects.get(pk=pk)
@@ -152,7 +151,7 @@ class ImpressionEmargement(PDFTemplateView):
 
             for centre in centres_gestions:
 
-                centre.etudiants = centre.etudiant_by_step_session(cod_etp, session, type_examen)
+                centre.etudiants = centre.etudiant_by_step_session(cod_etp, session)
                 centre.nb_etudiant = centre.etudiants.count()
                 centre.nb_ligne_vide = [nb + centre.nb_etudiant + 1 for nb in range(15-centre.nb_etudiant)]
             context['centres'] = centres_gestions

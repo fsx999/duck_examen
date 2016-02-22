@@ -242,7 +242,6 @@ class TypeExamen(models.Model):
 @python_2_unicode_compatible
 class DetailDeroulement(models.Model):
     deroulement = models.ForeignKey(DeroulementExamenModel, null=True, blank=True)
-    # type_examen = models.ForeignKey(TypeExamen, default='D', null=True)
     amenagement_examen = models.ForeignKey(AmenagementExamenModel, default='N', blank=True)
     parcours = models.ForeignKey(Parcours, null=True, default=None, blank=True)
     # deroule = models.FileField(null=True, upload_to='deroule_examen', blank=True)
@@ -302,7 +301,7 @@ SORTIE:
             return []
         resultat = []
         for deroule_jour in ylist:
-            jour = {'date': deroule_jour.keys()[0].strip().rstrip(), 'matieres': []}
+            jour = {'date': deroule_jour.keys()[0].strip().rstrip(), 'matieres': [], 'nb_ecs': 0}
             for j in deroule_jour[deroule_jour.keys()[0]]:
                 heures = j.keys()[0].split('-')
                 r = {
@@ -313,8 +312,9 @@ SORTIE:
                 for mat in j[j.keys()[0]]:
                     code_ec, label, prof = mat.split('|')
                     r['ecs'].append({'code_ec': code_ec, 'label': label, 'prof': prof})
+                    jour['nb_ecs'] += 1
                 jour['matieres'].append(r)
-
+            print jour['nb_ecs']
             resultat.append(jour)
         return resultat
 

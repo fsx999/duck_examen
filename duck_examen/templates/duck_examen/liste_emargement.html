@@ -23,15 +23,15 @@
     <tr>
         <td colspan="5" rowspan="2"></td>
         {% for deroulement in deroulements %}
-            <td colspan="{{ deroulement.matieres|length }}">{{ deroulement.date }}</td>
+                    <th colspan="{{ deroulement.nb_ecs}}">{{ deroulement.date }}</th>
         {% endfor %}
     </tr>
     <tr>
-        {% for deroulement in deroulements %}
-            {% for matiere in deroulement.matieres %}
-                <td>{{ matiere.heure_debut|safe }}-{{ matiere.heure_fin|safe }} </td>
-            {% endfor %}
-        {% endfor %}
+         {% for deroulement in deroulements %}
+                    {% for matiere in deroulement.matieres %}
+                        <th colspan="{{ matiere.ecs|length }}">{{ matiere.heure_debut|safe }}-{{ matiere.heure_fin|safe }} </th>
+                    {% endfor %}
+         {% endfor %}
     </tr>
     <tr>
         <td></td>
@@ -40,15 +40,15 @@
         <td>PRÉNOM</td>
         <td>N° ÉTUDIANT</td>
         {% for deroulement in deroulements %}
-            {% for matiere in deroulement.matieres %}
-                <td>
-                    {% for ec in matiere.ecs %}
-                        {{ ec.label|safe }} {% if not forloop.last %}/{% endif %}
-                    {% endfor %}
+        {% for matiere in deroulement.matieres %}
 
-                </td>
+            {% for ec in matiere.ecs %}
+                    <th> {{ ec.label|safe }}</th>
+
             {% endfor %}
+
         {% endfor %}
+    {% endfor %}
     </tr>
 </thead>
 <tbody>
@@ -65,8 +65,15 @@
         <td>{{ etudiant.prenom }}</td>
         <td>{{ etudiant.cod_etu }}</td>
         {% endwith %}
-    {% for x in nb_matiere %}
-    <td></td>
+    {% for deroulement in deroulements %}
+        {% for matiere in deroulement.matieres %}
+
+                    {% for ec in matiere.ecs %}
+                            <th> &nbsp;</th>
+
+                    {% endfor %}
+
+        {% endfor %}
     {% endfor %}
 
 
@@ -81,8 +88,15 @@
             <td></td>
             <td></td>
             <td></td>
-            {% for x in nb_matiere %}
-            <td></td>
+            {% for deroulement in deroulements %}
+                {% for matiere in deroulement.matieres %}
+
+                    {% for ec in matiere.ecs %}
+                            <th> &nbsp;</th>
+
+                    {% endfor %}
+
+                {% endfor %}
             {% endfor %}
         </tr>
     {% endfor %}

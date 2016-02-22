@@ -9,6 +9,7 @@
         div.break {
             page-break-after: always
         }
+
         thead {
             display: table-header-group;
         }
@@ -29,72 +30,82 @@
                 </td>
             </tr>
         </table>
-                    <table class="table table-bordered table-striped" id="ma_table">
-                    <thead>
-                    <tr>
-                        <th colspan="5" rowspan="2"></th>
-                        {% for deroulement in deroulements %}
-                            <th colspan="{{ deroulement.matieres|length }}">{{ deroulement.date }}</th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for deroulement in deroulements %}
-                            {% for matiere in deroulement.matieres %}
-                                <th>{{ matiere.heure_debut|safe }}-{{ matiere.heure_fin|safe }} </th>
-                            {% endfor %}
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <th>NOM</th>
-                        <th>NOM D'ÉPOUSE</th>
-                        <th>PRÉNOM</th>
-                        <th>N° ÉTUDIANT</th>
-                        {% for deroulement in deroulements %}
-                            {% for matiere in deroulement.matieres %}
-                                <th>
-                                    {% for ec in matiere.ecs %}
-                                        {{ ec.label|safe }} {% if not forloop.last %}/{% endif %}
-                                    {% endfor %}
-                                </th>
-                            {% endfor %}
-                        {% endfor %}
-                    </tr>
-                    </thead>
-                    <tbody>
-        {% with page.object_list as etudiants %}
-
-
-            {% for etudiant in etudiants %}
+        <table class="table table-bordered table-striped" id="ma_table">
+            <thead>
             <tr>
-                <td colspan="1">{{ forloop.counter }}</td>
-                <td>{{ etudiant.nom }}</td>
-                <td>{{ etudiant.nom_epoux }}</td>
-                <td>{{ etudiant.prenom }}</td>
-                <td>{{ etudiant.cod_etu }}</td>
-                {% for x in nb_matiere %}
-                    <td></td>
+                <th colspan="5" rowspan="2"></th>
+                {% for deroulement in deroulements %}
+                    <th colspan="{{ deroulement.nb_ecs}}">{{ deroulement.date }}</th>
                 {% endfor %}
             </tr>
+            <tr>
+                {% for deroulement in deroulements %}
+                    {% for matiere in deroulement.matieres %}
+                        <th colspan="{{ matiere.ecs|length }}">{{ matiere.heure_debut|safe }}-{{ matiere.heure_fin|safe }} </th>
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+            <tr>
+                <th></th>
+                <th>NOM</th>
+                <th>NOM D'ÉPOUSE</th>
+                <th>PRÉNOM</th>
+                <th>N° ÉTUDIANT</th>
+                         {% for deroulement in deroulements %}
+                            {% for matiere in deroulement.matieres %}
 
-            {% endfor %}
+                                        {% for ec in matiere.ecs %}
+                                                <th> {{ ec.label|safe }}</th>
 
-                {% for nb in 10|get_range  %}
+                                        {% endfor %}
+
+                            {% endfor %}
+                        {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% with page.object_list as etudiants %}
+                {% for etudiant in etudiants %}
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        {% for x in nb_matiere %}
-                        <td></td>
+                        <td colspan="1">{{ forloop.counter }}</td>
+                        <td>{{ etudiant.nom }}</td>
+                        <td>{{ etudiant.nom_epoux }}</td>
+                        <td>{{ etudiant.prenom }}</td>
+                        <td>{{ etudiant.cod_etu }}</td>
+                        {% for deroulement in deroulements %}
+                            {% for matiere in deroulement.matieres %}
+
+                                        {% for ec in matiere.ecs %}
+                                                <th> &nbsp;</th>
+
+                                        {% endfor %}
+
+                            {% endfor %}
                         {% endfor %}
                     </tr>
                 {% endfor %}
+                {% for nb in 10|get_range %}
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        {% for deroulement in deroulements %}
+                            {% for matiere in deroulement.matieres %}
 
-        {% endwith %}
+                                        {% for ec in matiere.ecs %}
+                                                <th> &nbsp;</th>
 
-        </tbody>
+                                        {% endfor %}
+
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endwith %}
+
+            </tbody>
         </table>
         <div class="break"></div>
     {% endfor %}
