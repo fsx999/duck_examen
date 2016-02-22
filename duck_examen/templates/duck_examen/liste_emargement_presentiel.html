@@ -52,7 +52,11 @@
                         <th>N° ÉTUDIANT</th>
                         {% for deroulement in deroulements %}
                             {% for matiere in deroulement.matieres %}
-                                <th>{{ matiere.label|safe }} </th>
+                                <th>
+                                    {% for ec in matiere.ecs %}
+                                        {{ ec.label|safe }} {% if not forloop.last %}/{% endif %}
+                                    {% endfor %}
+                                </th>
                             {% endfor %}
                         {% endfor %}
                     </tr>

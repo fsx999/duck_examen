@@ -168,11 +168,11 @@ class EtapeExamenModel(Etape):
     """
     utiliser pour les examen
     """
-    def get_etudiant_presentiel(self, session, type_examen):
+    def get_etudiant_presentiel(self, session, amenagement_examen):
         qs = InsAdmEtp.inscrits_condi.filter(cod_etp=self.cod_etp,
                                              rattachementcentreexamen__centre__is_main_center=True,
                                              rattachementcentreexamen__session=session,
-                                             rattachementcentreexamen__type_examen__name=type_examen).order_by('cod_ind__lib_nom_pat_ind')
+                                             rattachementcentreexamen__type_amenagement=amenagement_examen).order_by('cod_ind__lib_nom_pat_ind')
         return qs.distinct()
 
     class Meta:
@@ -248,33 +248,6 @@ class DetailDeroulement(models.Model):
     # deroule = models.FileField(null=True, upload_to='deroule_examen', blank=True)
     deroulement_contenu = models.TextField('Le déroulement', help_text='chaque ec doit être séparé par un |', null=True,
                                    blank=True)
-
-    # def deroulement_parse(self):
-    #     if not self.deroulement_contenu:
-    #         return []
-    #     text = self.deroulement_contenu.encode('utf-8')
-    #     text = text.replace('\r\n', '').strip()
-    #     resultat = []
-    #     text = re.split(r'(\[[^]]*])', text)[1:]
-    #     for i, token in enumerate(text):
-    #         if i % 2 == 0:
-    #             jour = {'date': text[i][1:-1], 'matieres': []}
-    #             suite = text[i+1]
-    #             suite = re.split(r'(<[^>]*>)', suite)[1:]
-    #             for j, token2 in enumerate(suite):
-    #                 if j % 2 == 0:
-    #                     heure = suite[j].strip('< >'.encode('utf-8')).split(r'-')
-    #                     r = {
-    #                         'heure_debut': heure[0],
-    #                         'heure_fin': heure[1]
-    #                     }
-    #                     deroule = re.split(r'\|', suite[j+1])
-    #                     r['code_ec'] = deroule[0]
-    #                     r['label'] = deroule[1]
-    #                     r['prof'] = deroule[2]
-    #                     jour['matieres'].append(r)
-    #             resultat.append(jour)
-    #     return resultat
 
     def deroulement_parse2(self):
         """

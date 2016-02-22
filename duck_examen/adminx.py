@@ -160,12 +160,13 @@ class ImpressionEmargement(PDFTemplateView):
         else: # if type == 'P'
             etape = EtapeExamenModel.objects.get(cod_etp=cod_etp)
             self.template_name = "duck_examen/liste_emargement_presentiel.html"
-            if type_examen == 'H':
-                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, type_examen),
+            if deroulement.amenagement_examen.type_amenagement == 'T':
+                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, deroulement.amenagement_examen),
                                                    nb_amphi=1, nb_table=1)
             else:
-                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, type_examen),
-                                                   nb_amphi=deroulement.nb_salle, nb_table=deroulement.nb_table)
+                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, deroulement.amenagement_examen),
+                                                       nb_amphi=deroulement.deroulement.nb_salle,
+                                                       nb_table=deroulement.deroulement.nb_table)
 
         context['session'] = session
         context['label'] = Etape.objects.get(cod_etp=cod_etp).lib_etp
