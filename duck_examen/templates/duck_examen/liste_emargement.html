@@ -65,16 +65,16 @@
         <td>{{ etudiant.prenom }}</td>
         <td>{{ etudiant.cod_etu }}</td>
         {% endwith %}
-    {% for deroulement in deroulements %}
-        {% for matiere in deroulement.matieres %}
+        {% for deroulement in deroulements %}
+            {% for matiere in deroulement.matieres %}
 
-                    {% for ec in matiere.ecs %}
-                            <th> &nbsp;</th>
+                        {% for ec in matiere.ecs %}
+                                <th> &nbsp;</th>
 
-                    {% endfor %}
+                        {% endfor %}
 
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
 
 
     </tr>

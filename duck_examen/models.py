@@ -314,7 +314,6 @@ SORTIE:
                     r['ecs'].append({'code_ec': code_ec, 'label': label, 'prof': prof})
                     jour['nb_ecs'] += 1
                 jour['matieres'].append(r)
-            print jour['nb_ecs']
             resultat.append(jour)
         return resultat
 

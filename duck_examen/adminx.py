@@ -33,7 +33,7 @@ class ListImpressionView(views.Dashboard):
     def get_context(self):
         context = super(ListImpressionView, self).get_context()
         etapes = []
-        for etape in Etape.objects.by_centre_gestion('IED').order_by('cod_cur'):
+        for etape in Etape.objects.by_centre_gestion('IED').filter(deroulementexamenmodel__detailderoulement__deroulement_contenu__isnull=False).distinct('cod_etp').order_by('cod_etp'):
             try:
                 etape.types_examen_1 = etape.deroulementexamenmodel_set.get(annee=2015, session=1).derouler_par_parcours()
                 etape.types_examen_2 = etape.deroulementexamenmodel_set.get(annee=2015, session=2).derouler_par_parcours()
