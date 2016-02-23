@@ -183,6 +183,7 @@ class ImpressionPv(ImpressionEtiquetteEnveloppe):
     template_name = "duck_examen/pv_centre.html"
     cmd_options = {
     }
+
     def get_context_data(self, **kwargs):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
