@@ -23,6 +23,9 @@
         .half {
             height: 13cm;
         }
+      h5, h4{
+            font-weight: bold;
+        }
 
     </style>
 </head>
@@ -35,9 +38,9 @@
             IED PARIS 8
                     <center>
                     <div class="small">
-                    <h5>ENVELOPPE DESTINEE </h5>
+                    <u></u><h5>ENVELOPPE DESTINEE </h5>
                     <h5>AU RESPONSABLE DU CENTRE</h5>
-                    <h5>D'EXAMEN</h5>
+                    <h5>D'EXAMEN</h5></u>
 
                     {{ label }} <br/>
                     {{ centre.label }} - {% if session == '1' %}
@@ -56,7 +59,7 @@
                     <li>Le document "consignes de surveillance"</li>
                     <li>La liste d'émargement</li>
                     <li>Enveloppe RETOUR des PV + liste d'émargment</li>
-                    <li>Les Procès Verbauc des séances</li>
+                    <li>Les Procès Verbaux des séances</li>
                 </ul>
             Les PV sont à remplir par les surveillants après chaque séance et ils sont à retourner à l'IED même
                 si aucun étudiant ne s'est présenté à l'épreuve
@@ -64,9 +67,9 @@
 
 
             <div class="col-xs-5 etiquette">
-                IED PARIS 8
+                <strong>IED PARIS 8</strong>
                 <center>
-                    <h4>ENVELOPPE RETOUR</h4>
+                    <u><h4>ENVELOPPE RETOUR</h4></u>
                     DES PROCES-VERBAUX <br/>
                     ET <br/>
                     LA LISTE D'EMARGEMENT <br/>
@@ -86,44 +89,62 @@
         {% for deroulement in deroulements %}
 
                 {% for matiere in deroulement.matieres %}
+                    {% for ec in matiere.ecs %}
                 <div class="row half etiquette">
                     <div class="col-xs-5 etiquette">
-
-                        IED PARIS 8
+                        <table>
+                            <tr>
+                                <td>
+                                    <strong>IED PARIS 8</strong>
+                                </td>
+                                <td style="position: absolute; right: 15px;">
+                                    {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
+                                </td>
+                            </tr>
+                        </table>
                         <center>
-                        {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
+                         <br/> <br/>
+                            <u>ENVELOPPE SUJET</u> <br/>
                             {{ deroulement.date }} <br/>
                             de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
                             {{ label }} <br/>
-                            {{ matiere.label }} <br/>
+                            {{ ec.label }} <br/>
                             {{ centre.label }}
                         </center>
                     </div>
+
 
                     <div class="col-xs-5 etiquette">
 
                         IED PARIS 8
                         <center>
-                        {{ matiere.prof }} <br/> {{ matiere.code_ec }} <br/>
+                        {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
                             RETOUR ENVELOPPE <br/>
                             {{ deroulement.date }} <br/>
                             de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
                             {{ label }} <br/>
-                            {{ matiere.label }} <br/>
+                            {{ ec.label }} <br/>
                             {{ centre.label }}
                         </center>
                     </div>
                 </div>
+{#                        {% if forloop.first %}#}
+{#                            <div style="page-break-after:always"></div>#}
+{#                            {% endif %}#}
+                        {% endfor %}
+
                     {% if a|divisibleby:'2' %}
                     <div style="page-break-after:always"></div>
+
                     {% endif %}
                     {% counter assign='a' silent=True %}
             {% endfor %}
 
         {% endfor %}
         <div style="page-break-after:always"></div>
+        {% counter assign='a' start=0 silent=True %}
     {% endfor %}
 
 </div>

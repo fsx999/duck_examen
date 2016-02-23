@@ -192,11 +192,8 @@ class ImpressionPv(ImpressionEtiquetteEnveloppe):
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
 
         centres_gestions = getattr(self, self.type[type])(cod_etp, session, type_examen)
-        # try:
         deroulement = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session)
         context['deroulements'] = deroulement.get_deroulement_parse(TypeExamen.objects.get(name=type_examen))
-        # except IndexError:
-        #     pass
         nb_matiere = 0
         for jour in context['deroulements']:
             nb_matiere += len(jour['matieres'])
