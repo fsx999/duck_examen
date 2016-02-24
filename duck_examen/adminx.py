@@ -188,7 +188,7 @@ class ImpressionPv(ImpressionEtiquetteEnveloppe):
         cod_etp = self.kwargs.get('cod_etp', None)
         session = self.kwargs.get('session', None)
         type = self.kwargs.get('type', None)
-        type_examen = self.kwargs.get('type_examen', 'D')
+        pk = self.kwargs.get('pk')
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
 
         centres_gestions = getattr(self, self.type[type])(cod_etp, session, type_examen)
