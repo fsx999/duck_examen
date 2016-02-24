@@ -50,7 +50,7 @@
                     {% endif %}{% now "Y" %}
                     </div>
                     </center>
-            Cette enveloppe contient :
+            <u>Cette enveloppe contient : </u>
                 <ul>
                     <li>Le bordereau d'envoi</li>
                     <li>l'accusé de réception</li>
@@ -60,6 +60,7 @@
                     <li>La liste d'émargement</li>
                     <li>Enveloppe RETOUR des PV + liste d'émargment</li>
                     <li>Les Procès Verbaux des séances</li>
+                    <li>Les notes et PV de fraude</li>
                 </ul>
             Les PV sont à remplir par les surveillants après chaque séance et ils sont à retourner à l'IED même
                 si aucun étudiant ne s'est présenté à l'épreuve
@@ -104,11 +105,11 @@
                         </table>
                         <center>
                          <br/> <br/>
-                            <u>ENVELOPPE SUJET</u> <br/>
+                            <strong><u>ENVELOPPE SUJET</u> <br/>
                             {{ deroulement.date }} <br/>
                             de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
-                            {{ label }} <br/>
+                            {{ label }} <br/></strong>
                             {{ ec.label }} <br/>
                             {{ centre.label }}
                         </center>
@@ -117,14 +118,24 @@
 
                     <div class="col-xs-5 etiquette">
 
-                        IED PARIS 8
-                        <center>
-                        {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
-                            RETOUR ENVELOPPE <br/>
+                    <table>
+                            <tr>
+                                <td>
+                                    <strong>IED PARIS 8</strong>
+                                </td>
+                                <td style="position: absolute; right: 15px;">
+
+                                    {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
+                                </td>
+                            </tr>
+                    </table>
+                            <br/><br/>
+                            <center>
+                            <strong><u>ENVELOPPE RETOUR </u><br/>
                             {{ deroulement.date }} <br/>
                             de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
-                            {{ label }} <br/>
+                            {{ label }} <br/></strong>
                             {{ ec.label }} <br/>
                             {{ centre.label }}
                         </center>
