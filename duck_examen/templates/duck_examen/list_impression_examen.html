@@ -11,6 +11,7 @@
             <th> Émargement étranger</th>
             <th> Émargement autres</th>
             <th> Émargement présentiel</th>
+            <th> Étiquettes envoi centre etranger</th>
             <th> Étiquettes envoi centre autres</th>
             <th> Pv centre étranger</th>
             <th> Pv centre autres</th>
@@ -133,6 +134,42 @@
                     {% endfor %}
 
                 </ul>
+            </td>
+        <td>
+                 première session
+                <ul>
+                    {% for parcours, detail_examens in etape.types_examen_1.items %}
+                        <li> {{ parcours }}
+                            <ul>
+                                {% for detail_examen in detail_examens %}
+                                    <li><a href="{% url 'impression_envoi_centre' etape.cod_etp 'E' '1' detail_examen.id %}">{{ detail_examen.amenagement_examen }}</a></li>
+                                {% endfor %}
+
+                            </ul>
+
+
+
+                            <br/></li>
+                    {% endfor %}
+
+                </ul>
+                deuxième session
+                <ul>
+                    {% for parcours, detail_examens in etape.types_examen_2.items %}
+                        <li> {{ parcours }}
+                            <ul>
+                                {% for detail_examen in detail_examens %}
+                                    <li><a href="{% url 'impression_envoi_centre' etape.cod_etp 'E' '2' detail_examen.id %}">{{ detail_examen.amenagement_examen }}</a></li>
+                                {% endfor %}
+
+                            </ul>
+                            <br/>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+{#                <a href="{% url 'impression_envoi_centre' etape.cod_etp 'A' '1' %}">première session</a><br/>#}
+{#                <a href="{% url 'impression_envoi_centre' etape.cod_etp 'A' '2' %}">deuxième session</a>#}
             </td>
             <td>
                  première session
