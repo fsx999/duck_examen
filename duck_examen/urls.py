@@ -24,10 +24,10 @@ urlpatterns = patterns(
     url(r'^impression_emargement/(?P<cod_etp>\w+)/(?P<type>\w+)/(?P<session>\w+)/(?P<pk>\w+)$',
         ImpressionEmargement.as_view(),
         name='impression_emargement'),
-    url(r'^impression_envoi_centre/(?P<cod_etp>\w+)/(?P<type>\w+)/(?P<session>\w+)/(?P<pk>\w+)$$',
+    url(r'^impression_envoi_centre/(?P<cod_etp>\w+)/(?P<type>\w+)/(?P<session>\w+)/(?P<pk>\w+)$',
         ImpressionEtiquetteEnveloppe.as_view(),
         name='impression_envoi_centre'),
-    url(r'^impression_pv/(?P<cod_etp>\w+)/(?P<type>\w+)/(?P<session>\w+)$',
+    url(r'^impression_pv/(?P<cod_etp>\w+)/(?P<type>\w+)/(?P<session>\w+)/(?P<pk>\w+)$',
         ImpressionPv.as_view(),
         name='impression_pv'),
     )
