@@ -34,9 +34,13 @@
 
         {% for deroulement in deroulements %}
             {% for matiere in deroulement.matieres %}
+                {% for ec in matiere.ecs %}
+
+
+
                 <div class="row">
                     <div class="col-xs-3">IED <br/>PARIS 8</div>
-                    <div class="col-xs-8">INSTITUI D'ENSEIGNEMENT À DISTANCE DE PARIS 8 <br/>
+                    <div class="col-xs-8">INSTITUT D'ENSEIGNEMENT À DISTANCE DE PARIS 8 <br/>
                         2 RUE DE LA LIBERTÉ <br/>
                         93 526 - SAINT DENIS CEDEX 02 <br/>
                         TÉL. : 01.49.40.62.00 FAX. : 01.49.40.62.04
@@ -49,7 +53,7 @@
                 </div> <br/>
                 <div class="row">
                     <div class="col-xs-5">UNITÉ D'ENSEIGNEMENT :</div>
-                    <div class="col-xs-6">{{ matiere.code_ec }} - {{ matiere.label }}</div>
+                    <div class="col-xs-6">{{ ec.code_ec }} - {{ ec.label }}</div>
                 </div><br/>
                 <div class="row">
                     <div class="col-xs-5">DATE DE L'EXAMEN :</div>
@@ -134,7 +138,7 @@
                 </table>
                 <div style="page-break-after:always"></div>
             {% endfor %}
-
+            {% endfor %}
         {% endfor %}
 
     {% endfor %}

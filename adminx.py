@@ -33,7 +33,10 @@ class ListImpressionView(views.Dashboard):
     def get_context(self):
         context = super(ListImpressionView, self).get_context()
         etapes = []
-        for etape in Etape.objects.by_centre_gestion('IED').filter(deroulementexamenmodel__detailderoulement__deroulement_contenu__isnull=False).distinct('cod_etp').order_by('cod_etp'):
+        for etape in Etape.objects.by_centre_gestion('IED').filter(
+                cod_etp__in=self.user.setting_user.etapes.values_list('cod_etp', flat=True),
+                deroulementexamenmodel__detailderoulement__deroulement_contenu__isnull=False
+        ).distinct('cod_etp').order_by('cod_etp'):
             try:
                 etape.types_examen_1 = etape.deroulementexamenmodel_set.get(annee=2015, session=1).derouler_par_parcours()
                 etape.types_examen_2 = etape.deroulementexamenmodel_set.get(annee=2015, session=2).derouler_par_parcours()
@@ -191,18 +194,20 @@ class ImpressionPv(ImpressionEtiquetteEnveloppe):
         pk = self.kwargs.get('pk')
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
 
-        centres_gestions = getattr(self, self.type[type])(cod_etp, session, type_examen)
-        deroulement = DeroulementExamenModel.objects.get(etape__cod_etp=cod_etp, session=session)
-        context['deroulements'] = deroulement.get_deroulement_parse(TypeExamen.objects.get(name=type_examen))
+        f_centre_examen = getattr(self, self.type[type])
+        deroulement = DetailDeroulement.objects.get(pk=pk)
+        context['deroulements'] = deroulement.deroulement_parse2()
+
         nb_matiere = 0
         for jour in context['deroulements']:
             nb_matiere += len(jour['matieres'])
         context['nb_matiere'] = [0] * nb_matiere
 
         if type != 'P':
+            centres_gestions = f_centre_examen(cod_etp, session, parcours=deroulement.parcours)
             for centre in centres_gestions:
 
-                centre.etudiants = centre.etudiant_by_step_session(cod_etp, session, type_examen)
+                centre.etudiants = centre.etudiant_by_step_session(cod_etp, session)
                 centre.nb_etudiant = centre.etudiants.count()
                 centre.nb_ligne_vide = [nb + centre.nb_etudiant + 1 for nb in range(15-centre.nb_etudiant)]
             context['centres'] = centres_gestions
@@ -210,14 +215,17 @@ class ImpressionPv(ImpressionEtiquetteEnveloppe):
         else: # if type == 'P'
             etape = EtapeExamenModel.objects.get(cod_etp=cod_etp)
             centre = ExamCenter.objects.get(is_main_center=True)
-            centre.nb_etudiant = centre.etudiant_by_step_session(cod_etp, session, type_examen).count()
+            centre.nb_etudiant = centre.etudiant_by_step_session(cod_etp, session, deroulement.amenagement_examen).count()
             context['centres'] = [centre]
-            if type_examen == 'H':
-                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, type_examen),
-                                                   nb_amphi=1, nb_table=1)
+            if deroulement.amenagement_examen.type_amenagement == 'T':
+                context['pages'] = get_etudiant_pagine(
+                    etape.get_etudiant_presentiel(session, deroulement.amenagement_examen),
+                    nb_amphi=1, nb_table=1)
             else:
-                context['pages'] = get_etudiant_pagine(etape.get_etudiant_presentiel(session, type_examen),
-                                                   nb_amphi=deroulement.nb_salle, nb_table=deroulement.nb_table)
+                context['pages'] = get_etudiant_pagine(
+                    etape.get_etudiant_presentiel(session, deroulement.amenagement_examen),
+                    nb_amphi=deroulement.deroulement.nb_salle,
+                    nb_table=deroulement.deroulement.nb_table)
 
         context['session'] = session
         context['label'] = Etape.objects.get(cod_etp=cod_etp).lib_etp
