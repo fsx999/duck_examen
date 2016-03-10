@@ -238,10 +238,12 @@ class PaysFilter(RelatedFieldListFilter):
         etp = self.request.GET.get('_p_cod_etp__in', None)
         if etp:
             self.lookup_choices = [(x.pk, x.lib_pay) for x in Pays.objects.filter(
-                examcenter__rattachementcentreexamen__inscription__cod_etp=etp).order_by('lib_pay').distinct()]
+                examcenter__rattachementcentreexamen__inscription__cod_etp=etp,
+                examcenter__rattachementcentreexamen__inscription__cod_anu=2015,
+            ).order_by('lib_pay').distinct()]
         else:
             self.lookup_choices = [(x.pk, x.lib_pay) for x in
-                                   Pays.objects.filter(examcenter__isnull=False).order_by('lib_pay').distinct()]
+                                   Pays.objects.filter(examcenter__isnull=False, examcenter__rattachementcentreexamen__inscription__cod_anu=2015).order_by('lib_pay').distinct()]
         return super(PaysFilter, self).choices()
 
 
@@ -528,13 +530,18 @@ class EtapeFilter(RelatedFieldListFilter):
 class RecapitulatifExamenAdmin(object):
     hidden_menu = True
     actions = [date_envoi, date_reception]
-    list_filter = [('etape', EtapeFilter), 'session']
+    search_fields = ['centre__country__lib_pay']
+    list_filter = [('etape', EtapeFilter), 'session', ('centre__country', PaysFilter)]
     list_display = ('__str__', 'date_envoie', 'date_reception', 'nb_enveloppe', 'nb_colis', 'anomalie')
     list_editable = ('nb_enveloppe', 'anomalie', 'date_envoie', 'nb_colis')
     list_per_page = 20
     readonly_fields = ['etape', 'session', 'centre']
     remove_permissions = ['delete', 'add']
     show_bookmarks = False
+    def queryset(self):
+        qs = super(RecapitulatifExamenAdmin, self).queryset().filter(
+            centre__rattachementcentreexamen__inscription__cod_anu=2015).distinct('id')
+        return qs
 
 
 class EtapeSettingsDerouleModelAdmin(object):

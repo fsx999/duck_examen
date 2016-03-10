@@ -343,7 +343,7 @@ class RecapitulatifExamenModel(models.Model):
         #app_label = 'core'
         verbose_name = 'Recap envoie'
         verbose_name_plural = 'Recaps envoie'
-        ordering = ['centre__country__lib_pay']
+        # ordering = ['centre__country__lib_pay']
 
     def __str__(self):
         return '{} {} {}'.format(self.centre.name_by_pays(), self.etape_id, self.session)
