@@ -31,7 +31,7 @@
 </head>
 <body>
 <div class="container">
-{% counter assign='a' silent=True %}
+{% counter assign='a' start=0 silent=True %}
     {% for centre in centres %}
         <div class="row half">
             <div class="col-xs-6 etiquette">
@@ -91,68 +91,71 @@
 
                 {% for matiere in deroulement.matieres %}
                     {% for ec in matiere.ecs %}
-                <div class="row half">
-                    <div class="col-xs-6 etiquette">
-                        <table>
-                            <tr>
-                                <td>
-                                    <strong>IED PARIS 8</strong>
-                                </td>
-                                <td style="position: absolute; right: 15px;">
-                                    {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
-                                </td>
-                            </tr>
-                        </table>
-                        <center>
-                         <br/> <br/>
-                            <strong><u>ENVELOPPE SUJET</u> <br/>
-                            {{ deroulement.date }} <br/>
-                            de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
+                        <div class="row half">
+                            <div class="col-xs-6 etiquette">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <strong>IED PARIS 8</strong>
+                                        </td>
+                                        <td style="position: absolute; right: 15px;">
+                                            {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <center>
+                                 <br/> <br/>
+                                    <strong><u>ENVELOPPE SUJET</u> <br/>
+                                    {{ deroulement.date }} <br/>
+                                    de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
-                            {{ label }} <br/></strong>
-                            {{ ec.label }} <br/>
-                            {{ centre.label }}
-                        </center>
-                    </div>
+                                    {{ label }} <br/></strong>
+                                    {{ ec.label }} <br/>
+                                    {{ centre.label }}
+                                </center>
+                            </div>
 
 
-                    <div class="col-xs-6 etiquette">
+                            <div class="col-xs-6 etiquette">
 
-                    <table>
-                            <tr>
-                                <td>
-                                    <strong>IED PARIS 8</strong>
-                                </td>
-                                <td style="position: absolute; right: 15px;">
+                            <table>
+                                    <tr>
+                                        <td>
+                                            <strong>IED PARIS 8</strong>
+                                        </td>
+                                        <td style="position: absolute; right: 15px;">
 
-                                    {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
-                                </td>
-                            </tr>
-                    </table>
-                            <br/><br/>
-                            <center>
-                            <strong><u>ENVELOPPE RETOUR </u><br/>
-                            {{ deroulement.date }} <br/>
-                            de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
+                                            {{ ec.prof }} <br/> {{ ec.code_ec }} <br/>
+                                        </td>
+                                    </tr>
+                            </table>
+                                    <br/><br/>
+                                    <center>
+                                    <strong><u>ENVELOPPE RETOUR </u><br/>
+                                    {{ deroulement.date }} <br/>
+                                    de {{ matiere.heure_debut }} à {{ matiere.heure_fin }} <br/>
 
-                            {{ label }} <br/></strong>
-                            {{ ec.label }} <br/>
-                            {{ centre.label }}
-                        </center>
-                    </div>
-                </div>
-                        {% endfor %}
+                                    {{ label }} <br/></strong>
+                                    {{ ec.label }} <br/>
+                                    {{ centre.label }}
+                                </center>
+                            </div>
+                        </div>
+                        {% if  counter.value == 0 %}
+                            {{ counter.increment|default_if_none:"" }}
+                            <div style="page-break-after:always"></div>
+                        {% elif counter.value|divisibleby:'2' %}
+                            {{ counter.increment|default_if_none:"" }}
+                            <div style="page-break-after:always"></div>
+                        {% endif %}
 
-                    {% if a|divisibleby:'2' %}
-                    <div style="page-break-after:always"></div>
+                    {% endfor %}
 
-                    {% endif %}
-                    {% counter assign='a' silent=True %}
             {% endfor %}
 
         {% endfor %}
         <div style="page-break-after:always"></div>
-        {% counter assign='a' start=0 silent=True %}
+        {{ counter.reset|default_if_none:"" }}
     {% endfor %}
 
 </div>

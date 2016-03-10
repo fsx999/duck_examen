@@ -103,6 +103,19 @@ class ImpresssionRecap(PDFTemplateView):
 
         return context
 
+class Counter:
+    def __init__(self):
+        self.value=0
+
+    def reset(self):
+        self.value=0
+
+    def increment(self):
+        self.value += 1
+
+    def decrement(self):
+        self.value -= 1
+
 
 class ImpressionEmargement(PDFTemplateView):
     filename = "emargement_{}_{}_{}.pdf"
@@ -140,6 +153,7 @@ class ImpressionEmargement(PDFTemplateView):
         type = self.kwargs.get('type', None)
         pk = self.kwargs.get('pk')
         context = super(ImpressionEmargement, self).get_context_data(**kwargs)
+        context['counter'] = Counter()
         f_centre_examen = getattr(self, self.type[type])
         deroulement = DetailDeroulement.objects.get(pk=pk)
         context['deroulements'] = deroulement.deroulement_parse2()
